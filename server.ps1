@@ -67,6 +67,16 @@ while ($listener.IsListening) {
             continue
         }
 
+        # Automated test reporter
+        if ($request.HttpMethod -eq "POST" -and $request.Url.LocalPath -eq "/api/test-results") {
+            $reader = New-Object System.IO.StreamReader($request.InputStream)
+            $body = $reader.ReadToEnd()
+            [System.IO.File]::WriteAllText("$rootDir\live_test_report.txt", $body)
+            $response.StatusCode = 200
+            $response.OutputStream.Close()
+            continue
+        }
+
         $rawUrl = $request.Url.LocalPath
         if ($rawUrl -eq "/" -or $rawUrl -eq "") {
             $rawUrl = "/index.html"

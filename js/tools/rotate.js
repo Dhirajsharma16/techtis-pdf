@@ -8,6 +8,13 @@ import { StorageManager } from '../utils/storage.js';
 
 export const RotateTool = {
     /**
+     * Rotate pages helper
+     */
+    async rotate(file, degrees = 90, onProgress = () => {}) {
+        return this.execute(file, { rotationDegrees: degrees }, onProgress);
+    },
+
+    /**
      * Rotate pages in a PDF document
      * @param {File} file
      * @param {Object} options - { rotationDegrees: 90 | 180 | 270, pageIndices: 'all' | [0, 1] }
@@ -57,7 +64,8 @@ export const RotateTool = {
             success: true,
             totalPages,
             durationMs,
-            filename
+            filename,
+            pdfBytes
         };
     }
 };

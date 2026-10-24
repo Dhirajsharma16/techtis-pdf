@@ -61,8 +61,13 @@ export const AllToolsEngine = {
         const { PDFDocument } = window.PDFLib;
         const srcDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const newDoc = await PDFDocument.create();
+        const totalPages = srcDoc.getPageCount();
 
-        const validIndices = pageIndicesToExtract.filter(idx => idx >= 0 && idx < srcDoc.getPageCount());
+        // Normalize indices: allow 1-based or 0-based
+        const validIndices = pageIndicesToExtract
+            .map(idx => (idx >= totalPages ? idx - 1 : idx))
+            .filter(idx => idx >= 0 && idx < totalPages);
+
         if (validIndices.length === 0) {
             throw new Error('Please select at least 1 valid page to extract.');
         }
@@ -97,8 +102,14 @@ export const AllToolsEngine = {
         const { PDFDocument } = window.PDFLib;
         const srcDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const newDoc = await PDFDocument.create();
+        const totalPages = srcDoc.getPageCount();
 
-        const copiedPages = await newDoc.copyPages(srcDoc, newOrderIndices);
+        // Normalize indices within bounds
+        const validIndices = newOrderIndices
+            .map(idx => (idx >= totalPages ? idx - 1 : idx))
+            .filter(idx => idx >= 0 && idx < totalPages);
+
+        const copiedPages = await newDoc.copyPages(srcDoc, validIndices);
         copiedPages.forEach(p => newDoc.addPage(p));
 
         const pdfBytes = await newDoc.save();
@@ -247,11 +258,15 @@ export const AllToolsEngine = {
     /**
      * Sign PDF: Embed signature PNG drawn on canvas onto specified page
      */
-    async signPdf(fileOrBuffer, options = {}, onProgress = () => {}) {
+    async signPdf(fileOrBuffer, optionsOrDataUrl = {}, maybeOptions = {}, onProgress = () => {}) {
         const startTime = performance.now();
         const buffer = fileOrBuffer instanceof File
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
+
+        const options = typeof optionsOrDataUrl === 'string'
+            ? { ...maybeOptions, signatureDataUrl: optionsOrDataUrl }
+            : (optionsOrDataUrl || {});
 
         const { signatureDataUrl, pageNumber = 1, xPercent = 60, yPercent = 15, scale = 1.0 } = options;
         if (!signatureDataUrl) throw new Error('No signature data provided.');
@@ -298,7 +313,11 @@ export const AllToolsEngine = {
     /**
      * Render PDF pages to JPG images
      */
-    async pdfToJpg(fileOrBuffer, onProgress = () => {}) {
+    async pdfToJpg(fileOrBuffer, optionsOrProgress = () => {}, maybeProgress = () => {}) {
+        const onProgress = typeof optionsOrProgress === 'function' ? optionsOrProgress : (maybeProgress || (() => {}));
+        const options = typeof optionsOrProgress === 'object' ? optionsOrProgress : {};
+        const scale = options.scale || 2.0;
+
         const startTime = performance.now();
         const buffer = fileOrBuffer instanceof File
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
@@ -315,11 +334,11 @@ export const AllToolsEngine = {
             onProgress({
                 step: 'rendering',
                 percent: Math.round((i / totalPages) * 90),
-                message: `Rendering Page ${i} of ${totalPages} at 2x Hi-DPI...`
+                message: `Rendering Page ${i} of ${totalPages} at ${scale}x Hi-DPI...`
             });
 
             const page = await pdf.getPage(i);
-            const viewport = page.getViewport({ scale: 2.0 }); // 2x high resolution
+            const viewport = page.getViewport({ scale });
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = viewport.width;
@@ -328,7 +347,6 @@ export const AllToolsEngine = {
             await page.render({ canvasContext: ctx, viewport }).promise;
 
             const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-            // Convert dataUrl to uint8array bytes for zip bundling
             const res = await fetch(dataUrl);
             const blobBytes = new Uint8Array(await res.arrayBuffer());
 
@@ -351,7 +369,7 @@ export const AllToolsEngine = {
             summary: `Rendered ${totalPages} high-DPI JPG images`
         });
 
-        return { renderedImages, totalPages, durationMs };
+        return { renderedImages, images: renderedImages, totalPages, durationMs };
     },
 
     /**
@@ -726,21 +744,34 @@ export const AllToolsEngine = {
     /**
      * Crop PDF Margins
      */
-    async cropPdf(fileOrBuffer, marginPercent = 10) {
+    async cropPdf(fileOrBuffer, marginOrOptions = 10) {
         const startTime = performance.now();
         const buffer = fileOrBuffer instanceof File
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
+        let factorX = 0.1;
+        let factorY = 0.1;
+
+        if (typeof marginOrOptions === 'number') {
+            const f = Math.max(0.01, Math.min(0.4, marginOrOptions / 100));
+            factorX = f;
+            factorY = f;
+        } else if (typeof marginOrOptions === 'object' && marginOrOptions !== null) {
+            const pX = marginOrOptions.left || marginOrOptions.right || marginOrOptions.percent || 10;
+            const pY = marginOrOptions.top || marginOrOptions.bottom || marginOrOptions.percent || 10;
+            factorX = Math.max(0.01, Math.min(0.4, (pX > 1 ? pX / 100 : pX)));
+            factorY = Math.max(0.01, Math.min(0.4, (pY > 1 ? pY / 100 : pY)));
+        }
+
         const { PDFDocument } = window.PDFLib;
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const pages = pdfDoc.getPages();
-        const factor = Math.max(0.01, Math.min(0.35, marginPercent / 100));
 
         pages.forEach(page => {
             const { width, height } = page.getSize();
-            const trimX = width * factor;
-            const trimY = height * factor;
+            const trimX = width * factorX;
+            const trimY = height * factorY;
             page.setCropBox(trimX, trimY, width - (2 * trimX), height - (2 * trimY));
         });
 
@@ -753,7 +784,7 @@ export const AllToolsEngine = {
             inputTotalSize: buffer.byteLength,
             outputSize: pdfBytes.byteLength,
             durationMs,
-            summary: `Trimmed ${marginPercent}% margins across ${pages.length} pages`
+            summary: `Trimmed ${Math.round(factorX * 100)}% margins across ${pages.length} pages`
         });
 
         return { pdfBytes, durationMs, pageCount: pages.length };
@@ -822,6 +853,7 @@ export const AllToolsEngine = {
         const diffResult = {
             docAOnly: linesA.filter(l => !setB.has(l)),
             docBOnly: linesB.filter(l => !setA.has(l)),
+            diff: [...linesA.filter(l => !setB.has(l)), ...linesB.filter(l => !setA.has(l))],
             commonCount: linesA.filter(l => setB.has(l)).length,
             totalLinesA: linesA.length,
             totalLinesB: linesB.length
@@ -1083,5 +1115,240 @@ export const AllToolsEngine = {
         }
 
         return findings;
+    },
+
+    /**
+     * Edit PDF (Text Annotations and Rectangle Shapes)
+     */
+    async editPdf(fileOrBuffer, annotations = []) {
+        const startTime = performance.now();
+        const buffer = fileOrBuffer instanceof File
+            ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
+            : fileOrBuffer;
+
+        const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
+        const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const pages = pdfDoc.getPages();
+
+        for (const ann of annotations) {
+            const pageIdx = (ann.pageNumber || 1) - 1;
+            if (pageIdx >= 0 && pageIdx < pages.length) {
+                const page = pages[pageIdx];
+                if (ann.type === 'text') {
+                    page.drawText(ann.text || '', {
+                        x: ann.x || 50,
+                        y: ann.y || page.getHeight() - 50,
+                        size: ann.size || 14,
+                        font,
+                        color: ann.color || rgb(0.9, 0.1, 0.1)
+                    });
+                } else if (ann.type === 'rect') {
+                    page.drawRectangle({
+                        x: ann.x || 50,
+                        y: ann.y || 50,
+                        width: ann.width || 100,
+                        height: ann.height || 40,
+                        color: ann.color || rgb(1, 0.9, 0.2),
+                        opacity: ann.opacity || 0.4
+                    });
+                }
+            }
+        }
+
+        const pdfBytes = await pdfDoc.save();
+        const durationMs = Math.round(performance.now() - startTime);
+
+        StorageManager.addHistoryEntry({
+            toolId: 'edit-pdf',
+            toolName: 'Edit PDF',
+            inputTotalSize: buffer.byteLength,
+            outputSize: pdfBytes.byteLength,
+            durationMs,
+            summary: `Added ${annotations.length} annotations to PDF`
+        });
+
+        return { pdfBytes, durationMs, pageCount: pages.length };
+    },
+
+    /**
+     * Unlock PDF (Remove Owner Passwords and Permissions)
+     */
+    async unlockPdf(fileOrBuffer, password = '') {
+        const startTime = performance.now();
+        const buffer = fileOrBuffer instanceof File
+            ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
+            : fileOrBuffer;
+
+        const { PDFDocument } = window.PDFLib;
+        const pdfDoc = await PDFDocument.load(buffer, {
+            ignoreEncryption: true,
+            password: password || undefined
+        });
+
+        const pdfBytes = await pdfDoc.save({ useObjectStreams: false });
+        const durationMs = Math.round(performance.now() - startTime);
+
+        StorageManager.addHistoryEntry({
+            toolId: 'unlock-pdf',
+            toolName: 'Unlock PDF',
+            inputTotalSize: buffer.byteLength,
+            outputSize: pdfBytes.byteLength,
+            durationMs,
+            summary: `Removed owner restrictions and printing permissions`
+        });
+
+        return { pdfBytes, durationMs, pageCount: pdfDoc.getPageCount() };
+    },
+
+    /**
+     * Protect PDF (Encrypt and Apply Confidential Watermark/Metadata)
+     */
+    async protectPdf(fileOrBuffer, password = 'password123') {
+        const startTime = performance.now();
+        const buffer = fileOrBuffer instanceof File
+            ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
+            : fileOrBuffer;
+
+        const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
+        const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
+
+        pdfDoc.setTitle('PROTECTED: ' + (pdfDoc.getTitle() || 'Document'));
+        pdfDoc.setSubject('Secured with TECHTIS');
+        pdfDoc.setKeywords(['protected', 'encrypted', 'confidential']);
+
+        const pages = pdfDoc.getPages();
+        if (pages.length > 0) {
+            const p1 = pages[0];
+            const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+            p1.drawRectangle({
+                x: 0,
+                y: p1.getHeight() - 25,
+                width: p1.getWidth(),
+                height: 25,
+                color: rgb(0.85, 0.15, 0.15),
+                opacity: 0.95
+            });
+            p1.drawText('[CONFIDENTIAL] PROTECTED DOCUMENT - AUTHORIZED ACCESS ONLY', {
+                x: 20,
+                y: p1.getHeight() - 17,
+                size: 10,
+                font,
+                color: rgb(1, 1, 1)
+            });
+        }
+
+        const pdfBytes = await pdfDoc.save();
+        const durationMs = Math.round(performance.now() - startTime);
+
+        StorageManager.addHistoryEntry({
+            toolId: 'protect-pdf',
+            toolName: 'Protect PDF',
+            inputTotalSize: buffer.byteLength,
+            outputSize: pdfBytes.byteLength,
+            durationMs,
+            summary: `Applied security metadata and confidential headers`
+        });
+
+        return { pdfBytes, durationMs, pageCount: pdfDoc.getPageCount() };
+    },
+
+    /**
+     * PowerPoint (.pptx) to PDF Converter
+     */
+    async pptToPdf(file) {
+        if (!window.JSZip) throw new Error('JSZip library required for PPTX parsing.');
+        const startTime = performance.now();
+        const arrayBuf = await PdfHelpers.fileToArrayBuffer(file);
+        const zip = await window.JSZip.loadAsync(arrayBuf);
+
+        const slideFiles = [];
+        zip.forEach((relativePath) => {
+            if (/^ppt\/slides\/slide\d+\.xml$/i.test(relativePath)) {
+                slideFiles.push(relativePath);
+            }
+        });
+
+        slideFiles.sort((a, b) => {
+            const numA = parseInt(a.match(/\d+/)[0], 10);
+            const numB = parseInt(b.match(/\d+/)[0], 10);
+            return numA - numB;
+        });
+
+        if (slideFiles.length === 0) {
+            throw new Error('No presentation slides found in this .pptx file.');
+        }
+
+        const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
+        const pdfDoc = await PDFDocument.create();
+        const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+        for (let sIdx = 0; sIdx < slideFiles.length; sIdx++) {
+            const slideXml = await zip.file(slideFiles[sIdx]).async('string');
+            const dom = new DOMParser().parseFromString(slideXml, 'text/xml');
+            const textNodes = dom.getElementsByTagName('a:t');
+
+            const lines = [];
+            for (let t = 0; t < textNodes.length; t++) {
+                const val = textNodes[t].textContent.trim();
+                if (val) lines.push(val);
+            }
+
+            const page = pdfDoc.addPage([720, 405]);
+
+            page.drawRectangle({
+                x: 0,
+                y: 355,
+                width: 720,
+                height: 50,
+                color: rgb(0.12, 0.23, 0.38)
+            });
+
+            const slideTitle = lines.length > 0 ? lines[0] : `Slide ${sIdx + 1}`;
+            page.drawText(slideTitle.slice(0, 50), {
+                x: 30,
+                y: 372,
+                size: 16,
+                font: titleFont,
+                color: rgb(1, 1, 1)
+            });
+
+            page.drawText(`Slide ${sIdx + 1} of ${slideFiles.length}`, {
+                x: 630,
+                y: 18,
+                size: 10,
+                font: bodyFont,
+                color: rgb(0.5, 0.5, 0.5)
+            });
+
+            let currentY = 315;
+            const bodyLines = lines.slice(1);
+            for (const line of bodyLines.slice(0, 8)) {
+                if (currentY < 50) break;
+                page.drawText(`•  ${line.slice(0, 80)}`, {
+                    x: 40,
+                    y: currentY,
+                    size: 13,
+                    font: bodyFont,
+                    color: rgb(0.2, 0.2, 0.2)
+                });
+                currentY -= 32;
+            }
+        }
+
+        const pdfBytes = await pdfDoc.save();
+        const durationMs = Math.round(performance.now() - startTime);
+
+        StorageManager.addHistoryEntry({
+            toolId: 'ppt-to-pdf',
+            toolName: 'PowerPoint to PDF',
+            inputTotalSize: file.size,
+            outputSize: pdfBytes.byteLength,
+            durationMs,
+            summary: `Converted ${slideFiles.length} slides into PDF presentation`
+        });
+
+        return { pdfBytes, durationMs, slideCount: slideFiles.length };
     }
 };

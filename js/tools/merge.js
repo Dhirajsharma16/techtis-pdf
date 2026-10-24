@@ -10,6 +10,13 @@ import { StorageManager } from '../utils/storage.js';
 export const MergeTool = {
     /**
      * Merge multiple PDF files into a single PDF document
+     */
+    async merge(files, options = {}, onProgress = () => {}) {
+        return this.execute(files, options, onProgress);
+    },
+
+    /**
+     * Merge multiple PDF files into a single PDF document
      * @param {Array<File>} files - Array of File objects in user-defined order
      * @param {Object} options - Merge options (outputName, etc.)
      * @param {Function} onProgress - Progress reporter callback
@@ -112,7 +119,9 @@ export const MergeTool = {
             outputSize: mergedPdfBytes.byteLength,
             durationMs,
             filename: customName,
-            bytes: mergedPdfBytes
+            bytes: mergedPdfBytes,
+            pdfBytes: mergedPdfBytes,
+            pageCount: totalMergedPages
         };
     }
 };

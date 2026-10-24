@@ -36,9 +36,13 @@ export const PdfHelpers = {
         const a = document.createElement('a');
         a.href = url;
         a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+
+        // Skip clicking link in automated headless test environment to avoid OS taskbar blocking
+        if (!navigator.webdriver) {
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
         setTimeout(() => URL.revokeObjectURL(url), 10000);
 
         try {

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>TECHTIS Automated Test Suite</title>
+    <script src="vendor/pdf-lib.min.js"></script>
+    <script src="vendor/pdf.min.js"></script>
+    <script src="vendor/jszip.min.js"></script>
+    <script src="vendor/tesseract.min.js"></script>
+</head>
+<body style="font-family: monospace; white-space: pre; padding: 20px;">
+<div id="output">Running TECHTIS Automated Test Suite for all 32 tools...</div>
+
+<script type="module">
+import { MergeTool } from './js/tools/merge.js';
+import { SplitTool } from './js/tools/split.js';
+import { RotateTool } from './js/tools/rotate.js';
+import { AllToolsEngine } from './js/tools/all-tools-engine.js';
+import { EdgeAIBridge } from './js/edge/ai-bridge.js';
+import { StorageManager } from './js/utils/storage.js';
+
+const out = document.getElementById('output');
+function log(msg) {
+    out.innerText += '\n' + msg;
+    console.log(msg);
+}
+
+async function runTests() {
+    let passed = 0;
+    let failed = 0;
+
+    async function assertTool(name, testFn) {
+        try {
+            const start = performance.now();
+            const res = await testFn();
+            const dur = Math.round(performance.now() - start);
+            log(`[PASS] ${name} (${dur}ms) - ${res || 'OK'}`);
+            passed++;
+        } catch (err) {
+            log(`[FAIL] ${name}: ${err.message}`);
+            console.error(err);
+            failed++;
+        }
+    }
+
+    log('====================================================');
+    log('1. FETCHING TEST SAMPLES');
+    log('====================================================');
+    const s1Bytes = await fetch('sample1.pdf').then(r => r.arrayBuffer());
+    const s2Bytes = await fetch('sample2.pdf').then(r => r.arrayBuffer());
+    const s1File = new File([s1Bytes], 'sample1.pdf', { type: 'application/pdf' });
+    const s2File = new File([s2Bytes], 'sample2.pdf', { type: 'application/pdf' });
+
+    log(`Sample 1: ${s1Bytes.byteLength} bytes`);
+    log(`Sample 2: ${s2Bytes.byteLength} bytes`);
+
+    log('\n====================================================');
+    log('2. TESTING GROUP A: CLIENT-SIDE PDF ENGINES');
+    log('====================================================');
+
+    // 1. Merge
+    await assertTool('Merge PDF', async () => {
+        const res = await MergeTool.merge([s1File, s2File]);
+        if (!res.pdfBytes || res.pdfBytes.length === 0) throw new Error('No PDF output');
+        return `Output: ${res.pdfBytes.length} bytes, ${res.pageCount} pages`;
+    });
+
+    // 2. Split Ranges
+    await assertTool('Split PDF (Range)', async () => {
+        const res = await SplitTool.splitByRanges(s1File, '1');
+        if (!res.pdfBytes) throw new Error('No PDF output');
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 3. Rotate
+    await assertTool('Rotate PDF', async () => {
+        const res = await RotateTool.rotate(s1File, 90);
+        if (!res.pdfBytes) throw new Error('No PDF output');
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 4. Remove Pages
+    await assertTool('Remove Pages', async () => {
+        const res = await AllToolsEngine.removePages(s1File, [1]);
+        return `Output: ${res.pdfBytes.length} bytes, Remaining: ${res.remainingPages}`;
+    });
+
+    // 5. Extract Pages
+    await assertTool('Extract Pages', async () => {
+        const res = await AllToolsEngine.extractPages(s1File, [1]);
+        return `Output: ${res.pdfBytes.length} bytes, Pages: ${res.pageCount}`;
+    });
+
+    // 6. Reorder Pages
+    await assertTool('Organize Pages', async () => {
+        const res = await AllToolsEngine.reorderPages(s1File, [1]);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 7. Add Watermark
+    await assertTool('Add Watermark', async () => {
+        const res = await AllToolsEngine.addWatermark(s1File, { text: 'CONFIDENTIAL TECHTIS' });
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 8. Add Page Numbers
+    await assertTool('Add Page Numbers', async () => {
+        const res = await AllToolsEngine.addPageNumbers(s1File, { format: 'Page {n} of {total}' });
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 9. Sign PDF
+    await assertTool('Sign PDF', async () => {
+        // Create 1x1 transparent canvas PNG as signature
+        const c = document.createElement('canvas');
+        c.width = 100; c.height = 40;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#000088';
+        ctx.fillText('Dhiraj Sharma', 5, 25);
+        const sigPngUrl = c.toDataURL('image/png');
+        const res = await AllToolsEngine.signPdf(s1File, sigPngUrl, { pageNumber: 1, x: 50, y: 50, width: 100, height: 40 });
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 10. Edit PDF
+    await assertTool('Edit PDF (Annotations)', async () => {
+        const res = await AllToolsEngine.editPdf(s1File, [{ type: 'text', text: 'VERIFIED', pageNumber: 1, x: 50, y: 500 }]);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 11. Protect PDF
+    await assertTool('Protect PDF', async () => {
+        const res = await AllToolsEngine.protectPdf(s1File, 'secret123');
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 12. Unlock PDF
+    await assertTool('Unlock PDF', async () => {
+        const res = await AllToolsEngine.unlockPdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 13. PDF to JPG
+    await assertTool('PDF to JPG', async () => {
+        const res = await AllToolsEngine.pdfToJpg(s1File, { scale: 1 });
+        return `Rendered ${res.images.length} page(s) to Hi-DPI image`;
+    });
+
+    // 14. JPG to PDF
+    await assertTool('JPG to PDF', async () => {
+        const c = document.createElement('canvas');
+        c.width = 200; c.height = 200;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#ff6600';
+        ctx.fillRect(0, 0, 200, 200);
+        const blob = await new Promise(r => c.toBlob(r, 'image/jpeg'));
+        const imgFile = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+        const res = await AllToolsEngine.jpgToPdf([imgFile]);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 15. Compress PDF
+    await assertTool('Compress PDF', async () => {
+        const res = await AllToolsEngine.compressPdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes, Reduction: ${res.reductionPercent}%`;
+    });
+
+    // 16. Grayscale PDF
+    await assertTool('Grayscale PDF', async () => {
+        const res = await AllToolsEngine.grayscalePdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 17. Crop PDF
+    await assertTool('Crop PDF Margins', async () => {
+        const res = await AllToolsEngine.cropPdf(s1File, { top: 20, bottom: 20, left: 20, right: 20 });
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 18. Repair PDF
+    await assertTool('Repair PDF', async () => {
+        const res = await AllToolsEngine.repairPdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 19. Metadata Editor
+    await assertTool('Metadata Editor', async () => {
+        const res = await AllToolsEngine.editMetadata(s1File, { title: 'TECHTIS Test Document', author: 'Dhiraj Sharma' });
+        const readBack = await AllToolsEngine.readMetadata(res.pdfBytes);
+        return `Title verified: "${readBack.title}", Author: "${readBack.author}"`;
+    });
+
+    // 20. Flatten PDF
+    await assertTool('Flatten PDF', async () => {
+        const res = await AllToolsEngine.flattenPdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 21. Document Compare
+    await assertTool('Document Compare', async () => {
+        const res = await AllToolsEngine.compareDocuments(s1File, s2File);
+        return `Diff checked: ${res.diff.length} line changes detected`;
+    });
+
+    // 22. Text to PDF
+    await assertTool('Text to PDF', async () => {
+        const res = await AllToolsEngine.textToPdf('TECHTIS Serverless PDF Platform\nDomain: techtis.in\nHigh-Performance Client Engine.');
+        return `Output: ${res.pdfBytes.length} bytes, ${res.pageCount} page(s)`;
+    });
+
+    // 23. Markdown to PDF
+    await assertTool('Markdown to PDF', async () => {
+        const md = '# TECHTIS\n## Zero-Cost Platform\n- 100% Client-Side\n- Free AI Edge\n- Sub-100ms Latency';
+        const res = await AllToolsEngine.markdownToPdf(md);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 24. Form Blank Detector
+    await assertTool('Form Blank Detector', async () => {
+        const findings = await AllToolsEngine.detectFormBlanks(s1File);
+        return `Inspected: ${findings.length} form item(s) checked`;
+    });
+
+    log('\n====================================================');
+    log('3. TESTING GROUP C: OFFICE FORMAT CONVERTERS');
+    log('====================================================');
+
+    // 25. Word to PDF (synthesizing valid docx zip)
+    await assertTool('Word (DOCX) to PDF', async () => {
+        const zip = new window.JSZip();
+        zip.file('word/document.xml', '<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:t>Hello TECHTIS Word Document</w:t></w:p></w:body></w:document>');
+        const docxBlob = await zip.generateAsync({ type: 'blob' });
+        const docxFile = new File([docxBlob], 'test.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const res = await AllToolsEngine.wordToPdf(docxFile);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 26. Excel to PDF
+    await assertTool('Excel (CSV/XLSX) to PDF', async () => {
+        const csvFile = new File(['Item,Price,Qty\nPDF Suite,$0,Unlimited\nEdge Worker,$0,100k'], 'table.csv', { type: 'text/csv' });
+        const res = await AllToolsEngine.excelToPdf(csvFile);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 27. PowerPoint to PDF
+    await assertTool('PowerPoint (PPTX) to PDF', async () => {
+        const zip = new window.JSZip();
+        zip.file('ppt/slides/slide1.xml', '<?xml version="1.0" encoding="UTF-8"?><p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>TECHTIS Slide 1</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>');
+        const pptxBlob = await zip.generateAsync({ type: 'blob' });
+        const pptxFile = new File([pptxBlob], 'presentation.pptx', { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' });
+        const res = await AllToolsEngine.pptToPdf(pptxFile);
+        return `Output: ${res.pdfBytes.length} bytes, ${res.slideCount} slide(s)`;
+    });
+
+    log('\n====================================================');
+    log('4. TESTING GROUP B: AI & DISTRIBUTED ENGINES');
+    log('====================================================');
+
+    // 28. Extract text from PDF
+    await assertTool('PDF.js Text Extraction', async () => {
+        const { text, numPages } = await EdgeAIBridge.extractTextFromPdf(s1File);
+        return `Extracted ${text.length} chars from ${numPages} page(s)`;
+    });
+
+    // 29. In-Browser Heuristic TextRank Summarizer (Zero API tokens, Infinite Scale)
+    await assertTool('Client TextRank Summarizer', async () => {
+        const sampleText = 'Antigravity systems generate high-speed PDF modification engines. TECHTIS delivers 32 tools with $0 monthly cost. The architecture ensures 100% privacy by processing data in browser RAM. In 2026, over 1 million documents were processed with zero cloud fees. Executive users save hours each week.';
+        const summary = EdgeAIBridge.generateLocalExtractiveSummary(sampleText);
+        if (!summary.includes('Executive Summary')) throw new Error('Summary missing structure');
+        return `Generated ${summary.length} character summary in 0ms`;
+    });
+
+    // 30. AI Summarizer with fallbacks
+    await assertTool('AI Summarizer Multi-Tier Routing', async () => {
+        const sampleText = 'TECHTIS is a serverless PDF platform hosted at techtis.in. All operations run with 0 latency inside RAM.';
+        const res = await EdgeAIBridge.summarizeDocument(sampleText);
+        if (!res) throw new Error('No summary returned');
+        return `Summary generated successfully (${res.length} chars)`;
+    });
+
+    // 31. AI Document Translator with fallbacks
+    await assertTool('AI Translator Multi-Tier Routing', async () => {
+        const res = await EdgeAIBridge.translateDocument('Hello world. TECHTIS is free.', 'Spanish');
+        if (!res) throw new Error('No translation returned');
+        return `Translation result: ${res.slice(0, 45)}...`;
+    });
+
+    // 32. OCR Engine with fallbacks
+    await assertTool('OCR Scan-to-Text Fallback', async () => {
+        const res = await EdgeAIBridge.performOcr(s1File);
+        return `OCR stream: ${res.slice(0, 40)}...`;
+    });
+
+    log('\n====================================================');
+    log(`FINAL TEST RESULTS: ${passed} PASSED | ${failed} FAILED (Out of ${passed + failed} tools)`);
+    log('====================================================');
+
+    document.title = `TESTS_FINISHED_${passed}_PASSED_${failed}_FAILED`;
+    window.TEST_COMPLETED = true;
+    window.TEST_PASSED = passed;
+    window.TEST_FAILED = failed;
+
+    // Send complete report to local server
+    try {
+        await fetch('/api/test-results', {
+            method: 'POST',
+            body: out.innerText
+        });
+    } catch (_) {}
+}
+
+runTests();
+</script>
+</body>
+</html>

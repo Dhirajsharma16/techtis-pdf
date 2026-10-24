@@ -9,6 +9,20 @@ import { StorageManager } from '../utils/storage.js';
 
 export const SplitTool = {
     /**
+     * Split PDF by range string (e.g. "1-3, 5")
+     */
+    async splitByRanges(file, range = '1', onProgress = () => {}) {
+        return this.execute(file, { mode: 'custom-range', range }, onProgress);
+    },
+
+    /**
+     * Split every page into separate files
+     */
+    async splitAllPages(file, onProgress = () => {}) {
+        return this.execute(file, { mode: 'extract-all' }, onProgress);
+    },
+
+    /**
      * Inspect PDF and return total pages and basic metadata
      */
     async inspect(file) {
@@ -148,7 +162,8 @@ export const SplitTool = {
             filesCreated: generatedFiles.length,
             durationMs,
             totalOutputBytes,
-            generatedFiles
+            generatedFiles,
+            pdfBytes: generatedFiles[0]?.bytes
         };
     }
 };

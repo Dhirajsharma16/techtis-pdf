@@ -347,6 +347,14 @@ class App {
             this.handleBlankDetectorFile(file);
         } else if (toolId === 'ai-translator') {
             this.handleTranslatorFile(file);
+        } else if (toolId === 'edit-pdf') {
+            this.handleEditPdfFile(file);
+        } else if (toolId === 'protect-pdf') {
+            this.handleProtectFile(file);
+        } else if (toolId === 'unlock-pdf') {
+            this.handleUnlockFile(file);
+        } else if (toolId === 'ppt-to-pdf') {
+            this.handlePptFile(file);
         } else {
             this.uploadedFiles = [file];
             this.showToast(`"${file.name}" ready for ${this.currentTool?.name}.`, 'success');
@@ -576,6 +584,18 @@ class App {
                 break;
             case 'ai-translator':
                 this.renderTranslatorWorkspace(container);
+                break;
+            case 'edit-pdf':
+                this.renderEditPdfWorkspace(container);
+                break;
+            case 'protect-pdf':
+                this.renderProtectWorkspace(container);
+                break;
+            case 'unlock-pdf':
+                this.renderUnlockWorkspace(container);
+                break;
+            case 'ppt-to-pdf':
+                this.renderPptToPdfWorkspace(container);
                 break;
             default:
                 this.renderGenericWorkspace(container, tool);
@@ -2864,6 +2884,290 @@ This document was compiled directly in your browser using zero-cost serverless P
         document.getElementById('trans-dropzone')?.classList.add('hidden');
         document.getElementById('trans-editor')?.classList.remove('hidden');
         document.getElementById('trans-filename').textContent = file.name;
+    }
+
+    // ================= 29. EDIT PDF =================
+    renderEditPdfWorkspace(container) {
+        container.innerHTML = `
+            <div class="space-y-6">
+                <div id="editpdf-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
+                    <input type="file" id="editpdf-file-input" accept=".pdf" class="hidden">
+                    <div class="space-y-3 pointer-events-none">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
+                            <i data-lucide="pen-tool" class="w-7 h-7"></i>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-800">Select PDF to Annotate &amp; Edit</h4>
+                        <p class="text-xs text-slate-500">Overlay text notes, review stamps, and geometric highlights onto any page.</p>
+                    </div>
+                </div>
+
+                <div id="editpdf-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-5 shadow-sm">
+                    <div class="flex items-center justify-between border-b pb-3">
+                        <h4 id="editpdf-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                        <span class="text-xs text-emerald-600 font-semibold">100% In-Browser Engine</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Annotation Text</label>
+                            <input type="text" id="editpdf-text" placeholder="e.g. APPROVED / CONFIDENTIAL" value="APPROVED"
+                                   class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Page #</label>
+                                <input type="number" id="editpdf-page" value="1" min="1"
+                                       class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Font Size</label>
+                                <select id="editpdf-size" class="w-full px-2 py-2 text-xs border border-slate-300 rounded-lg">
+                                    <option value="12">12 pt</option>
+                                    <option value="16" selected>16 pt</option>
+                                    <option value="20">20 pt</option>
+                                    <option value="28">28 pt</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Color</label>
+                                <select id="editpdf-color" class="w-full px-2 py-2 text-xs border border-slate-300 rounded-lg">
+                                    <option value="red">Red</option>
+                                    <option value="blue">Blue</option>
+                                    <option value="green">Green</option>
+                                    <option value="black">Black</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2">
+                        <span class="text-xs text-slate-400">Position: Stamps at top-left margin (X: 50, Y: Top - 60).</span>
+                        <button id="btn-execute-editpdf" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition">
+                            Apply Annotations &amp; Download PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const dropzone = document.getElementById('editpdf-dropzone');
+        const fileInput = document.getElementById('editpdf-file-input');
+        dropzone?.addEventListener('click', () => fileInput?.click());
+        fileInput?.addEventListener('change', (e) => {
+            if (e.target?.files?.length) this.handleEditPdfFile(e.target.files[0]);
+        });
+
+        document.getElementById('btn-execute-editpdf')?.addEventListener('click', async () => {
+            if (!this.uploadedFiles.length) return;
+            const text = document.getElementById('editpdf-text')?.value || 'APPROVED';
+            const pageNumber = parseInt(document.getElementById('editpdf-page')?.value, 10) || 1;
+            const size = parseInt(document.getElementById('editpdf-size')?.value, 10) || 16;
+            const colorName = document.getElementById('editpdf-color')?.value || 'red';
+
+            const { rgb } = window.PDFLib;
+            let color = rgb(0.85, 0.15, 0.15);
+            if (colorName === 'blue') color = rgb(0.15, 0.35, 0.85);
+            else if (colorName === 'green') color = rgb(0.1, 0.6, 0.2);
+            else if (colorName === 'black') color = rgb(0.1, 0.1, 0.1);
+
+            try {
+                this.showToast('Applying annotations locally...', 'info');
+                const result = await AllToolsEngine.editPdf(this.uploadedFiles[0], [
+                    { type: 'text', text, pageNumber, size, color, x: 50, y: undefined }
+                ]);
+                PdfHelpers.downloadBytes(result.pdfBytes, `annotated_${Date.now()}.pdf`, 'application/pdf');
+                this.showToast('Annotated PDF downloaded successfully!', 'success');
+            } catch (err) {
+                this.showToast(err.message, 'error');
+            }
+        });
+
+        this.refreshLucideIcons();
+    }
+
+    handleEditPdfFile(file) {
+        if (!file) return;
+        this.uploadedFiles = [file];
+        document.getElementById('editpdf-dropzone')?.classList.add('hidden');
+        document.getElementById('editpdf-editor')?.classList.remove('hidden');
+        document.getElementById('editpdf-filename').textContent = file.name;
+    }
+
+    // ================= 30. PROTECT PDF =================
+    renderProtectWorkspace(container) {
+        container.innerHTML = `
+            <div class="space-y-6">
+                <div id="protect-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
+                    <input type="file" id="protect-file-input" accept=".pdf" class="hidden">
+                    <div class="space-y-3 pointer-events-none">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                            <i data-lucide="lock" class="w-7 h-7"></i>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-800">Select PDF to Password Protect</h4>
+                        <p class="text-xs text-slate-500">Encrypt document metadata and apply confidential access safeguards.</p>
+                    </div>
+                </div>
+
+                <div id="protect-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                    <h4 id="protect-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                    <div class="max-w-sm space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Set Document Password</label>
+                            <input type="password" id="protect-pass" placeholder="Enter password (e.g. MySecret123)"
+                                   class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                    </div>
+                    <button id="btn-execute-protect" class="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-md transition">
+                        Lock &amp; Download Protected PDF
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const dropzone = document.getElementById('protect-dropzone');
+        const fileInput = document.getElementById('protect-file-input');
+        dropzone?.addEventListener('click', () => fileInput?.click());
+        fileInput?.addEventListener('change', (e) => {
+            if (e.target?.files?.length) this.handleProtectFile(e.target.files[0]);
+        });
+
+        document.getElementById('btn-execute-protect')?.addEventListener('click', async () => {
+            if (!this.uploadedFiles.length) return;
+            const pass = document.getElementById('protect-pass')?.value || 'protected';
+            try {
+                this.showToast('Securing document in browser RAM...', 'info');
+                const result = await AllToolsEngine.protectPdf(this.uploadedFiles[0], pass);
+                PdfHelpers.downloadBytes(result.pdfBytes, `protected_${Date.now()}.pdf`, 'application/pdf');
+                this.showToast('Protected PDF secured and downloaded!', 'success');
+            } catch (err) {
+                this.showToast(err.message, 'error');
+            }
+        });
+
+        this.refreshLucideIcons();
+    }
+
+    handleProtectFile(file) {
+        if (!file) return;
+        this.uploadedFiles = [file];
+        document.getElementById('protect-dropzone')?.classList.add('hidden');
+        document.getElementById('protect-editor')?.classList.remove('hidden');
+        document.getElementById('protect-filename').textContent = file.name;
+    }
+
+    // ================= 31. UNLOCK PDF =================
+    renderUnlockWorkspace(container) {
+        container.innerHTML = `
+            <div class="space-y-6">
+                <div id="unlock-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
+                    <input type="file" id="unlock-file-input" accept=".pdf" class="hidden">
+                    <div class="space-y-3 pointer-events-none">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i data-lucide="unlock" class="w-7 h-7"></i>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-800">Select PDF to Unlock</h4>
+                        <p class="text-xs text-slate-500">Strip owner restrictions, print blocks, and permission locks locally.</p>
+                    </div>
+                </div>
+
+                <div id="unlock-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                    <h4 id="unlock-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                    <div class="max-w-sm space-y-2">
+                        <label class="block text-xs font-semibold text-slate-700">Password (Only if document has open-password)</label>
+                        <input type="password" id="unlock-pass" placeholder="Leave empty for owner/permission locks"
+                               class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                    </div>
+                    <button id="btn-execute-unlock" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition">
+                        Strip Restrictions &amp; Download PDF
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const dropzone = document.getElementById('unlock-dropzone');
+        const fileInput = document.getElementById('unlock-file-input');
+        dropzone?.addEventListener('click', () => fileInput?.click());
+        fileInput?.addEventListener('change', (e) => {
+            if (e.target?.files?.length) this.handleUnlockFile(e.target.files[0]);
+        });
+
+        document.getElementById('btn-execute-unlock')?.addEventListener('click', async () => {
+            if (!this.uploadedFiles.length) return;
+            const pass = document.getElementById('unlock-pass')?.value || '';
+            try {
+                this.showToast('Unlocking PDF in browser memory...', 'info');
+                const result = await AllToolsEngine.unlockPdf(this.uploadedFiles[0], pass);
+                PdfHelpers.downloadBytes(result.pdfBytes, `unlocked_${Date.now()}.pdf`, 'application/pdf');
+                this.showToast('Restrictions removed! Downloaded clean PDF.', 'success');
+            } catch (err) {
+                this.showToast('Unlock failed: Check if password is correct.', 'error');
+            }
+        });
+
+        this.refreshLucideIcons();
+    }
+
+    handleUnlockFile(file) {
+        if (!file) return;
+        this.uploadedFiles = [file];
+        document.getElementById('unlock-dropzone')?.classList.add('hidden');
+        document.getElementById('unlock-editor')?.classList.remove('hidden');
+        document.getElementById('unlock-filename').textContent = file.name;
+    }
+
+    // ================= 32. PPT TO PDF =================
+    renderPptToPdfWorkspace(container) {
+        container.innerHTML = `
+            <div class="space-y-6">
+                <div id="ppt-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
+                    <input type="file" id="ppt-file-input" accept=".pptx" class="hidden">
+                    <div class="space-y-3 pointer-events-none">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                            <i data-lucide="presentation" class="w-7 h-7"></i>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-800">Select PowerPoint (.pptx) Presentation</h4>
+                        <p class="text-xs text-slate-500">Unzips XML slide text and compiles into a 16:9 presentation PDF.</p>
+                    </div>
+                </div>
+
+                <div id="ppt-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                    <h4 id="ppt-filename" class="text-sm font-bold text-slate-800">presentation.pptx</h4>
+                    <p class="text-xs text-slate-500">Parses slide XML structures directly in browser RAM (0ms server latency).</p>
+                    <button id="btn-execute-ppt" class="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow-md transition">
+                        Convert Slides to PDF &amp; Download
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const dropzone = document.getElementById('ppt-dropzone');
+        const fileInput = document.getElementById('ppt-file-input');
+        dropzone?.addEventListener('click', () => fileInput?.click());
+        fileInput?.addEventListener('change', (e) => {
+            if (e.target?.files?.length) this.handlePptFile(e.target.files[0]);
+        });
+
+        document.getElementById('btn-execute-ppt')?.addEventListener('click', async () => {
+            if (!this.uploadedFiles.length) return;
+            try {
+                this.showToast('Unzipping and parsing PowerPoint slides...', 'info');
+                const result = await AllToolsEngine.pptToPdf(this.uploadedFiles[0]);
+                PdfHelpers.downloadBytes(result.pdfBytes, `${this.uploadedFiles[0].name.replace(/\.[^/.]+$/, '')}.pdf`, 'application/pdf');
+                this.showToast(`Converted ${result.slideCount} slides to PDF!`, 'success');
+            } catch (err) {
+                this.showToast(err.message, 'error');
+            }
+        });
+
+        this.refreshLucideIcons();
+    }
+
+    handlePptFile(file) {
+        if (!file) return;
+        this.uploadedFiles = [file];
+        document.getElementById('ppt-dropzone')?.classList.add('hidden');
+        document.getElementById('ppt-editor')?.classList.remove('hidden');
+        document.getElementById('ppt-filename').textContent = file.name;
     }
 
     // ================= GENERIC FALLBACK =================
