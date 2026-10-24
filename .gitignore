@@ -1,0 +1,18 @@
+# OS and system files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logs and scratch
+*.log
+scratch/
+.system_generated/
+
+# Node / package artifacts (if any used later)
+node_modules/
+dist/
+.wrangler/
+
+# Test sample files (keep repository lightweight)
+sample1.pdf
+sample2.pdf

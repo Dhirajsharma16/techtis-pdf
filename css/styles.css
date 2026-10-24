@@ -1,0 +1,274 @@
+/* Modern, High-Performance PDF Platform Styling */
+:root {
+    --primary: #dc2626; /* iLovePDF signature vibrant red */
+    --primary-hover: #b91c1c;
+    --primary-light: #fef2f2;
+    --primary-ring: rgba(220, 38, 38, 0.2);
+    --surface-bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --success: #10b981;
+    --success-bg: #ecfdf5;
+    --accent: #6366f1;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Glass & Header */
+.header-glass {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.privacy-banner {
+    background: linear-gradient(90deg, #ecfdf5 0%, #f0fdf4 100%);
+    border: 1px solid #a7f3d0;
+}
+
+/* Upper Navigation Category Bar */
+.top-nav-cat {
+    transition: all 0.15s ease;
+}
+.top-nav-cat.active {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border-color: #fca5a5;
+}
+.top-nav-cat:hover:not(.active) {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+/* Universal Action Hub */
+.hub-cat-tab {
+    transition: all 0.15s ease;
+}
+.hub-cat-tab.active {
+    background-color: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+}
+
+.hub-action-card {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+}
+.hub-action-card:hover {
+    transform: translateY(-2px);
+    border-color: #f87171;
+    box-shadow: 0 10px 20px -8px rgba(220, 38, 38, 0.12);
+}
+.hub-action-card:hover .hub-action-icon {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border-color: #fca5a5;
+}
+
+/* Hide scrollbar for category strip */
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Tool Cards */
+.tool-card {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+}
+
+.tool-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    border-color: #cbd5e1;
+}
+
+.tool-card:active {
+    transform: translateY(-1px);
+}
+
+/* Dropzone Styles */
+.dropzone {
+    border: 2px dashed #cbd5e1;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+}
+
+.dropzone.drag-active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    transform: scale(1.008);
+}
+
+/* Skeleton loader shimmer */
+.skeleton-shimmer {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* File list card animation */
+.file-item-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.file-item-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Progress bar animation */
+.progress-bar-fill {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page Thumbnail Tiles */
+.page-thumbnail-tile {
+    position: relative;
+    border: 2px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.page-thumbnail-tile.selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-ring);
+}
+
+.page-thumbnail-tile.marked-for-removal {
+    border-color: #ef4444;
+    opacity: 0.55;
+    background-color: #fef2f2;
+}
+
+.page-thumbnail-tile.marked-for-removal::after {
+    content: "✕ DELETE";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #dc2626;
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+    pointer-events: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.page-thumbnail-tile.selected-for-extract {
+    border-color: #2563eb;
+    background-color: #eff6ff;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.page-thumbnail-tile.selected-for-extract::after {
+    content: "✓ EXTRACT";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 5px;
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.page-thumbnail-tile:hover {
+    transform: scale(1.02);
+}
+
+/* Signature Pad Canvas */
+#signature-pad-canvas {
+    touch-action: none;
+    cursor: crosshair;
+    background-color: #ffffff;
+}
+
+/* Toast Notifications */
+#toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    background: #1e293b;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.875rem;
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.toast-success {
+    border-left: 4px solid var(--success);
+}
+.toast.toast-error {
+    border-left: 4px solid var(--primary);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
