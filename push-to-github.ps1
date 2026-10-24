@@ -9,17 +9,10 @@ Write-Host "==========================================================" -Foregro
 Write-Host " TECHTIS -> GitHub Deployment Helper ($GitHubUser)" -ForegroundColor Yellow
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-# Check if git is available
-$gitCmd = Get-Command git -ErrorAction SilentlyContinue
-if (-not $gitCmd) {
-    # Check default install path
-    if (Test-Path "C:\Program Files\Git\cmd\git.exe") {
-        $env:Path += ";C:\Program Files\Git\cmd"
-        $gitCmd = "C:\Program Files\Git\cmd\git.exe"
-    } else {
-        Write-Host "Error: Git is still installing or not found on PATH." -ForegroundColor Red
-        exit 1
-    }
+# Ensure git is available
+$minGit = "C:\Users\PEL\AppData\Local\Programs\MinGit\cmd"
+if (Test-Path "$minGit\git.exe") {
+    $env:Path = "$minGit;" + $env:Path
 }
 
 Set-Location -Path $PSScriptRoot
