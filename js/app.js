@@ -64,6 +64,10 @@ class App {
         const searchInput = document.getElementById('tool-search-input');
         searchInput?.addEventListener('input', (e) => {
             this.searchQuery = e.target.value.toLowerCase().trim();
+            if (this.searchQuery) {
+                document.getElementById('workspace-view')?.classList.add('hidden');
+                document.getElementById('catalog-view')?.classList.remove('hidden');
+            }
             this.renderCatalog();
         });
 
@@ -408,34 +412,17 @@ class App {
         }
 
         grid.innerHTML = filtered.map(tool => {
-            const badgeClass = tool.group === 'group-a'
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                : tool.group === 'group-b'
-                ? 'bg-purple-50 text-purple-700 border-purple-200'
-                : 'bg-blue-50 text-blue-700 border-blue-200';
-
             return `
-                <div class="tool-card p-5 rounded-2xl cursor-pointer flex flex-col justify-between group" data-tool-id="${tool.id}">
-                    <div>
-                        <div class="flex items-start justify-between gap-2 mb-3">
-                            <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700 group-hover:bg-red-50 group-hover:text-red-600 group-hover:border-red-100 transition">
-                                <i data-lucide="${tool.icon}" class="w-5 h-5"></i>
-                            </div>
-                            <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border ${badgeClass}">
-                                ${tool.badge}
-                            </span>
-                        </div>
-                        <h3 class="text-base font-bold text-slate-900 group-hover:text-red-600 transition flex items-center gap-1.5">
-                            <span>${tool.name}</span>
-                            ${tool.isPopular ? '<span class="text-[9px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">POPULAR</span>' : ''}
-                        </h3>
-                        <p class="text-xs text-slate-500 mt-1.5 line-clamp-2">${tool.tagline}</p>
+                <div class="tool-card p-3 sm:p-3.5 rounded-xl border border-slate-200/90 bg-white hover:border-red-400 hover:shadow-md transition-all cursor-pointer flex items-center gap-3 group" data-tool-id="${tool.id}">
+                    <div class="w-9 h-9 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-red-600 group-hover:text-white transition-all shadow-2xs">
+                        <i data-lucide="${tool.icon}" class="w-4 h-4"></i>
                     </div>
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                        <span class="font-medium text-slate-500">${tool.category}</span>
-                        <span class="text-red-600 font-semibold group-hover:translate-x-1 transition-transform inline-flex items-center gap-0.5">
-                            Open <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                        </span>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1">
+                            <h3 class="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-red-600 transition truncate">${tool.name}</h3>
+                            ${tool.isPopular ? '<span class="text-[9px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 shrink-0">Popular</span>' : ''}
+                        </div>
+                        <p class="text-[11px] text-slate-400 line-clamp-1 mt-0.5 leading-snug">${tool.tagline}</p>
                     </div>
                 </div>
             `;
@@ -445,11 +432,7 @@ class App {
         grid.querySelectorAll('.tool-card').forEach(card => {
             card.addEventListener('click', () => {
                 const toolId = card.getAttribute('data-tool-id');
-                if (this.hubDocFile) {
-                    this.launchToolWithDocument(toolId, this.hubDocFile);
-                } else {
-                    this.openToolWorkspace(toolId);
-                }
+                this.openToolWorkspace(toolId);
             });
         });
 
@@ -2233,31 +2216,170 @@ class App {
 
     // ================= 19. FORM FILLER =================
     renderFormFillerWorkspace(container) {
+        // Reset state
+        this.fillerPdfDoc = null;
+        this.fillerPageCount = 1;
+        this.fillerCurrentPage = 1;
+        this.fillerMode = 'text'; // 'text', 'check', 'cross', 'date'
+        this.fillerFontSize = 11;
+        this.fillerColor = 'black'; // 'black', 'blue', 'red'
+        this.fillerItems = []; // [{ id, pageNumber, xPct, yPct, text, isCheck, fontSize, color }]
+        this.fillerAcroFields = [];
+
         container.innerHTML = `
-            <div class="space-y-6">
+            <div class="space-y-4">
+                <!-- Dropzone State -->
                 <div id="filler-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
                     <input type="file" id="filler-file-input" accept=".pdf" class="hidden">
                     <div class="space-y-3 pointer-events-none">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-xs">
                             <i data-lucide="check-square" class="w-7 h-7"></i>
                         </div>
-                        <h4 class="text-base font-bold text-slate-800">Select Interactive PDF Form to Fill</h4>
-                        <p class="text-xs text-slate-500">Read and edit AcroForm text fields natively without Adobe Acrobat.</p>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800">Select PDF Form to Fill</h4>
+                        <p class="text-xs text-slate-500 max-w-md mx-auto">
+                            Fill any government form (Aadhaar, PAN, applications) or interactive digital AcroForms. Click anywhere on the form to type, add checkmarks, and sign.
+                        </p>
+                        <div class="pt-2">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full border border-blue-200">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Works on Flat &amp; Scanned Forms
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <div id="filler-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                        <h4 id="filler-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                        <button id="btn-execute-fill" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md transition">
-                            Save Filled Form &amp; Download
-                        </button>
+                <!-- Active Editor State -->
+                <div id="filler-editor" class="hidden space-y-3">
+                    <!-- Top Action Bar -->
+                    <div class="p-3 bg-white border border-slate-200 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 id="filler-filename" class="text-xs sm:text-sm font-bold text-slate-900 truncate max-w-xs sm:max-w-md">form.pdf</h4>
+                                <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                                    <span id="filler-page-badge" class="font-semibold text-blue-600">1 Page</span>
+                                    <span>&bull;</span>
+                                    <span>100% In-Browser Private</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button id="btn-filler-change-file" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition flex items-center gap-1">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                <span>Change PDF</span>
+                            </button>
+                            <button id="btn-filler-clear-all" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition flex items-center gap-1" title="Clear all typed text on this document">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5 text-slate-500"></i>
+                                <span>Clear</span>
+                            </button>
+                            <button id="btn-execute-fill" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>Save &amp; Download PDF</span>
+                            </button>
+                        </div>
                     </div>
-                    <div id="filler-fields-list" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
+
+                    <!-- Interactive Form Filler Toolbar -->
+                    <div class="p-2.5 bg-slate-900 text-white rounded-2xl flex flex-wrap items-center justify-between gap-2.5 shadow-sm text-xs">
+                        <!-- Mode Selector -->
+                        <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
+                            <button class="filler-mode-btn active px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white transition flex items-center gap-1" data-mode="text">
+                                <i data-lucide="type" class="w-3.5 h-3.5"></i>
+                                <span>Text</span>
+                            </button>
+                            <button class="filler-mode-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1" data-mode="check">
+                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                <span>Check (✓)</span>
+                            </button>
+                            <button class="filler-mode-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1" data-mode="cross">
+                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                <span>Cross (✗)</span>
+                            </button>
+                            <button class="filler-mode-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1" data-mode="date">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                <span>Date</span>
+                            </button>
+                        </div>
+
+                        <!-- Font Size & Color Controls -->
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[11px] text-slate-400">Size:</span>
+                                <select id="filler-font-size" class="bg-slate-800 text-white border border-slate-700 rounded-lg px-2 py-1 text-xs outline-none">
+                                    <option value="9">9 pt</option>
+                                    <option value="11" selected>11 pt</option>
+                                    <option value="14">14 pt</option>
+                                    <option value="18">18 pt</option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center gap-1">
+                                <span class="text-[11px] text-slate-400">Ink:</span>
+                                <div class="flex items-center gap-1 bg-slate-800 p-0.5 rounded-lg border border-slate-700">
+                                    <button class="filler-color-btn active w-6 h-6 rounded-md bg-slate-950 border border-slate-600 flex items-center justify-center text-[10px]" data-color="black" title="Black Ink">
+                                        <span class="w-3 h-3 rounded-full bg-slate-900 border border-white"></span>
+                                    </button>
+                                    <button class="filler-color-btn w-6 h-6 rounded-md flex items-center justify-center text-[10px]" data-color="blue" title="Pen Blue Ink">
+                                        <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+                                    </button>
+                                    <button class="filler-color-btn w-6 h-6 rounded-md flex items-center justify-center text-[10px]" data-color="red" title="Red Ink">
+                                        <span class="w-3 h-3 rounded-full bg-red-600"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Page Navigation -->
+                        <div class="flex items-center gap-1.5">
+                            <button id="btn-filler-prev-page" class="p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition disabled:opacity-30 disabled:pointer-events-none" title="Previous Page">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            </button>
+                            <span id="filler-page-indicator" class="text-xs font-semibold px-1 text-slate-200">Page 1 / 1</span>
+                            <button id="btn-filler-next-page" class="p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition disabled:opacity-30 disabled:pointer-events-none" title="Next Page">
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Digital AcroForm Fields Collapsible Container (shown if digital fields exist) -->
+                    <div id="filler-acro-container" class="hidden p-3 bg-blue-50 border border-blue-200 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between cursor-pointer" id="btn-toggle-acro-fields">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="sliders" class="w-4 h-4 text-blue-700"></i>
+                                <span class="text-xs font-bold text-blue-900" id="acro-fields-title">Interactive AcroForm Fields Detected</span>
+                            </div>
+                            <span class="text-[11px] font-semibold text-blue-600 underline">Toggle Fields</span>
+                        </div>
+                        <div id="acro-fields-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1 max-h-48 overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Instructions Banner -->
+                    <div class="px-3 py-1.5 bg-amber-50/80 border border-amber-200/70 rounded-xl flex items-center justify-between text-xs text-amber-900">
+                        <div class="flex items-center gap-1.5">
+                            <i data-lucide="mouse-pointer" class="w-3.5 h-3.5 text-amber-600"></i>
+                            <span><strong>Click anywhere on the form</strong> to type text or place checkmarks. Drag any text box to reposition, or click &times; to delete.</span>
+                        </div>
+                        <span id="filler-placed-count" class="text-[11px] font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full shrink-0">0 items placed</span>
+                    </div>
+
+                    <!-- Visual Canvas + Click-to-Fill Overlay Container -->
+                    <div class="relative overflow-auto max-h-[75vh] p-2 sm:p-4 bg-slate-200/80 rounded-2xl border border-slate-300 flex justify-center shadow-inner">
+                        <div id="filler-page-container" class="relative bg-white shadow-2xl rounded overflow-hidden select-none">
+                            <canvas id="filler-canvas" class="block"></canvas>
+                            <div id="filler-overlay" class="absolute inset-0 cursor-crosshair"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
 
+        this.bindFormFillerEvents();
+        this.refreshLucideIcons();
+    }
+
+    bindFormFillerEvents() {
         const dropzone = document.getElementById('filler-dropzone');
         const fileInput = document.getElementById('filler-file-input');
         dropzone?.addEventListener('click', () => fileInput?.click());
@@ -2265,58 +2387,394 @@ class App {
             if (e.target?.files?.length) this.handleFormFillerFile(e.target.files[0]);
         });
 
-        document.getElementById('btn-execute-fill')?.addEventListener('click', async () => {
-            if (!this.uploadedFiles.length) return;
-            const values = {};
-            document.querySelectorAll('.acro-input-field').forEach(input => {
-                const name = input.getAttribute('data-field-name');
-                values[name] = input.value;
-            });
+        // Change PDF
+        document.getElementById('btn-filler-change-file')?.addEventListener('click', () => {
+            document.getElementById('filler-editor')?.classList.add('hidden');
+            document.getElementById('filler-dropzone')?.classList.remove('hidden');
+            this.uploadedFiles = [];
+            this.fillerItems = [];
+        });
 
-            try {
-                this.showToast('Saving filled form fields...', 'info');
-                const result = await AllToolsEngine.fillFormFields(this.uploadedFiles[0], values);
-                PdfHelpers.downloadBytes(result.pdfBytes, `filled_${Date.now()}.pdf`, 'application/pdf');
-                this.updateHistoryCounter();
-                this.showToast('Filled PDF downloaded successfully!', 'success');
-            } catch (err) {
-                this.showToast(err.message, 'error');
+        // Clear all
+        document.getElementById('btn-filler-clear-all')?.addEventListener('click', () => {
+            if (this.fillerItems.length === 0) return;
+            if (confirm('Clear all placed inputs and checkmarks?')) {
+                this.fillerItems = [];
+                this.renderFillerOverlayItems();
+                this.updateFillerCount();
             }
         });
 
-        this.refreshLucideIcons();
+        // Tool Mode Buttons
+        document.querySelectorAll('.filler-mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filler-mode-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-blue-600', 'text-white');
+                    b.classList.add('text-slate-300');
+                });
+                btn.classList.add('active', 'bg-blue-600', 'text-white');
+                btn.classList.remove('text-slate-300');
+                this.fillerMode = btn.getAttribute('data-mode') || 'text';
+            });
+        });
+
+        // Font Size
+        document.getElementById('filler-font-size')?.addEventListener('change', (e) => {
+            this.fillerFontSize = parseInt(e.target.value, 10) || 11;
+        });
+
+        // Color Buttons
+        document.querySelectorAll('.filler-color-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filler-color-btn').forEach(b => b.classList.remove('active', 'ring-2', 'ring-white'));
+                btn.classList.add('active', 'ring-2', 'ring-white');
+                this.fillerColor = btn.getAttribute('data-color') || 'black';
+            });
+        });
+
+        // Prev Page
+        document.getElementById('btn-filler-prev-page')?.addEventListener('click', () => {
+            if (this.fillerCurrentPage > 1) {
+                this.renderFormPage(this.fillerCurrentPage - 1);
+            }
+        });
+
+        // Next Page
+        document.getElementById('btn-filler-next-page')?.addEventListener('click', () => {
+            if (this.fillerCurrentPage < this.fillerPageCount) {
+                this.renderFormPage(this.fillerCurrentPage + 1);
+            }
+        });
+
+        // AcroFields Accordion Toggle
+        document.getElementById('btn-toggle-acro-fields')?.addEventListener('click', () => {
+            document.getElementById('acro-fields-list')?.classList.toggle('hidden');
+        });
+
+        // Overlay Click to add text / marks
+        const overlay = document.getElementById('filler-overlay');
+        overlay?.addEventListener('click', (e) => {
+            if (e.target.closest('.filler-item')) return;
+            const rect = overlay.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+
+            const xPct = Math.max(0.01, Math.min(0.98, (e.clientX - rect.left) / rect.width));
+            const yPct = Math.max(0.01, Math.min(0.98, (e.clientY - rect.top) / rect.height));
+
+            const itemId = 'fi_' + Date.now();
+            let newItem;
+
+            if (this.fillerMode === 'check') {
+                newItem = {
+                    id: itemId,
+                    pageNumber: this.fillerCurrentPage,
+                    xPct,
+                    yPct,
+                    text: 'X',
+                    isCheck: true,
+                    fontSize: this.fillerFontSize + 2,
+                    color: this.fillerColor
+                };
+            } else if (this.fillerMode === 'cross') {
+                newItem = {
+                    id: itemId,
+                    pageNumber: this.fillerCurrentPage,
+                    xPct,
+                    yPct,
+                    text: 'X',
+                    isCheck: false,
+                    fontSize: this.fillerFontSize + 2,
+                    color: this.fillerColor
+                };
+            } else if (this.fillerMode === 'date') {
+                const d = new Date();
+                const dStr = String(d.getDate()).padStart(2, '0') + '/' +
+                             String(d.getMonth() + 1).padStart(2, '0') + '/' +
+                             d.getFullYear();
+                newItem = {
+                    id: itemId,
+                    pageNumber: this.fillerCurrentPage,
+                    xPct,
+                    yPct,
+                    text: dStr,
+                    isCheck: false,
+                    fontSize: this.fillerFontSize,
+                    color: this.fillerColor
+                };
+            } else {
+                newItem = {
+                    id: itemId,
+                    pageNumber: this.fillerCurrentPage,
+                    xPct,
+                    yPct,
+                    text: '',
+                    isCheck: false,
+                    fontSize: this.fillerFontSize,
+                    color: this.fillerColor
+                };
+            }
+
+            this.fillerItems.push(newItem);
+            this.renderFillerOverlayItems(itemId);
+            this.updateFillerCount();
+        });
+
+        // Save & Download
+        document.getElementById('btn-execute-fill')?.addEventListener('click', async () => {
+            if (!this.uploadedFiles.length) return;
+            const saveBtn = document.getElementById('btn-execute-fill');
+            try {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = `<span>⏳ Saving...</span>`;
+                this.showToast('Generating filled PDF...', 'info');
+
+                const arrayBuffer = await PdfHelpers.fileToArrayBuffer(this.uploadedFiles[0]);
+                const pdfDoc = await window.PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+                const pages = pdfDoc.getPages();
+
+                const visualOverlays = this.fillerItems
+                    .filter(item => item.text && item.text.trim().length > 0)
+                    .map(item => {
+                        const pageIdx = Math.max(0, Math.min(item.pageNumber - 1, pages.length - 1));
+                        const page = pages[pageIdx];
+                        const { width: pWidth, height: pHeight } = page.getSize();
+                        const x = item.xPct * pWidth;
+                        const y = pHeight - (item.yPct * pHeight) - (item.fontSize * 0.75);
+
+                        return {
+                            pageNumber: item.pageNumber,
+                            x: Math.round(x * 10) / 10,
+                            y: Math.round(y * 10) / 10,
+                            text: item.text.trim(),
+                            isCheck: item.isCheck || false,
+                            fontSize: item.fontSize || 11,
+                            color: item.color || 'black',
+                            bold: false
+                        };
+                    });
+
+                const acroValues = {};
+                document.querySelectorAll('.acro-input-field').forEach(input => {
+                    const name = input.getAttribute('data-field-name');
+                    if (name) acroValues[name] = input.value;
+                });
+
+                const result = await AllToolsEngine.fillFormFields(this.uploadedFiles[0], acroValues, visualOverlays);
+                const originalName = this.uploadedFiles[0].name.replace(/\.pdf$/i, '');
+                PdfHelpers.downloadBytes(result.pdfBytes, `filled_${originalName}.pdf`, 'application/pdf');
+                this.updateHistoryCounter();
+                this.showToast('Filled PDF downloaded successfully!', 'success');
+            } catch (err) {
+                console.error('Save fill error:', err);
+                this.showToast(`Error: ${err.message}`, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = `<i data-lucide="download" class="w-4 h-4 mr-1.5"></i> Save &amp; Download PDF`;
+                this.refreshLucideIcons();
+            }
+        });
     }
 
     async handleFormFillerFile(file) {
         if (!file) return;
         this.uploadedFiles = [file];
+        this.fillerItems = [];
+
         document.getElementById('filler-dropzone')?.classList.add('hidden');
         document.getElementById('filler-editor')?.classList.remove('hidden');
         document.getElementById('filler-filename').textContent = file.name;
 
-        const listEl = document.getElementById('filler-fields-list');
-        listEl.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">Reading AcroForm interactive fields in RAM...</div>`;
-
         try {
-            const fields = await AllToolsEngine.getFormFields(file);
-            if (fields.length === 0) {
-                listEl.innerHTML = `
-                    <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
-                        <strong>No interactive AcroForm fields detected in this document.</strong>
-                        <p class="mt-1">This PDF consists of flat vectors or text. To add text annotations or sign this file, please use the <strong>Sign PDF</strong> or <strong>Add Watermark</strong> tools.</p>
+            this.showToast('Loading PDF form in browser RAM...', 'info');
+            const arrayBuffer = await PdfHelpers.fileToArrayBuffer(file);
+            const copy = arrayBuffer.slice(0);
+            const loadingTask = window.pdfjsLib.getDocument({ data: copy });
+            this.fillerPdfDoc = await loadingTask.promise;
+            this.fillerPageCount = this.fillerPdfDoc.numPages;
+            this.fillerCurrentPage = 1;
+
+            document.getElementById('filler-page-badge').textContent = `${this.fillerPageCount} ${this.fillerPageCount === 1 ? 'Page' : 'Pages'}`;
+
+            // Check if AcroForm interactive fields exist
+            try {
+                this.fillerAcroFields = await AllToolsEngine.getFormFields(file);
+                const acroContainer = document.getElementById('filler-acro-container');
+                const acroList = document.getElementById('acro-fields-list');
+                const acroTitle = document.getElementById('acro-fields-title');
+
+                if (this.fillerAcroFields && this.fillerAcroFields.length > 0) {
+                    acroContainer?.classList.remove('hidden');
+                    if (acroTitle) acroTitle.textContent = `Interactive AcroForm Fields Detected (${this.fillerAcroFields.length})`;
+                    if (acroList) {
+                        acroList.innerHTML = this.fillerAcroFields.map(f => `
+                            <div class="space-y-0.5">
+                                <label class="block text-[11px] font-semibold text-slate-700 truncate" title="${f.name}">${f.name}</label>
+                                <input type="text" data-field-name="${f.name}" value="${f.value}" class="acro-input-field w-full px-2 py-1 text-xs border border-slate-300 rounded bg-white">
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    acroContainer?.classList.add('hidden');
+                }
+            } catch (_) {}
+
+            await this.renderFormPage(1);
+            this.updateFillerCount();
+        } catch (err) {
+            console.error('Error opening form in filler:', err);
+            this.showToast(`Error opening PDF: ${err.message}`, 'error');
+        }
+    }
+
+    async renderFormPage(pageNum) {
+        if (!this.fillerPdfDoc) return;
+        this.fillerCurrentPage = pageNum;
+        const page = await this.fillerPdfDoc.getPage(pageNum);
+
+        const viewport1 = page.getViewport({ scale: 1.0 });
+        this.fillerPagePdfWidth = viewport1.width;
+        this.fillerPagePdfHeight = viewport1.height;
+
+        const maxWidth = Math.min(window.innerWidth - 64, 900);
+        const scale = Math.max(1.0, Math.min(2.0, maxWidth / viewport1.width));
+        const viewport = page.getViewport({ scale });
+
+        const canvas = document.getElementById('filler-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        canvas.style.width = `${viewport.width}px`;
+        canvas.style.height = `${viewport.height}px`;
+
+        const container = document.getElementById('filler-page-container');
+        if (container) {
+            container.style.width = `${viewport.width}px`;
+            container.style.height = `${viewport.height}px`;
+        }
+
+        await page.render({ canvasContext: ctx, viewport }).promise;
+
+        const indicator = document.getElementById('filler-page-indicator');
+        if (indicator) indicator.textContent = `Page ${pageNum} / ${this.fillerPageCount}`;
+
+        const prevBtn = document.getElementById('btn-filler-prev-page');
+        const nextBtn = document.getElementById('btn-filler-next-page');
+        if (prevBtn) prevBtn.disabled = pageNum <= 1;
+        if (nextBtn) nextBtn.disabled = pageNum >= this.fillerPageCount;
+
+        this.renderFillerOverlayItems();
+    }
+
+    renderFillerOverlayItems(focusItemId = null) {
+        const overlay = document.getElementById('filler-overlay');
+        if (!overlay) return;
+        overlay.innerHTML = '';
+
+        const pageItems = this.fillerItems.filter(item => item.pageNumber === this.fillerCurrentPage);
+        const overlayWidth = overlay.clientWidth || 800;
+        const scaleRatio = overlayWidth / (this.fillerPagePdfWidth || 595.28);
+
+        pageItems.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'filler-item group absolute flex items-center select-none';
+            el.style.left = `${item.xPct * 100}%`;
+            el.style.top = `${item.yPct * 100}%`;
+            el.style.transform = 'translate(0, -50%)';
+
+            const screenFontSize = Math.max(10, Math.round(item.fontSize * scaleRatio));
+            const textColor = item.color === 'blue' ? '#0833a2' : (item.color === 'red' ? '#dc2626' : '#0f172a');
+
+            if (item.isCheck || item.text === 'X') {
+                el.innerHTML = `
+                    <div class="relative px-1 py-0.5 font-bold cursor-move flex items-center border border-dashed border-transparent hover:border-blue-400 rounded bg-white/75"
+                         style="font-size: ${screenFontSize + 2}px; color: ${textColor}; line-height: 1;">
+                        <span>X</span>
+                        <button class="btn-del-item hidden group-hover:flex absolute -top-2.5 -right-2.5 w-4 h-4 bg-red-600 text-white rounded-full items-center justify-center text-[10px] shadow" title="Delete">×</button>
                     </div>
                 `;
-                return;
+            } else {
+                el.innerHTML = `
+                    <div class="relative flex items-center cursor-move border border-dashed border-transparent hover:border-blue-400 rounded bg-white/70 focus-within:border-blue-500 focus-within:bg-white shadow-2xs">
+                        <input type="text" value="${item.text.replace(/"/g, '&quot;')}" placeholder="Type here..."
+                               class="filler-text-input px-1 py-0.5 bg-transparent outline-none font-sans"
+                               style="font-size: ${screenFontSize}px; color: ${textColor}; min-width: 60px; width: ${Math.max(60, (item.text.length + 2) * (screenFontSize * 0.6))}px;">
+                        <button class="btn-del-item hidden group-hover:flex absolute -top-2.5 -right-2.5 w-4 h-4 bg-red-600 text-white rounded-full items-center justify-center text-[10px] shadow" title="Delete">×</button>
+                    </div>
+                `;
             }
 
-            listEl.innerHTML = fields.map(f => `
-                <div class="space-y-1">
-                    <label class="block text-xs font-semibold text-slate-700">${f.name} <span class="text-[10px] text-slate-400">(${f.type})</span></label>
-                    <input type="text" data-field-name="${f.name}" value="${f.value}" class="acro-input-field w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
-                </div>
-            `).join('');
-        } catch (err) {
-            listEl.innerHTML = `<div class="text-xs text-red-500 py-4">${err.message}</div>`;
+            const input = el.querySelector('.filler-text-input');
+            if (input) {
+                input.addEventListener('input', (ev) => {
+                    item.text = ev.target.value;
+                    input.style.width = `${Math.max(60, (item.text.length + 2) * (screenFontSize * 0.6))}px`;
+                    this.updateFillerCount();
+                });
+                input.addEventListener('keydown', (ev) => {
+                    if (ev.key === 'Enter') input.blur();
+                });
+            }
+
+            el.querySelector('.btn-del-item')?.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                this.fillerItems = this.fillerItems.filter(i => i.id !== item.id);
+                this.renderFillerOverlayItems();
+                this.updateFillerCount();
+            });
+
+            this.makeFillerItemDraggable(el, item, overlay);
+            overlay.appendChild(el);
+
+            if (focusItemId && item.id === focusItemId && input) {
+                setTimeout(() => input.focus(), 50);
+            }
+        });
+    }
+
+    makeFillerItemDraggable(el, item, overlay) {
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let initialXPct = item.xPct, initialYPct = item.yPct;
+
+        const onMouseDown = (e) => {
+            if (e.target.tagName === 'INPUT' && document.activeElement === e.target) return;
+            if (e.target.classList.contains('btn-del-item')) return;
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialXPct = item.xPct;
+            initialYPct = item.yPct;
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        };
+
+        const onMouseMove = (e) => {
+            if (!isDragging) return;
+            const rect = overlay.getBoundingClientRect();
+            const deltaXPct = (e.clientX - startX) / rect.width;
+            const deltaYPct = (e.clientY - startY) / rect.height;
+            item.xPct = Math.max(0.01, Math.min(0.98, initialXPct + deltaXPct));
+            item.yPct = Math.max(0.01, Math.min(0.98, initialYPct + deltaYPct));
+            el.style.left = `${item.xPct * 100}%`;
+            el.style.top = `${item.yPct * 100}%`;
+        };
+
+        const onMouseUp = () => {
+            isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
+
+        el.addEventListener('mousedown', onMouseDown);
+    }
+
+    updateFillerCount() {
+        const count = this.fillerItems.filter(i => i.text && i.text.trim().length > 0).length;
+        const countEl = document.getElementById('filler-placed-count');
+        if (countEl) {
+            countEl.textContent = `${count} ${count === 1 ? 'item' : 'items'} placed`;
         }
     }
 

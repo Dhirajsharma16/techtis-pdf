@@ -703,26 +703,63 @@ export const AllToolsEngine = {
     },
 
     /**
-     * Populate AcroForm Fields and Save
+     * Populate AcroForm Fields & Visual Click-to-Type Form Inputs
+     * Works on BOTH interactive digital PDFs and flat scanned/printed government forms (e.g. Aadhaar, PAN)
      */
-    async fillFormFields(fileOrBuffer, fieldValues = {}) {
+    async fillFormFields(fileOrBuffer, fieldValues = {}, visualOverlays = []) {
         const startTime = performance.now();
         const buffer = fileOrBuffer instanceof File
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
-        const form = pdfDoc.getForm();
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const pages = pdfDoc.getPages();
 
-        for (const [name, val] of Object.entries(fieldValues)) {
-            try {
-                const field = form.getField(name);
-                if (field && typeof field.setText === 'function') {
-                    field.setText(String(val));
+        // 1. Fill AcroForm interactive digital fields if present
+        try {
+            const form = pdfDoc.getForm();
+            for (const [name, val] of Object.entries(fieldValues || {})) {
+                try {
+                    const field = form.getField(name);
+                    if (field && typeof field.setText === 'function') {
+                        field.setText(String(val));
+                    }
+                } catch (err) {
+                    console.warn(`Could not set AcroField ${name}:`, err);
                 }
-            } catch (err) {
-                console.warn(`Could not set field ${name}:`, err);
+            }
+        } catch (_) {}
+
+        // 2. Burn visual click-to-type inputs onto flat forms (Aadhaar, applications, etc.)
+        if (Array.isArray(visualOverlays) && visualOverlays.length > 0) {
+            for (const item of visualOverlays) {
+                const pageIdx = Math.max(0, Math.min((item.pageNumber || 1) - 1, pages.length - 1));
+                const page = pages[pageIdx];
+                const fontSize = Number(item.fontSize) || 11;
+                const chosenFont = item.bold ? boldFont : font;
+
+                let textColor = rgb(0.05, 0.05, 0.05); // default black
+                if (item.color === 'blue') textColor = rgb(0.08, 0.2, 0.7); // pen ink blue
+                else if (item.color === 'red') textColor = rgb(0.85, 0.1, 0.1);
+
+                let textToDraw = String(item.text !== undefined && item.text !== null ? item.text : (item.isCheck ? 'X' : '')).trim();
+                if (textToDraw === '✓' || textToDraw === '✔') textToDraw = 'X';
+                if (textToDraw === '✗' || textToDraw === '✕') textToDraw = 'X';
+                // Sanitize WinAnsi unencodable characters
+                textToDraw = textToDraw.replace(/[^\x20-\x7E\xA0-\xFF]/g, ' ');
+
+                if (textToDraw && typeof item.x === 'number' && typeof item.y === 'number') {
+                    page.drawText(textToDraw, {
+                        x: item.x,
+                        y: item.y,
+                        size: fontSize,
+                        font: chosenFont,
+                        color: textColor
+                    });
+                }
             }
         }
 
@@ -735,10 +772,14 @@ export const AllToolsEngine = {
             inputTotalSize: buffer.byteLength,
             outputSize: pdfBytes.byteLength,
             durationMs,
-            summary: `Filled ${Object.keys(fieldValues).length} form fields`
+            summary: `Filled ${Object.keys(fieldValues || {}).length} AcroFields & ${visualOverlays.length} visual form inputs`
         });
 
-        return { pdfBytes, durationMs };
+        return {
+            pdfBytes,
+            durationMs,
+            fieldCount: Object.keys(fieldValues || {}).length + visualOverlays.length
+        };
     },
 
     /**
