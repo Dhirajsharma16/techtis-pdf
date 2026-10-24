@@ -1,0 +1,12 @@
+# https://techtis.in robots.txt
+# Premium Global Search Engine Directives
+
+User-agent: *
+Allow: /
+Allow: /#*
+Allow: /css/
+Allow: /js/
+Allow: /vendor/
+
+# Sitemaps
+Sitemap: https://techtis.in/sitemap.xml

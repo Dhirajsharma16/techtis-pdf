@@ -40,6 +40,23 @@ class App {
         this.renderCatalog();
         this.updateHistoryCounter();
         this.refreshLucideIcons();
+
+        // Deep-linking routing based on URL hash (e.g. #form-filler, #merge-pdf)
+        const initialHash = window.location.hash.replace(/^#/, '');
+        if (initialHash && TOOLS.some(t => t.id === initialHash)) {
+            this.openToolWorkspace(initialHash);
+        }
+
+        window.addEventListener('hashchange', () => {
+            const h = window.location.hash.replace(/^#/, '');
+            if (h && TOOLS.some(t => t.id === h)) {
+                if (this.currentTool?.id !== h) {
+                    this.openToolWorkspace(h);
+                }
+            } else if (!h) {
+                this.showCatalogView();
+            }
+        });
     }
 
     refreshLucideIcons() {
@@ -445,6 +462,18 @@ class App {
         document.getElementById('workspace-view')?.classList.add('hidden');
         this.currentTool = null;
         this.uploadedFiles = [];
+
+        // Reset document title & meta for homepage SEO
+        document.title = 'TECHTIS — 100% Private, Free Online PDF Tools & Document Suite | techtis.in';
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute('content', 'TECHTIS (techtis.in) is the world\'s most private and fastest free online PDF platform. 32 professional tools: Form Filler, Merge PDF, Compress PDF, Sign PDF, Split, OCR, Convert to Word/JPG, Protect & Unlock. 100% in-browser RAM execution, zero file uploads, zero server latency, unlimited free use across all countries.');
+        }
+
+        if (window.location.hash) {
+            history.pushState(null, '', window.location.pathname + window.location.search);
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -472,9 +501,71 @@ class App {
         if (iconEl) iconEl.setAttribute('data-lucide', tool.icon);
         if (badgeEl) badgeEl.textContent = tool.group === 'group-a' ? '100% Client-Side RAM Processing' : tool.badge;
 
+        // Dynamic SEO Update for this tool
+        document.title = `${tool.name} Free Online — 100% Private PDF Tool | TECHTIS`;
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute('content', `${tool.name} online free: ${tool.tagline}. ${tool.description} 100% in-browser private execution, zero file uploads, unlimited free access.`);
+        }
+        if (window.location.hash !== `#${tool.id}`) {
+            history.pushState(null, '', `#${tool.id}`);
+        }
+
         this.renderToolWorkspaceBody(tool);
+        this.appendToolSeoGuide(tool);
         this.refreshLucideIcons();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    appendToolSeoGuide(tool) {
+        const container = document.getElementById('workspace-body');
+        if (!container) return;
+
+        const seoGuide = document.createElement('div');
+        seoGuide.className = 'mt-10 pt-6 border-t border-slate-200 text-slate-600 space-y-6';
+        seoGuide.innerHTML = `
+            <div class="space-y-3">
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="info" class="w-4 h-4 text-red-600"></i>
+                    <span>How to use ${tool.name} Online Free</span>
+                </h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    ${tool.description} All document processing takes place strictly inside your browser's local RAM memory. No files are uploaded to our servers, ensuring 100% privacy and confidentiality for personal documents, business agreements, and government forms.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
+                    <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-1 shadow-2xs">
+                        <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px]">1</span>
+                            <span>Select Document</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Drop your file into the upload zone or choose it from your computer or phone.</p>
+                    </div>
+                    <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-1 shadow-2xs">
+                        <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px]">2</span>
+                            <span>Customize &amp; Process</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Use the interactive controls to configure settings, fill fields, or edit content in real time.</p>
+                    </div>
+                    <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-1 shadow-2xs">
+                        <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px]">3</span>
+                            <span>Instant Download</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Click download to save your new PDF instantly with 0ms server latency.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-start gap-2.5">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+                <div>
+                    <strong>Privacy Guarantee:</strong>
+                    <span>Your documents are processed in local WebAssembly memory and never touch remote servers or databases. Zero file retention.</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(seoGuide);
     }
 
     // ================= WORKSPACE ROUTER =================
