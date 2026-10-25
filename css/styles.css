@@ -272,3 +272,86 @@ body {
         opacity: 1;
     }
 }
+
+
+/* ================= ZERO-SCROLL WORKSPACE OPTIMIZATIONS ================= */
+.dropzone {
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 1.25rem !important;
+    padding: 1.5rem 1rem !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04) !important;
+}
+
+@media (min-width: 640px) {
+    .dropzone {
+        padding: 2.25rem 1.5rem !important;
+    }
+}
+
+.dropzone:hover {
+    border-color: #ef4444 !important;
+    background: #fffcfc !important;
+}
+
+.dropzone.drag-active {
+    border-color: #dc2626 !important;
+    background: #fef2f2 !important;
+    transform: scale(1.01) !important;
+}
+
+/* Compact dropzone icons to keep entire interface above the fold */
+.dropzone .w-16.h-16,
+.dropzone .w-14.h-14 {
+    width: 3.25rem !important;
+    height: 3.25rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.dropzone .w-8.h-8,
+.dropzone .w-7.h-7 {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+}
+
+/* Prominent, vibrant call-to-action button */
+.dropzone button[type="button"] {
+    padding: 0.75rem 2rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.75rem !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.35) !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.dropzone button[type="button"]:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 6px 20px 0 rgba(220, 38, 38, 0.45) !important;
+}
+
+/* Constrain internal editor lists & grids so action buttons stay visible without webpage scrolling */
+#merge-file-list,
+#split-page-grid,
+#rotate-page-grid,
+#remove-page-grid,
+#extract-page-grid,
+#organize-page-grid {
+    max-height: 46vh !important;
+    overflow-y: auto !important;
+    padding: 0.25rem !important;
+}
+
+/* Sticky Action Bar for Workspaces when files are loaded */
+.workspace-actions-sticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 0.75rem 0;
+    border-top: 1px solid #e2e8f0;
+}
