@@ -6,7 +6,7 @@
 import { ImageEngine } from './image-engine.js';
 import { PdfHelpers } from '../utils/pdf-helpers.js';
 import { StorageManager } from '../utils/storage.js';
-import { EdgeAIBridge } from '../edge/ai-bridge.js';
+import { EdgeAIBridge, AIQuotaManager } from '../edge/ai-bridge.js';
 
 export function registerImageWorkspaces(AppClass) {
 
@@ -594,7 +594,7 @@ export function registerImageWorkspaces(AppClass) {
         this.refreshLucideIcons();
     };
 
-    // ================= 4. IMAGE CROPPER & ROTATOR =================
+    // ================= 4. IMAGE CROPPER & ROTATOR (FREE-FORM & HEAD/UPPER SELECTION) =================
     AppClass.prototype.renderImageCropperWorkspace = function(container) {
         container.innerHTML = `
             <div class="space-y-6">
@@ -606,7 +606,7 @@ export function registerImageWorkspaces(AppClass) {
                             <i data-lucide="crop" class="w-8 h-8"></i>
                         </div>
                         <h4 class="text-base sm:text-lg font-bold text-slate-800">Select Image to Crop &amp; Rotate</h4>
-                        <p class="text-xs text-slate-500">Preset ratios (1:1, 4:3, 16:9, Passport) and 90° rotation in browser memory.</p>
+                        <p class="text-xs text-slate-500">Freeform anywhere-to-anywhere selection, head/upper focus, and 90° rotation in browser memory.</p>
                         <div class="pt-2">
                             <button type="button" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
                                 Select Image
@@ -619,16 +619,66 @@ export function registerImageWorkspaces(AppClass) {
                 <div id="crop-editor" class="hidden space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         <!-- Preview Column -->
-                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[320px] max-h-[460px] overflow-hidden bg-slate-900/5 relative select-none">
-                            <div id="crop-viewport" class="relative max-h-[380px] max-w-full flex items-center justify-center">
-                                <img id="crop-preview-img" src="" alt="Crop Preview" class="max-h-[380px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
-                                <div id="crop-overlay-box" class="absolute border-2 border-red-500 bg-red-500/20 pointer-events-none shadow-sm rounded-xs"></div>
+                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[380px] max-h-[520px] overflow-hidden bg-slate-900/5 relative select-none">
+                            <div id="crop-stage-container" class="relative max-h-[440px] max-w-full flex items-center justify-center select-none cursor-crosshair">
+                                <canvas id="crop-stage-canvas" class="max-h-[440px] w-auto max-w-full rounded-lg shadow-sm border border-slate-200 block"></canvas>
+                                
+                                <!-- Interactive Crop Box -->
+                                <div id="crop-interactive-box" class="absolute border-2 border-red-500 bg-red-500/15 cursor-move shadow-md hidden select-none">
+                                    <!-- 3x3 Rule-of-Thirds Grid -->
+                                    <div class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3">
+                                        <div class="border-r border-b border-red-500/30"></div>
+                                        <div class="border-r border-b border-red-500/30"></div>
+                                        <div class="border-b border-red-500/30"></div>
+                                        <div class="border-r border-b border-red-500/30"></div>
+                                        <div class="border-r border-b border-red-500/30"></div>
+                                        <div class="border-b border-red-500/30"></div>
+                                        <div class="border-r border-b border-red-500/30"></div>
+                                        <div class="border-r border-b border-red-500/30"></div>
+                                        <div></div>
+                                    </div>
+
+                                    <!-- 8 Handles (Corners + Edges) -->
+                                    <div class="crop-handle absolute -top-2 -left-2 w-4 h-4 bg-red-600 border-2 border-white rounded-full cursor-nwse-resize shadow-sm" data-dir="nw"></div>
+                                    <div class="crop-handle absolute -top-2 -right-2 w-4 h-4 bg-red-600 border-2 border-white rounded-full cursor-nesw-resize shadow-sm" data-dir="ne"></div>
+                                    <div class="crop-handle absolute -bottom-2 -left-2 w-4 h-4 bg-red-600 border-2 border-white rounded-full cursor-nesw-resize shadow-sm" data-dir="sw"></div>
+                                    <div class="crop-handle absolute -bottom-2 -right-2 w-4 h-4 bg-red-600 border-2 border-white rounded-full cursor-nwse-resize shadow-sm" data-dir="se"></div>
+                                    <div class="crop-handle absolute -top-1.5 left-1/2 -translate-x-1/2 w-4 h-3 bg-red-600 border border-white rounded-xs cursor-ns-resize shadow-2xs" data-dir="n"></div>
+                                    <div class="crop-handle absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-3 bg-red-600 border border-white rounded-xs cursor-ns-resize shadow-2xs" data-dir="s"></div>
+                                    <div class="crop-handle absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-4 bg-red-600 border border-white rounded-xs cursor-ew-resize shadow-2xs" data-dir="w"></div>
+                                    <div class="crop-handle absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-4 bg-red-600 border border-white rounded-xs cursor-ew-resize shadow-2xs" data-dir="e"></div>
+
+                                    <!-- Dimension Pill -->
+                                    <div id="crop-dim-badge" class="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900/85 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-full whitespace-nowrap pointer-events-none shadow-sm">
+                                        0 × 0 px
+                                    </div>
+                                </div>
                             </div>
+                            <p class="text-[11px] text-slate-500 mt-2 pointer-events-none text-center">
+                                💡 Click &amp; drag anywhere on the image to select, or drag the box/handles to crop head, face, or custom area.
+                            </p>
                         </div>
 
                         <!-- Controls Column -->
                         <div class="lg:col-span-5 space-y-4">
                             <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+                                <!-- Quick Target Presets -->
+                                <div>
+                                    <label class="text-xs font-bold text-slate-800 block mb-1.5">Quick Position</label>
+                                    <div class="grid grid-cols-3 gap-1.5 text-xs">
+                                        <button type="button" id="btn-crop-pos-head" class="px-2.5 py-1.5 border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 font-bold rounded-lg flex items-center justify-center gap-1 shadow-2xs">
+                                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                            <span>Head / Upper</span>
+                                        </button>
+                                        <button type="button" id="btn-crop-pos-all" class="px-2.5 py-1.5 border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold rounded-lg">
+                                            Full Image
+                                        </button>
+                                        <button type="button" id="btn-crop-pos-center" class="px-2.5 py-1.5 border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold rounded-lg">
+                                            Center
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <!-- Rotation Buttons -->
                                 <div>
                                     <label class="text-xs font-bold text-slate-800 block mb-1.5">Rotate</label>
@@ -648,22 +698,13 @@ export function registerImageWorkspaces(AppClass) {
                                 <div>
                                     <label class="text-xs font-bold text-slate-800 block mb-1.5">Aspect Ratio</label>
                                     <div class="grid grid-cols-3 gap-1.5 text-xs">
-                                        <button type="button" class="crop-ratio-btn active px-2.5 py-1.5 border border-red-500 bg-red-50 text-red-700 font-bold rounded-lg" data-ratio="free">Free</button>
+                                        <button type="button" class="crop-ratio-btn active px-2.5 py-1.5 border border-red-500 bg-red-50 text-red-700 font-bold rounded-lg" data-ratio="free">Free (Any)</button>
                                         <button type="button" class="crop-ratio-btn px-2.5 py-1.5 border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold rounded-lg" data-ratio="1:1">1:1 Square</button>
                                         <button type="button" class="crop-ratio-btn px-2.5 py-1.5 border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold rounded-lg" data-ratio="4:3">4:3 Standard</button>
-                                        <button type="button" class="crop-ratio-btn px-2.5 py-1.5 border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold rounded-lg" data-ratio="16:9">16:9 Widescreen</button>
+                                        <button type="button" class="crop-ratio-btn px-2.5 py-1.5 border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold rounded-lg" data-ratio="16:9">16:9 Wide</button>
                                         <button type="button" class="crop-ratio-btn px-2.5 py-1.5 border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold rounded-lg" data-ratio="3:2">3:2 Classic</button>
                                         <button type="button" class="crop-ratio-btn px-2.5 py-1.5 border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold rounded-lg" data-ratio="35:45">35:45 Passport</button>
                                     </div>
-                                </div>
-
-                                <!-- Crop Sliders -->
-                                <div class="space-y-2 pt-1 border-t border-slate-100">
-                                    <div class="flex items-center justify-between text-[11px] font-semibold text-slate-700">
-                                        <span>Crop Window Scale</span>
-                                        <span id="crop-scale-val">80%</span>
-                                    </div>
-                                    <input type="range" id="crop-scale-slider" min="20" max="100" value="80" class="w-full accent-red-600 cursor-pointer h-2 bg-slate-200 rounded-lg">
                                 </div>
 
                                 <div class="pt-2">
@@ -688,20 +729,34 @@ export function registerImageWorkspaces(AppClass) {
         const dropzone = document.getElementById('crop-dropzone');
         const input = document.getElementById('crop-input');
         const editor = document.getElementById('crop-editor');
-        const previewImg = document.getElementById('crop-preview-img');
-        const cropBox = document.getElementById('crop-overlay-box');
-        const scaleSlider = document.getElementById('crop-scale-slider');
-        const scaleVal = document.getElementById('crop-scale-val');
+        const stageContainer = document.getElementById('crop-stage-container');
+        const stageCanvas = document.getElementById('crop-stage-canvas');
+        const cropBoxEl = document.getElementById('crop-interactive-box');
+        const dimBadge = document.getElementById('crop-dim-badge');
         const rotCw = document.getElementById('btn-crop-rot-cw');
         const rotCcw = document.getElementById('btn-crop-rot-ccw');
         const ratioBtns = document.querySelectorAll('.crop-ratio-btn');
         const downloadBtn = document.getElementById('btn-download-crop');
         const newBtn = document.getElementById('btn-crop-new');
+        const btnPosHead = document.getElementById('btn-crop-pos-head');
+        const btnPosAll = document.getElementById('btn-crop-pos-all');
+        const btnPosCenter = document.getElementById('btn-crop-pos-center');
 
         let currentFile = null;
+        let loadedImg = null;
         let rotationAngle = 0;
         let selectedRatio = 'free';
-        let cropScale = 0.8;
+
+        // Normalized crop box { x, y, w, h } in stage canvas pixel coordinates
+        let box = { x: 0, y: 0, w: 0, h: 0 };
+
+        // Interaction state
+        let isDragging = false;
+        let isResizing = false;
+        let isDrawing = false;
+        let resizeDir = '';
+        let startPointer = { x: 0, y: 0 };
+        let initialBox = { x: 0, y: 0, w: 0, h: 0 };
 
         dropzone?.addEventListener('click', () => input?.click());
         input?.addEventListener('change', (e) => {
@@ -713,29 +768,28 @@ export function registerImageWorkspaces(AppClass) {
 
         async function loadFile() {
             if (!currentFile) return;
-            const img = await ImageEngine.loadImage(currentFile);
-            previewImg.src = img._dataUrl || img.src;
+            loadedImg = await ImageEngine.loadImage(currentFile);
             rotationAngle = 0;
-            updateRotation();
             dropzone.classList.add('hidden');
             editor.classList.remove('hidden');
-            setTimeout(updateCropBox, 60);
+            renderStage();
+            // Default select top-middle head area!
+            selectHeadArea();
         }
 
         rotCw?.addEventListener('click', () => {
             rotationAngle = (rotationAngle + 90) % 360;
-            updateRotation();
+            renderStage();
+            clampBoxToBounds();
+            updateBoxUI();
         });
 
         rotCcw?.addEventListener('click', () => {
             rotationAngle = (rotationAngle - 90 + 360) % 360;
-            updateRotation();
+            renderStage();
+            clampBoxToBounds();
+            updateBoxUI();
         });
-
-        function updateRotation() {
-            previewImg.style.transform = `rotate(${rotationAngle}deg)`;
-            updateCropBox();
-        }
 
         ratioBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -746,70 +800,292 @@ export function registerImageWorkspaces(AppClass) {
                 btn.classList.add('border-red-500', 'bg-red-50', 'text-red-700', 'font-bold');
                 btn.classList.remove('border-slate-200', 'text-slate-700', 'font-semibold');
                 selectedRatio = btn.dataset.ratio;
-                updateCropBox();
+                applyRatioToBox();
             });
         });
 
-        scaleSlider?.addEventListener('input', (e) => {
-            cropScale = parseInt(e.target.value, 10) / 100;
-            scaleVal.textContent = `${e.target.value}%`;
-            updateCropBox();
-        });
+        btnPosHead?.addEventListener('click', () => selectHeadArea());
+        btnPosAll?.addEventListener('click', () => selectAllArea());
+        btnPosCenter?.addEventListener('click', () => selectCenterArea());
 
-        function updateCropBox() {
-            const rect = previewImg.getBoundingClientRect();
-            const w = rect.width;
-            const h = rect.height;
-            if (!w || !h) return;
+        function selectHeadArea() {
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+            if (!cw || !ch) return;
 
-            let boxW = w * cropScale;
-            let boxH = h * cropScale;
+            let w = Math.round(cw * 0.65);
+            let h = Math.round(ch * 0.60);
 
             if (selectedRatio === '1:1') {
-                const side = Math.min(boxW, boxH);
-                boxW = side;
-                boxH = side;
+                const side = Math.min(w, h);
+                w = side;
+                h = side;
             } else if (selectedRatio === '4:3') {
-                boxH = (boxW * 3) / 4;
+                h = Math.round((w * 3) / 4);
             } else if (selectedRatio === '16:9') {
-                boxH = (boxW * 9) / 16;
+                h = Math.round((w * 9) / 16);
             } else if (selectedRatio === '3:2') {
-                boxH = (boxW * 2) / 3;
+                h = Math.round((w * 2) / 3);
             } else if (selectedRatio === '35:45') {
-                boxH = (boxW * 45) / 35;
+                h = Math.round((w * 45) / 35);
             }
 
-            cropBox.style.width = `${boxW}px`;
-            cropBox.style.height = `${boxH}px`;
-            cropBox.style.left = `${(w - boxW) / 2}px`;
-            cropBox.style.top = `${(h - boxH) / 2}px`;
+            // Head area placed at middle upper side!
+            const x = Math.round((cw - w) / 2);
+            const y = Math.round(ch * 0.03); // Top 3% margin to capture upper head/hair!
+            box = { x: Math.max(0, x), y: Math.max(0, y), w: Math.min(cw, w), h: Math.min(ch - y, h) };
+            updateBoxUI();
         }
 
-        downloadBtn?.addEventListener('click', async () => {
-            if (!currentFile) return;
-            this.showToast('Cropping image in browser memory...', 'info');
-            try {
-                const img = await ImageEngine.loadImage(currentFile);
+        function selectAllArea() {
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+            if (!cw || !ch) return;
+            box = { x: 0, y: 0, w: cw, h: ch };
+            applyRatioToBox();
+        }
+
+        function selectCenterArea() {
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+            if (!cw || !ch) return;
+            const w = Math.round(cw * 0.7);
+            const h = Math.round(ch * 0.7);
+            box = { x: Math.round((cw - w) / 2), y: Math.round((ch - h) / 2), w, h };
+            applyRatioToBox();
+        }
+
+        function applyRatioToBox() {
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+            if (!cw || !ch) return;
+
+            if (selectedRatio === 'free') {
+                clampBoxToBounds();
+                updateBoxUI();
+                return;
+            }
+
+            let ratioVal = 1;
+            if (selectedRatio === '1:1') ratioVal = 1;
+            else if (selectedRatio === '4:3') ratioVal = 4 / 3;
+            else if (selectedRatio === '16:9') ratioVal = 16 / 9;
+            else if (selectedRatio === '3:2') ratioVal = 3 / 2;
+            else if (selectedRatio === '35:45') ratioVal = 35 / 45;
+
+            let newH = Math.round(box.w / ratioVal);
+            if (box.y + newH > ch) {
+                newH = ch - box.y;
+                box.w = Math.round(newH * ratioVal);
+            }
+            box.h = newH;
+            clampBoxToBounds();
+            updateBoxUI();
+        }
+
+        function renderStage() {
+            if (!loadedImg) return;
+            const isRot90 = (rotationAngle % 180 !== 0);
+            const origW = isRot90 ? loadedImg.naturalHeight : loadedImg.naturalWidth;
+            const origH = isRot90 ? loadedImg.naturalWidth : loadedImg.naturalHeight;
+
+            // Fit smoothly within 560px width and 420px height
+            const maxW = 560;
+            const maxH = 420;
+            const scale = Math.min(maxW / origW, maxH / origH, 1.0);
+
+            const displayW = Math.round(origW * scale);
+            const displayH = Math.round(origH * scale);
+
+            stageCanvas.width = displayW;
+            stageCanvas.height = displayH;
+
+            const ctx = stageCanvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            ctx.save();
+            ctx.translate(displayW / 2, displayH / 2);
+            ctx.rotate((rotationAngle * Math.PI) / 180);
+            ctx.drawImage(
+                loadedImg,
+                -Math.round(loadedImg.naturalWidth * scale) / 2,
+                -Math.round(loadedImg.naturalHeight * scale) / 2,
+                Math.round(loadedImg.naturalWidth * scale),
+                Math.round(loadedImg.naturalHeight * scale)
+            );
+            ctx.restore();
+
+            cropBoxEl.classList.remove('hidden');
+        }
+
+        function clampBoxToBounds() {
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+            if (!cw || !ch) return;
+
+            box.w = Math.max(25, Math.min(cw, box.w));
+            box.h = Math.max(25, Math.min(ch, box.h));
+            box.x = Math.max(0, Math.min(cw - box.w, box.x));
+            box.y = Math.max(0, Math.min(ch - box.h, box.y));
+        }
+
+        function updateBoxUI() {
+            clampBoxToBounds();
+            cropBoxEl.style.left = `${box.x}px`;
+            cropBoxEl.style.top = `${box.y}px`;
+            cropBoxEl.style.width = `${box.w}px`;
+            cropBoxEl.style.height = `${box.h}px`;
+
+            // Calculate native original pixels
+            if (loadedImg && stageCanvas.width) {
                 const isRot90 = (rotationAngle % 180 !== 0);
-                const imgW = isRot90 ? img.naturalHeight : img.naturalWidth;
-                const imgH = isRot90 ? img.naturalWidth : img.naturalHeight;
+                const fullW = isRot90 ? loadedImg.naturalHeight : loadedImg.naturalWidth;
+                const fullH = isRot90 ? loadedImg.naturalWidth : loadedImg.naturalHeight;
+                const scaleX = fullW / stageCanvas.width;
+                const scaleY = fullH / stageCanvas.height;
 
-                let cropRect = {
-                    x: Math.round((imgW * (1 - cropScale)) / 2),
-                    y: Math.round((imgH * (1 - cropScale)) / 2),
-                    width: Math.round(imgW * cropScale),
-                    height: Math.round(imgH * cropScale)
-                };
+                const actualW = Math.round(box.w * scaleX);
+                const actualH = Math.round(box.h * scaleY);
+                dimBadge.textContent = `${actualW} × ${actualH} px`;
+            }
+        }
 
-                if (selectedRatio === '1:1') {
-                    const side = Math.min(cropRect.width, cropRect.height);
-                    cropRect.width = side;
-                    cropRect.height = side;
-                } else if (selectedRatio === '35:45') {
-                    cropRect.height = Math.round((cropRect.width * 45) / 35);
+        function getCanvasPointer(e) {
+            const rect = stageCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: Math.max(0, Math.min(stageCanvas.width, clientX - rect.left)),
+                y: Math.max(0, Math.min(stageCanvas.height, clientY - rect.top))
+            };
+        }
+
+        // Pointer Events for Interactive Drag, Resize, and Draw-From-Anywhere
+        function onPointerDown(e) {
+            const pt = getCanvasPointer(e);
+            startPointer = pt;
+            initialBox = { ...box };
+
+            const target = e.target;
+            if (target && target.classList.contains('crop-handle')) {
+                // Resize Handle Clicked
+                isResizing = true;
+                resizeDir = target.dataset.dir;
+                e.preventDefault();
+                e.stopPropagation();
+            } else if (target === cropBoxEl || cropBoxEl.contains(target)) {
+                // Drag existing selection box
+                isDragging = true;
+                e.preventDefault();
+                e.stopPropagation();
+            } else {
+                // Click & Drag on image: Draw brand new selection box from anywhere to anywhere!
+                isDrawing = true;
+                box = { x: pt.x, y: pt.y, w: 10, h: 10 };
+                updateBoxUI();
+                e.preventDefault();
+            }
+        }
+
+        function onPointerMove(e) {
+            if (!isDragging && !isResizing && !isDrawing) return;
+            const pt = getCanvasPointer(e);
+            const dx = pt.x - startPointer.x;
+            const dy = pt.y - startPointer.y;
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+
+            if (isDragging) {
+                box.x = Math.max(0, Math.min(cw - box.w, initialBox.x + dx));
+                box.y = Math.max(0, Math.min(ch - box.h, initialBox.y + dy));
+                updateBoxUI();
+            } else if (isDrawing) {
+                const left = Math.min(startPointer.x, pt.x);
+                const top = Math.min(startPointer.y, pt.y);
+                let w = Math.abs(pt.x - startPointer.x);
+                let h = Math.abs(pt.y - startPointer.y);
+
+                if (selectedRatio !== 'free') {
+                    let r = 1;
+                    if (selectedRatio === '1:1') r = 1;
+                    else if (selectedRatio === '4:3') r = 4 / 3;
+                    else if (selectedRatio === '16:9') r = 16 / 9;
+                    else if (selectedRatio === '3:2') r = 3 / 2;
+                    else if (selectedRatio === '35:45') r = 35 / 45;
+                    h = Math.round(w / r);
                 }
 
-                const res = await ImageEngine.cropImage(currentFile, cropRect, rotationAngle, 'image/png');
+                box = { x: left, y: top, w: Math.max(20, w), h: Math.max(20, h) };
+                updateBoxUI();
+            } else if (isResizing) {
+                let { x, y, w, h } = initialBox;
+
+                if (resizeDir.includes('e')) w = Math.max(20, initialBox.w + dx);
+                if (resizeDir.includes('s')) h = Math.max(20, initialBox.h + dy);
+                if (resizeDir.includes('w')) {
+                    const newW = Math.max(20, initialBox.w - dx);
+                    x = initialBox.x + (initialBox.w - newW);
+                    w = newW;
+                }
+                if (resizeDir.includes('n')) {
+                    const newH = Math.max(20, initialBox.h - dy);
+                    y = initialBox.y + (initialBox.h - newH);
+                    h = newH;
+                }
+
+                if (selectedRatio !== 'free') {
+                    let r = 1;
+                    if (selectedRatio === '1:1') r = 1;
+                    else if (selectedRatio === '4:3') r = 4 / 3;
+                    else if (selectedRatio === '16:9') r = 16 / 9;
+                    else if (selectedRatio === '3:2') r = 3 / 2;
+                    else if (selectedRatio === '35:45') r = 35 / 45;
+                    h = Math.round(w / r);
+                }
+
+                box = { x, y, w, h };
+                updateBoxUI();
+            }
+        }
+
+        function onPointerUp() {
+            isDragging = false;
+            isResizing = false;
+            isDrawing = false;
+            clampBoxToBounds();
+            updateBoxUI();
+        }
+
+        // Attach listeners to container & window
+        stageContainer.addEventListener('mousedown', onPointerDown);
+        stageContainer.addEventListener('touchstart', onPointerDown, { passive: false });
+
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('touchmove', onPointerMove, { passive: false });
+
+        window.addEventListener('mouseup', onPointerUp);
+        window.addEventListener('touchend', onPointerUp);
+
+        downloadBtn?.addEventListener('click', async () => {
+            if (!currentFile || !loadedImg) return;
+            this.showToast('Cropping image with pixel-perfect resolution...', 'info');
+            try {
+                const isRot90 = (rotationAngle % 180 !== 0);
+                const fullW = isRot90 ? loadedImg.naturalHeight : loadedImg.naturalWidth;
+                const fullH = isRot90 ? loadedImg.naturalWidth : loadedImg.naturalHeight;
+
+                const scaleX = fullW / stageCanvas.width;
+                const scaleY = fullH / stageCanvas.height;
+
+                const actualCropRect = {
+                    x: Math.max(0, Math.round(box.x * scaleX)),
+                    y: Math.max(0, Math.round(box.y * scaleY)),
+                    width: Math.min(fullW - Math.round(box.x * scaleX), Math.round(box.w * scaleX)),
+                    height: Math.min(fullH - Math.round(box.y * scaleY), Math.round(box.h * scaleY))
+                };
+
+                const res = await ImageEngine.cropImage(currentFile, actualCropRect, rotationAngle, 'image/png');
                 const baseName = currentFile.name.replace(/\.[^/.]+$/, '');
                 const filename = `${baseName}_cropped.png`;
 
@@ -820,7 +1096,7 @@ export function registerImageWorkspaces(AppClass) {
                 a.click();
                 URL.revokeObjectURL(url);
 
-                StorageManager.logActivity('image-cropper', 'Image Cropper', `Cropped ${currentFile.name} (${cropRect.width}x${cropRect.height} px)`);
+                StorageManager.logActivity('image-cropper', 'Image Cropper', `Cropped ${currentFile.name} (${actualCropRect.width}x${actualCropRect.height} px)`);
                 this.updateHistoryCounter();
                 this.showToast('Cropped image downloaded successfully!', 'success');
             } catch (err) {
@@ -830,6 +1106,7 @@ export function registerImageWorkspaces(AppClass) {
 
         newBtn?.addEventListener('click', () => {
             currentFile = null;
+            loadedImg = null;
             editor.classList.add('hidden');
             dropzone.classList.remove('hidden');
             input.value = '';
@@ -1261,7 +1538,7 @@ export function registerImageWorkspaces(AppClass) {
                             <i data-lucide="scan-line" class="w-8 h-8"></i>
                         </div>
                         <h4 class="text-base sm:text-lg font-bold text-slate-800">Select Document or ID Photo (Image or PDF)</h4>
-                        <p class="text-xs text-slate-500">100% In-Browser WebAssembly OCR. Extracts Name, Email, Phone, DOB, ID numbers &amp; Address with 1-click copy.</p>
+                        <p class="text-xs text-slate-500">100% In-Browser WebAssembly OCR with AI Smart Correction. Extracts Name, Email, Phone, DOB, ID numbers &amp; Address.</p>
                         <div class="pt-2">
                             <button type="button" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
                                 Select Document / ID
@@ -1306,6 +1583,33 @@ export function registerImageWorkspaces(AppClass) {
                                     </button>
                                 </div>
 
+                                <!-- AI Smart Enhancement Toolbar with Strict Rate-Limit Safeguard -->
+                                <div class="p-3 bg-gradient-to-r from-red-50 to-amber-50 border border-red-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
+                                                <span>AI Field Correction</span>
+                                                <span id="ocr-ai-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-red-700 border border-red-200 shadow-2xs">
+                                                    5/5 Free Left Today
+                                                </span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500">Auto-clean typos, verify Aadhaar/PAN, and format address.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button type="button" id="btn-ocr-ai-enhance" class="px-3.5 py-1.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                            <span>Enhance with AI</span>
+                                        </button>
+                                        <button type="button" id="btn-ocr-open-settings" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-white transition" title="Add personal key for unlimited AI">
+                                            <i data-lucide="settings" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <!-- Dynamic Field List -->
                                 <div id="ocr-fields-container" class="space-y-3">
                                     <!-- Rendered dynamically with Copy Buttons -->
@@ -1345,13 +1649,89 @@ export function registerImageWorkspaces(AppClass) {
         const rawTextEl = document.getElementById('ocr-raw-text');
         const clearBtn = document.getElementById('btn-ocr-clear');
         const copyAllBtn = document.getElementById('btn-ocr-copy-all');
+        const aiEnhanceBtn = document.getElementById('btn-ocr-ai-enhance');
+        const aiBadge = document.getElementById('ocr-ai-badge');
+        const aiSettingsBtn = document.getElementById('btn-ocr-open-settings');
 
         let currentExtracted = null;
+        let lastRecognizedText = '';
+
+        function updateAiQuotaBadge() {
+            const quota = AIQuotaManager.getQuota();
+            if (aiBadge) {
+                if (quota.hasCustomKey) {
+                    aiBadge.textContent = 'Unlimited (Personal Key)';
+                    aiBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs';
+                } else if (quota.remaining <= 0) {
+                    aiBadge.textContent = '0/5 Free Left Today';
+                    aiBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs';
+                } else {
+                    aiBadge.textContent = `${quota.remaining}/${quota.limit} Free Left Today`;
+                    aiBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-red-700 border border-red-200 shadow-2xs';
+                }
+            }
+        }
+        updateAiQuotaBadge();
 
         dropzone?.addEventListener('click', () => input?.click());
         input?.addEventListener('change', (e) => {
             if (e.target?.files?.length) {
                 runOcr(e.target.files[0]);
+            }
+        });
+
+        aiSettingsBtn?.addEventListener('click', () => this.openSettingsModal());
+
+        aiEnhanceBtn?.addEventListener('click', async () => {
+            if (!lastRecognizedText || !lastRecognizedText.trim()) {
+                this.showToast('Please upload an ID card or document first.', 'warning');
+                return;
+            }
+
+            const quota = AIQuotaManager.getQuota();
+            if (!quota.canUseAi && !quota.isUnlimited) {
+                this.showToast('Daily free AI limit reached (5/5). Add your own free Groq API key in Settings for unlimited AI!', 'warning');
+                this.openSettingsModal();
+                return;
+            }
+
+            aiEnhanceBtn.disabled = true;
+            aiEnhanceBtn.innerHTML = '<span class="animate-spin inline-block mr-1">⏳</span> Analyzing with AI...';
+
+            try {
+                this.showToast('Analyzing text with neural AI...', 'info');
+                const aiResult = await EdgeAIBridge.extractFieldsWithAI(lastRecognizedText);
+
+                currentExtracted = {
+                    ...currentExtracted,
+                    docType: aiResult.docType || currentExtracted.docType,
+                    name: aiResult.name || currentExtracted.name,
+                    email: aiResult.email || currentExtracted.email,
+                    phone: aiResult.phone || currentExtracted.phone,
+                    dob: aiResult.dob || currentExtracted.dob,
+                    gender: aiResult.gender || currentExtracted.gender,
+                    idNumber: aiResult.idNumber || currentExtracted.idNumber,
+                    maskedIdNumber: ImageEngine.maskSensitiveNumber(aiResult.idNumber || currentExtracted.idNumber),
+                    fatherName: aiResult.fatherName || currentExtracted.fatherName,
+                    address: aiResult.address || currentExtracted.address,
+                    pincode: aiResult.pincode || currentExtracted.pincode
+                };
+
+                badgeDocType.textContent = currentExtracted.docType;
+                renderFieldInputs(currentExtracted);
+                updateAiQuotaBadge();
+                this.showToast('Document details enhanced with AI precision!', 'success');
+            } catch (err) {
+                if (err.message.includes('NO_API_KEY')) {
+                    this.showToast('Please add your personal free Groq API key in Settings.', 'info');
+                    this.openSettingsModal();
+                } else {
+                    this.showToast(err.message, 'error');
+                }
+            } finally {
+                aiEnhanceBtn.disabled = false;
+                aiEnhanceBtn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span>Enhance with AI</span>';
+                this.refreshLucideIcons();
             }
         });
 
@@ -1393,11 +1773,13 @@ export function registerImageWorkspaces(AppClass) {
                     });
                 }
 
+                lastRecognizedText = recognizedText;
                 currentExtracted = ImageEngine.extractAllDocumentFields(recognizedText);
                 badgeDocType.textContent = currentExtracted.docType;
                 rawTextEl.textContent = currentExtracted.rawText || '(No text detected)';
 
                 renderFieldInputs(currentExtracted);
+                updateAiQuotaBadge();
 
                 progressCard.classList.add('hidden');
                 editor.classList.remove('hidden');
@@ -1496,6 +1878,7 @@ export function registerImageWorkspaces(AppClass) {
             fieldsContainer.innerHTML = '';
             rawTextEl.textContent = '';
             currentExtracted = null;
+            lastRecognizedText = '';
             input.value = '';
             editor.classList.add('hidden');
             dropzone.classList.remove('hidden');
@@ -1584,6 +1967,33 @@ export function registerImageWorkspaces(AppClass) {
                                     <span class="text-[11px] text-slate-400">Click icon or value to copy</span>
                                 </div>
 
+                                <!-- AI Smart Enhancement Toolbar with Strict Rate-Limit Safeguard -->
+                                <div class="p-3 bg-gradient-to-r from-red-50 to-amber-50 border border-red-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
+                                                <span>AI Form Field Extraction</span>
+                                                <span id="ff-ai-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-red-700 border border-red-200 shadow-2xs">
+                                                    5/5 Free Left Today
+                                                </span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500">Auto-clean typos, detect all fields, and format for rapid form copy.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button type="button" id="btn-ff-ai-enhance" class="px-3.5 py-1.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                            <span>Enhance with AI</span>
+                                        </button>
+                                        <button type="button" id="btn-ff-open-settings" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-white transition" title="Add personal key for unlimited AI">
+                                            <i data-lucide="settings" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <div id="ff-cards-list" class="space-y-2.5">
                                     <!-- Rendered dynamically -->
                                 </div>
@@ -1613,8 +2023,8 @@ export function registerImageWorkspaces(AppClass) {
                     </div>
 
                     <!-- Search Input inside Dock -->
-                    <div class="p-2.5 border-b border-slate-200 bg-slate-50">
-                        <div class="relative">
+                    <div class="p-2.5 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+                        <div class="relative flex-1">
                             <input type="text" id="ff-dock-search" placeholder="Filter fields (e.g. pan, dob, phone)..."
                                    class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
                             <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400"></i>
@@ -1657,13 +2067,95 @@ export function registerImageWorkspaces(AppClass) {
         const closeDockBtn = document.getElementById('btn-ff-close-dock');
         const dockSearch = document.getElementById('ff-dock-search');
         const dockFieldsList = document.getElementById('ff-dock-fields');
+        const aiEnhanceBtn = document.getElementById('btn-ff-ai-enhance');
+        const aiBadge = document.getElementById('ff-ai-badge');
+        const aiSettingsBtn = document.getElementById('btn-ff-open-settings');
 
         let currentExtracted = null;
+        let lastExtractedText = '';
+
+        function updateAiQuotaBadge() {
+            const quota = AIQuotaManager.getQuota();
+            if (aiBadge) {
+                if (quota.hasCustomKey) {
+                    aiBadge.textContent = 'Unlimited (Personal Key)';
+                    aiBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs';
+                } else if (quota.remaining <= 0) {
+                    aiBadge.textContent = '0/5 Free Left Today';
+                    aiBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs';
+                } else {
+                    aiBadge.textContent = `${quota.remaining}/${quota.limit} Free Left Today`;
+                    aiBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-red-700 border border-red-200 shadow-2xs';
+                }
+            }
+        }
+        updateAiQuotaBadge();
 
         dropzone?.addEventListener('click', () => input?.click());
         input?.addEventListener('change', (e) => {
             if (e.target?.files?.length) {
                 runUniversalExtraction(e.target.files[0]);
+            }
+        });
+
+        aiSettingsBtn?.addEventListener('click', () => this.openSettingsModal());
+
+        aiEnhanceBtn?.addEventListener('click', async () => {
+            if (!lastExtractedText || !lastExtractedText.trim()) {
+                this.showToast('Please upload a document or image first.', 'warning');
+                return;
+            }
+
+            const quota = AIQuotaManager.getQuota();
+            if (!quota.canUseAi && !quota.isUnlimited) {
+                this.showToast('Daily free AI limit reached (5/5). Add your free Groq API key in Settings for unlimited AI!', 'warning');
+                this.openSettingsModal();
+                return;
+            }
+
+            aiEnhanceBtn.disabled = true;
+            aiEnhanceBtn.innerHTML = '<span class="animate-spin inline-block mr-1">⏳</span> AI Analyzing...';
+
+            try {
+                this.showToast('Analyzing text with neural AI...', 'info');
+                const aiResult = await EdgeAIBridge.extractFieldsWithAI(lastExtractedText);
+
+                // Build merged allFields list
+                const newAllFields = [];
+                if (aiResult.name) newAllFields.push({ key: 'name', label: 'Full Name', value: aiResult.name, icon: 'user' });
+                if (aiResult.email) newAllFields.push({ key: 'email', label: 'Email Address', value: aiResult.email, icon: 'mail' });
+                if (aiResult.phone) newAllFields.push({ key: 'phone', label: 'Phone / Mobile', value: aiResult.phone, icon: 'phone' });
+                if (aiResult.idNumber) newAllFields.push({ key: 'idNumber', label: `${aiResult.docType} Number`, value: aiResult.idNumber, icon: 'credit-card' });
+                if (aiResult.dob) newAllFields.push({ key: 'dob', label: 'Date of Birth', value: aiResult.dob, icon: 'calendar' });
+                if (aiResult.gender) newAllFields.push({ key: 'gender', label: 'Gender', value: aiResult.gender, icon: 'user-check' });
+                if (aiResult.fatherName) newAllFields.push({ key: 'fatherName', label: "Father / Guardian", value: aiResult.fatherName, icon: 'users' });
+                if (aiResult.pincode) newAllFields.push({ key: 'pincode', label: 'PIN Code', value: aiResult.pincode, icon: 'map-pin' });
+                if (aiResult.address) newAllFields.push({ key: 'address', label: 'Full Address', value: aiResult.address, icon: 'home' });
+
+                currentExtracted = {
+                    ...currentExtracted,
+                    docType: aiResult.docType || currentExtracted.docType,
+                    allFields: newAllFields.length > 0 ? newAllFields : currentExtracted.allFields
+                };
+
+                docTypeText.textContent = currentExtracted.docType;
+                fieldsCount.textContent = `${currentExtracted.allFields.length} fields detected`;
+
+                renderCards(currentExtracted);
+                renderDockFields(currentExtracted.allFields);
+                updateAiQuotaBadge();
+                this.showToast('Document details enhanced with AI precision!', 'success');
+            } catch (err) {
+                if (err.message.includes('NO_API_KEY')) {
+                    this.showToast('Please add your personal free Groq API key in Settings.', 'info');
+                    this.openSettingsModal();
+                } else {
+                    this.showToast(err.message, 'error');
+                }
+            } finally {
+                aiEnhanceBtn.disabled = false;
+                aiEnhanceBtn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span>Enhance with AI</span>';
+                this.refreshLucideIcons();
             }
         });
 
@@ -1699,12 +2191,14 @@ export function registerImageWorkspaces(AppClass) {
                     });
                 }
 
+                lastExtractedText = extractedText;
                 currentExtracted = ImageEngine.extractAllDocumentFields(extractedText);
                 docTypeText.textContent = currentExtracted.docType;
                 fieldsCount.textContent = `${currentExtracted.allFields.length} fields detected`;
 
                 renderCards(currentExtracted);
                 renderDockFields(currentExtracted.allFields);
+                updateAiQuotaBadge();
 
                 progressCard.classList.add('hidden');
                 editor.classList.remove('hidden');
@@ -1835,6 +2329,7 @@ export function registerImageWorkspaces(AppClass) {
 
         resetBtn?.addEventListener('click', () => {
             currentExtracted = null;
+            lastExtractedText = '';
             previewImg.src = '';
             editor.classList.add('hidden');
             dockedSidebar?.classList.add('hidden');

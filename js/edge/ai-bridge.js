@@ -384,4 +384,232 @@ ${text.slice(0, 25000)}`;
         ctx.putImageData(imgData, 0, 0);
         return canvasElement.toDataURL('image/jpeg', 0.9);
     }
+,
+
+    /**
+     * AI-Powered Structured Document Field Extraction with Strict Rate Limiting
+     * Prevents excessive API hits and protects owner against billing charges ($0 guarantee)
+     */
+    async extractFieldsWithAI(rawText) {
+        if (!rawText || !rawText.trim()) {
+            throw new Error('No text content available for AI field extraction.');
+        }
+
+        const quota = AIQuotaManager.getQuota();
+        if (!quota.canUseAi && !quota.isUnlimited) {
+            throw new Error(`QUOTA_EXHAUSTED: Daily free AI limit reached (${AIQuotaManager.DAILY_LIMIT}/${AIQuotaManager.DAILY_LIMIT}). Local OCR remains 100% free & unlimited. Add your own free Groq API key in Settings for unlimited AI.`);
+        }
+
+        const settings = StorageManager.getSettings();
+        const groqKey = settings.groqApiKey;
+        const geminiKey = settings.geminiApiKey;
+
+        const systemPrompt = `You are an expert OCR document analyst. Extract structured personal and identity details from the provided text into clean JSON format.
+Return ONLY a valid JSON object matching this exact schema:
+{
+  "docType": "Aadhaar Card" | "PAN Card" | "Passport" | "Driving License" | "Voter ID" | "Invoice" | "Certificate" | "General Document",
+  "name": "Full name of the individual (clean without prefixes)",
+  "email": "Email address if present, else empty string",
+  "phone": "Phone or mobile number if present, else empty string",
+  "dob": "Date of birth in DD/MM/YYYY or original format, else empty string",
+  "gender": "Male" | "Female" | "Other" | "",
+  "idNumber": "Document / ID / Registration / Tax number without masking",
+  "fatherName": "Father's or Guardian's name if present, else empty string",
+  "address": "Full permanent or communication address if found, else empty string",
+  "pincode": "6-digit postal PIN code if found, else empty string"
+}
+Return only JSON. Do not include markdown code fences or any conversational text.`;
+
+        const userPrompt = `Document OCR Text:\n${rawText.slice(0, 8000)}`;
+
+        let parsedFields = null;
+
+        // 1. Personal Groq Key (if user provided one in Settings -> 100% free 14,400 req/day direct)
+        if (groqKey) {
+            try {
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${groqKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.1-8b-instant',
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userPrompt }
+                        ],
+                        temperature: 0.1,
+                        response_format: { type: 'json_object' }
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const jsonText = data.choices?.[0]?.message?.content;
+                    if (jsonText) {
+                        parsedFields = JSON.parse(jsonText);
+                    }
+                }
+            } catch (err) {
+                console.warn('Groq direct AI extraction fallback:', err);
+            }
+        }
+
+        // 2. Personal Gemini Key (if user provided one in Settings)
+        if (!parsedFields && geminiKey) {
+            try {
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
+                        generationConfig: { responseMimeType: 'application/json' }
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        parsedFields = JSON.parse(text);
+                    }
+                }
+            } catch (err) {
+                console.warn('Gemini direct AI extraction fallback:', err);
+            }
+        }
+
+        // 3. Local Server / Edge AI Endpoint (with strict IP daily quota)
+        if (!parsedFields) {
+            try {
+                const serverRes = await fetch('/api/ai/extract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: rawText.slice(0, 8000) })
+                });
+
+                if (serverRes.status === 429) {
+                    throw new Error(`Daily free AI extraction limit reached (${AIQuotaManager.DAILY_LIMIT}/${AIQuotaManager.DAILY_LIMIT}). Please add your own free Groq key in Settings for unlimited AI.`);
+                }
+
+                if (serverRes.ok) {
+                    const serverData = await serverRes.json();
+                    if (serverData.success && serverData.fields) {
+                        parsedFields = serverData.fields;
+                    } else if (serverData.needsUserKey) {
+                        throw new Error('NO_API_KEY: Please add your free Groq API key in Settings (14,400 free requests/day at console.groq.com) to enable AI field extraction.');
+                    }
+                }
+            } catch (serverErr) {
+                if (serverErr.message.includes('Daily free AI') || serverErr.message.includes('NO_API_KEY')) {
+                    throw serverErr;
+                }
+                console.warn('Server AI endpoint unavailable:', serverErr);
+            }
+        }
+
+        if (parsedFields) {
+            AIQuotaManager.consumeCredit();
+            return {
+                docType: parsedFields.docType || 'Document',
+                name: (parsedFields.name || '').trim(),
+                email: (parsedFields.email || '').trim(),
+                phone: (parsedFields.phone || '').trim(),
+                dob: (parsedFields.dob || '').trim(),
+                gender: (parsedFields.gender || '').trim(),
+                idNumber: (parsedFields.idNumber || '').trim(),
+                fatherName: (parsedFields.fatherName || '').trim(),
+                address: (parsedFields.address || '').trim(),
+                pincode: (parsedFields.pincode || '').trim(),
+                rawText: rawText
+            };
+        }
+
+        throw new Error('Could not extract fields with AI. Please verify your internet connection or enter your free Groq key in Settings.');
+    }
+};
+
+/**
+ * Client-Side AI Quota & Free Tier Protection Manager
+ * Guarantees zero billing charges by enforcing daily caps per user
+ */
+export const AIQuotaManager = {
+    DAILY_LIMIT: 5,
+    STORAGE_KEY: 'techtis_ai_quota',
+
+    getTodayKey() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    },
+
+    getQuota() {
+        const settings = StorageManager.getSettings();
+        const hasCustomKey = Boolean((settings.groqApiKey && settings.groqApiKey.trim()) || (settings.geminiApiKey && settings.geminiApiKey.trim()));
+
+        if (hasCustomKey) {
+            return {
+                hasCustomKey: true,
+                isUnlimited: true,
+                used: 0,
+                limit: Infinity,
+                remaining: Infinity,
+                label: 'Unlimited (Personal Key Active)'
+            };
+        }
+
+        const today = this.getTodayKey();
+        let quota = { date: today, used: 0 };
+        try {
+            const raw = localStorage.getItem(this.STORAGE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed.date === today && typeof parsed.used === 'number') {
+                    quota = parsed;
+                } else {
+                    quota = { date: today, used: 0 };
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(quota));
+                }
+            } else {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(quota));
+            }
+        } catch (_) {}
+
+        const remaining = Math.max(0, this.DAILY_LIMIT - quota.used);
+        return {
+            hasCustomKey: false,
+            isUnlimited: false,
+            used: quota.used,
+            limit: this.DAILY_LIMIT,
+            remaining,
+            label: `${remaining}/${this.DAILY_LIMIT} free today`
+        };
+    },
+
+    canUseAi() {
+        const q = this.getQuota();
+        return q.isUnlimited || q.remaining > 0;
+    },
+
+    consumeCredit() {
+        const settings = StorageManager.getSettings();
+        if ((settings.groqApiKey && settings.groqApiKey.trim()) || (settings.geminiApiKey && settings.geminiApiKey.trim())) {
+            return;
+        }
+
+        const today = this.getTodayKey();
+        let quota = { date: today, used: 0 };
+        try {
+            const raw = localStorage.getItem(this.STORAGE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed.date === today && typeof parsed.used === 'number') {
+                    quota = parsed;
+                }
+            }
+            quota.used += 1;
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(quota));
+        } catch (_) {}
+    }
 };

@@ -29,6 +29,10 @@ const MIME_TYPES = {
     '.txt': 'text/plain; charset=utf-8'
 };
 
+// Strict Daily AI Quota per IP to protect owner's free API limits ($0 cost guarantee)
+const ipAiUsage = new Map();
+const DAILY_IP_AI_LIMIT = 5;
+
 function createServer(port) {
     const server = http.createServer((req, res) => {
         // CORS headers
@@ -45,6 +49,130 @@ function createServer(port) {
         // Parse requested path
         const parsedUrl = new URL(req.url, `http://localhost:${port}`);
         let pathname = decodeURIComponent(parsedUrl.pathname);
+
+        // API Endpoint: /api/ai/quota (Check remaining IP AI quota)
+        if (req.method === 'GET' && pathname === '/api/ai/quota') {
+            const clientIp = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress || '127.0.0.1';
+            const today = new Date().toISOString().split('T')[0];
+            const record = ipAiUsage.get(clientIp);
+            const used = (record && record.date === today) ? record.count : 0;
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+                date: today,
+                used,
+                limit: DAILY_IP_AI_LIMIT,
+                remaining: Math.max(0, DAILY_IP_AI_LIMIT - used)
+            }));
+            return;
+        }
+
+        // API Endpoint: /api/ai/extract (AI OCR Document Field Extraction with Strict Rate Limiting)
+        if (req.method === 'POST' && pathname === '/api/ai/extract') {
+            const clientIp = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress || '127.0.0.1';
+            const today = new Date().toISOString().split('T')[0];
+
+            let record = ipAiUsage.get(clientIp);
+            if (!record || record.date !== today) {
+                record = { date: today, count: 0 };
+                ipAiUsage.set(clientIp, record);
+            }
+
+            if (record.count >= DAILY_IP_AI_LIMIT) {
+                res.writeHead(429, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({
+                    success: false,
+                    error: `Daily free AI extraction limit reached for your IP (${DAILY_IP_AI_LIMIT}/${DAILY_IP_AI_LIMIT}). Add your own free Groq API key in Settings for unlimited AI extractions.`
+                }));
+                return;
+            }
+
+            let body = '';
+            req.on('data', chunk => { body += chunk; });
+            req.on('end', async () => {
+                let parsed = {};
+                try {
+                    parsed = JSON.parse(body);
+                } catch (_) {}
+
+                const text = (parsed.text || '').slice(0, 8000);
+                if (!text) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: false, error: 'No text provided for AI extraction.' }));
+                    return;
+                }
+
+                const serverGroqKey = process.env.GROQ_API_KEY;
+                const serverGeminiKey = process.env.GEMINI_API_KEY;
+
+                if (!serverGroqKey && !serverGeminiKey) {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({
+                        success: false,
+                        needsUserKey: true,
+                        message: 'No server AI key configured. Please add your personal free Groq key in Settings (14,400 free requests/day).'
+                    }));
+                    return;
+                }
+
+                try {
+                    const systemPrompt = `You are an expert OCR document analyst. Extract structured personal and identity information from the provided text into clean JSON format.
+Return ONLY valid JSON matching this exact structure:
+{
+  "docType": "Aadhaar Card" | "PAN Card" | "Passport" | "Driving License" | "Voter ID" | "Invoice" | "Certificate" | "General Document",
+  "name": "Full name of the individual (clean without prefixes)",
+  "email": "Email address if present, else empty string",
+  "phone": "Phone or mobile number if present, else empty string",
+  "dob": "Date of birth in DD/MM/YYYY or original format, else empty string",
+  "gender": "Male" | "Female" | "Other" | "",
+  "idNumber": "Document / ID / Registration / Tax number without masking",
+  "fatherName": "Father's or Guardian's name if present, else empty string",
+  "address": "Full permanent or communication address if found, else empty string",
+  "pincode": "6-digit postal PIN code if found, else empty string"
+}
+Return only JSON. Do not include markdown code ticks.`;
+
+                    if (serverGroqKey) {
+                        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${serverGroqKey}`
+                            },
+                            body: JSON.stringify({
+                                model: 'llama-3.1-8b-instant',
+                                messages: [
+                                    { role: 'system', content: systemPrompt },
+                                    { role: 'user', content: `Document OCR Text:\n${text}` }
+                                ],
+                                temperature: 0.1,
+                                response_format: { type: 'json_object' }
+                            })
+                        });
+
+                        if (groqRes.ok) {
+                            const groqData = await groqRes.json();
+                            const rawJson = groqData.choices?.[0]?.message?.content || '{}';
+                            const fields = JSON.parse(rawJson);
+                            record.count++;
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({
+                                success: true,
+                                fields,
+                                remaining: DAILY_IP_AI_LIMIT - record.count
+                            }));
+                            return;
+                        }
+                    }
+
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: false, error: 'AI provider temporarily unavailable' }));
+                } catch (err) {
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: false, error: err.message }));
+                }
+            });
+            return;
+        }
 
         if (pathname === '/' || pathname === '') {
             pathname = '/index.html';
