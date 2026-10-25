@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-seo.js",
+    "deploy": "wrangler deploy",
     "start": "node server.js",
     "server:ps": "powershell -ExecutionPolicy Bypass -File server.ps1"
   },

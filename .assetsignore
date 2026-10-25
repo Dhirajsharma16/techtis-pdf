@@ -1,0 +1,23 @@
+# Ignore dependencies and build tools
+node_modules/
+**/node_modules/**
+.git/
+.github/
+.wrangler/
+
+# Ignore backend server and maintenance scripts
+scripts/
+cloudflare-worker/
+server.js
+server.ps1
+start-server.bat
+push-to-github.bat
+push-to-github.ps1
+
+# Ignore package and lock files
+package.json
+package-lock.json
+bun.lockb
+.env*
+*.log
+*.md
