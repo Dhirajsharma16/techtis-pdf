@@ -266,11 +266,10 @@ for (const tool of TOOLS) {
     <!-- Slim Navigation Header -->
     <header class="header-glass sticky top-0 z-40 px-3 sm:px-6 py-2 flex items-center justify-between gap-3 border-b border-slate-200">
         <a href="../" class="flex items-center gap-2.5 shrink-0 group" id="brand-logo-btn" title="TechTis — Free PDF and Image Tools">
-            <img src="../assets/images/logo.png" alt="TechTis Logo" class="h-8 sm:h-9 w-auto object-contain rounded-lg group-hover:scale-105 transition-transform">
+            <img src="../assets/images/logo.png" alt="TechTis Logo" class="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform">
             <div>
-                <div class="flex items-center gap-1.5 leading-none">
+                <div class="leading-none">
                     <span class="text-base sm:text-lg font-black tracking-tight text-[#002244]">Tech<span class="text-[#EA1D2C]">Tis</span></span>
-                    <span class="text-[9px] font-bold uppercase tracking-wider bg-slate-100 text-[#002244] px-1 py-0.2 rounded border border-slate-200">techtis.in</span>
                 </div>
                 <p class="text-[9px] font-semibold text-slate-500 mt-0.5 leading-none">Free <span class="text-[#EA1D2C] font-bold">PDF</span> and <span class="text-[#EA1D2C] font-bold">Image</span> Tools</p>
             </div>
