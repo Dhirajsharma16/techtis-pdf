@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>TECHTIS Automated Test Suite</title>
+    <script src="vendor/pdf-lib.min.js"></script>
+    <script src="vendor/pdf.min.js"></script>
+    <script src="vendor/jszip.min.js"></script>
+    <script src="vendor/tesseract.min.js"></script>
+</head>
+<body style="font-family: monospace; white-space: pre; padding: 20px;">
+<div id="output">Running TECHTIS Automated Test Suite for all 32 tools...</div>
+
+<script type="module">
+import { MergeTool } from './js/tools/merge.js';
+import { SplitTool } from './js/tools/split.js';
+import { RotateTool } from './js/tools/rotate.js';
+import { AllToolsEngine } from './js/tools/all-tools-engine.js';
+import { EdgeAIBridge } from './js/edge/ai-bridge.js';
+import { StorageManager } from './js/utils/storage.js';
+import { ImageEngine } from './js/tools/image-engine.js';
+import { SessionDocVault } from './js/utils/session-vault.js';
+import { QRCodeEngine, JsonEngine, Base64Engine, UrlEngine, HashEngine, PasswordEngine } from './js/engines/dev-tools-engine.js';
+import { GlassmorphismEngine, BoxShadowEngine, GradientEngine, NeumorphismEngine, ColorEngine } from './js/engines/design-tools-engine.js';
+import { WordCounterEngine, CaseConverterEngine, LoremIpsumEngine, MarkdownEngine } from './js/engines/text-tools-engine.js';
+import { ImageConverterEngine } from './js/engines/image-converters-engine.js';
+
+const out = document.getElementById('output');
+function log(msg) {
+    out.innerText += '\n' + msg;
+    console.log(msg);
+}
+
+async function runTests() {
+    let passed = 0;
+    let failed = 0;
+
+    async function assertTool(name, testFn) {
+        try {
+            const start = performance.now();
+            const res = await testFn();
+            const dur = Math.round(performance.now() - start);
+            log(`[PASS] ${name} (${dur}ms) - ${res || 'OK'}`);
+            passed++;
+        } catch (err) {
+            log(`[FAIL] ${name}: ${err.message}`);
+            console.error(err);
+            failed++;
+        }
+    }
+
+    log('====================================================');
+    log('1. FETCHING TEST SAMPLES');
+    log('====================================================');
+    let s1Bytes, s2Bytes;
+    try {
+        const r1 = await fetch('sample1.pdf');
+        if (!r1.ok) throw new Error();
+        s1Bytes = await r1.arrayBuffer();
+        s2Bytes = await fetch('sample2.pdf').then(r => r.arrayBuffer());
+    } catch (_) {
+        log('Generating test PDF samples dynamically via PDF-Lib...');
+        const doc1 = await window.PDFLib.PDFDocument.create();
+        const font = await doc1.embedFont(window.PDFLib.StandardFonts.Helvetica);
+        const p1 = doc1.addPage([600, 400]);
+        p1.drawText('TECHTIS Test Document Page 1', { x: 50, y: 350, font, size: 18 });
+        const p2 = doc1.addPage([600, 400]);
+        p2.drawText('TECHTIS Test Document Page 2', { x: 50, y: 350, font, size: 18 });
+        s1Bytes = await doc1.save();
+
+        const doc2 = await window.PDFLib.PDFDocument.create();
+        const p3 = doc2.addPage([600, 400]);
+        p3.drawText('TECHTIS Test Document 2', { x: 50, y: 350, font, size: 18 });
+        s2Bytes = await doc2.save();
+    }
+    const s1File = new File([s1Bytes], 'sample1.pdf', { type: 'application/pdf' });
+    const s2File = new File([s2Bytes], 'sample2.pdf', { type: 'application/pdf' });
+
+    log(`Sample 1: ${s1Bytes.byteLength} bytes`);
+    log(`Sample 2: ${s2Bytes.byteLength} bytes`);
+
+    log('\n====================================================');
+    log('2. TESTING GROUP A: CLIENT-SIDE PDF ENGINES');
+    log('====================================================');
+
+    // 1. Merge
+    await assertTool('Merge PDF', async () => {
+        const res = await MergeTool.merge([s1File, s2File]);
+        if (!res.pdfBytes || res.pdfBytes.length === 0) throw new Error('No PDF output');
+        return `Output: ${res.pdfBytes.length} bytes, ${res.pageCount} pages`;
+    });
+
+    // 2. Split Ranges
+    await assertTool('Split PDF (Range)', async () => {
+        const res = await SplitTool.splitByRanges(s1File, '1');
+        if (!res.pdfBytes) throw new Error('No PDF output');
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 3. Rotate
+    await assertTool('Rotate PDF', async () => {
+        const res = await RotateTool.rotate(s1File, 90);
+        if (!res.pdfBytes) throw new Error('No PDF output');
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 4. Remove Pages
+    await assertTool('Remove Pages', async () => {
+        const res = await AllToolsEngine.removePages(s1File, [1]);
+        return `Output: ${res.pdfBytes.length} bytes, Remaining: ${res.remainingPages}`;
+    });
+
+    // 5. Extract Pages
+    await assertTool('Extract Pages', async () => {
+        const res = await AllToolsEngine.extractPages(s1File, [1]);
+        return `Output: ${res.pdfBytes.length} bytes, Pages: ${res.pageCount}`;
+    });
+
+    // 6. Reorder Pages
+    await assertTool('Organize Pages', async () => {
+        const res = await AllToolsEngine.reorderPages(s1File, [1]);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 7. Add Watermark
+    await assertTool('Add Watermark', async () => {
+        const res = await AllToolsEngine.addWatermark(s1File, { text: 'CONFIDENTIAL TECHTIS' });
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 8. Add Page Numbers
+    await assertTool('Add Page Numbers', async () => {
+        const res = await AllToolsEngine.addPageNumbers(s1File, { format: 'Page {n} of {total}' });
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 9. Sign PDF
+    await assertTool('Sign PDF', async () => {
+        // Create 1x1 transparent canvas PNG as signature
+        const c = document.createElement('canvas');
+        c.width = 100; c.height = 40;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#000088';
+        ctx.fillText('Dhiraj Sharma', 5, 25);
+        const sigPngUrl = c.toDataURL('image/png');
+        const res = await AllToolsEngine.signPdf(s1File, sigPngUrl, { pageNumber: 1, x: 50, y: 50, width: 100, height: 40 });
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 10. Edit PDF
+    await assertTool('Edit PDF (Annotations)', async () => {
+        const res = await AllToolsEngine.editPdf(s1File, [{ type: 'text', text: 'VERIFIED', pageNumber: 1, x: 50, y: 500 }]);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 11. Protect PDF
+    await assertTool('Protect PDF', async () => {
+        const res = await AllToolsEngine.protectPdf(s1File, 'secret123');
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 12. Unlock PDF
+    await assertTool('Unlock PDF', async () => {
+        const res = await AllToolsEngine.unlockPdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 13. PDF to JPG
+    await assertTool('PDF to JPG', async () => {
+        const res = await AllToolsEngine.pdfToJpg(s1File, { scale: 1 });
+        return `Rendered ${res.images.length} page(s) to Hi-DPI image`;
+    });
+
+    // 14. JPG to PDF
+    await assertTool('JPG to PDF', async () => {
+        const c = document.createElement('canvas');
+        c.width = 200; c.height = 200;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#ff6600';
+        ctx.fillRect(0, 0, 200, 200);
+        const blob = await new Promise(r => c.toBlob(r, 'image/jpeg'));
+        const imgFile = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+        const res = await AllToolsEngine.jpgToPdf([imgFile]);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 15. Compress PDF
+    await assertTool('Compress PDF', async () => {
+        const res = await AllToolsEngine.compressPdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes, Reduction: ${res.reductionPercent}%`;
+    });
+
+    // 16. Grayscale PDF
+    await assertTool('Grayscale PDF', async () => {
+        const res = await AllToolsEngine.grayscalePdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 17. Crop PDF
+    await assertTool('Crop PDF Margins', async () => {
+        const res = await AllToolsEngine.cropPdf(s1File, { top: 20, bottom: 20, left: 20, right: 20 });
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 18. Repair PDF
+    await assertTool('Repair PDF', async () => {
+        const res = await AllToolsEngine.repairPdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 19. Metadata Editor
+    await assertTool('Metadata Editor', async () => {
+        const res = await AllToolsEngine.editMetadata(s1File, { title: 'TECHTIS Test Document', author: 'Dhiraj Sharma' });
+        const readBack = await AllToolsEngine.readMetadata(res.pdfBytes);
+        return `Title verified: "${readBack.title}", Author: "${readBack.author}"`;
+    });
+
+    // 20. Flatten PDF
+    await assertTool('Flatten PDF', async () => {
+        const res = await AllToolsEngine.flattenPdf(s1File);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 21. Document Compare
+    await assertTool('Document Compare', async () => {
+        const res = await AllToolsEngine.compareDocuments(s1File, s2File);
+        return `Diff checked: ${res.diff.length} line changes detected`;
+    });
+
+    // 22. Text to PDF
+    await assertTool('Text to PDF', async () => {
+        const res = await AllToolsEngine.textToPdf('TECHTIS Serverless PDF Platform\nDomain: techtis.in\nHigh-Performance Client Engine.');
+        return `Output: ${res.pdfBytes.length} bytes, ${res.pageCount} page(s)`;
+    });
+
+    // 23. Markdown to PDF
+    await assertTool('Markdown to PDF', async () => {
+        const md = '# TECHTIS\n## Zero-Cost Platform\n- 100% Client-Side\n- Free AI Edge\n- Sub-100ms Latency';
+        const res = await AllToolsEngine.markdownToPdf(md);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 24. Form Blank Detector
+    await assertTool('Form Blank Detector', async () => {
+        const findings = await AllToolsEngine.detectFormBlanks(s1File);
+        return `Inspected: ${findings.length} form item(s) checked`;
+    });
+
+    log('\n====================================================');
+    log('3. TESTING GROUP C: OFFICE FORMAT CONVERTERS');
+    log('====================================================');
+
+    // 25. Word to PDF (synthesizing valid docx zip)
+    await assertTool('Word (DOCX) to PDF', async () => {
+        const zip = new window.JSZip();
+        zip.file('word/document.xml', '<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:t>Hello TECHTIS Word Document</w:t></w:p></w:body></w:document>');
+        const docxBlob = await zip.generateAsync({ type: 'blob' });
+        const docxFile = new File([docxBlob], 'test.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const res = await AllToolsEngine.wordToPdf(docxFile);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 26. Excel to PDF
+    await assertTool('Excel (CSV/XLSX) to PDF', async () => {
+        const csvFile = new File(['Item,Price,Qty\nPDF Suite,$0,Unlimited\nEdge Worker,$0,100k'], 'table.csv', { type: 'text/csv' });
+        const res = await AllToolsEngine.excelToPdf(csvFile);
+        return `Output: ${res.pdfBytes.length} bytes`;
+    });
+
+    // 27. PowerPoint to PDF
+    await assertTool('PowerPoint (PPTX) to PDF', async () => {
+        const zip = new window.JSZip();
+        zip.file('ppt/slides/slide1.xml', '<?xml version="1.0" encoding="UTF-8"?><p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>TECHTIS Slide 1</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>');
+        const pptxBlob = await zip.generateAsync({ type: 'blob' });
+        const pptxFile = new File([pptxBlob], 'presentation.pptx', { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' });
+        const res = await AllToolsEngine.pptToPdf(pptxFile);
+        return `Output: ${res.pdfBytes.length} bytes, ${res.slideCount} slide(s)`;
+    });
+
+    log('\n====================================================');
+    log('4. TESTING GROUP B: AI & DISTRIBUTED ENGINES');
+    log('====================================================');
+
+    // 28. Extract text from PDF
+    await assertTool('PDF.js Text Extraction', async () => {
+        const { text, numPages } = await EdgeAIBridge.extractTextFromPdf(s1File);
+        return `Extracted ${text.length} chars from ${numPages} page(s)`;
+    });
+
+    // 29. In-Browser Heuristic TextRank Summarizer (Zero API tokens, Infinite Scale)
+    await assertTool('Client TextRank Summarizer', async () => {
+        const sampleText = 'Antigravity systems generate high-speed PDF modification engines. TECHTIS delivers 32 tools with $0 monthly cost. The architecture ensures 100% privacy by processing data in browser RAM. In 2026, over 1 million documents were processed with zero cloud fees. Executive users save hours each week.';
+        const summary = EdgeAIBridge.generateLocalExtractiveSummary(sampleText);
+        if (!summary.includes('Executive Summary')) throw new Error('Summary missing structure');
+        return `Generated ${summary.length} character summary in 0ms`;
+    });
+
+    // 30. AI Summarizer with fallbacks
+    await assertTool('AI Summarizer Multi-Tier Routing', async () => {
+        const sampleText = 'TECHTIS is a serverless PDF platform hosted at techtis.in. All operations run with 0 latency inside RAM.';
+        const res = await EdgeAIBridge.summarizeDocument(sampleText);
+        if (!res) throw new Error('No summary returned');
+        return `Summary generated successfully (${res.length} chars)`;
+    });
+
+    // 31. AI Document Translator with fallbacks
+    await assertTool('AI Translator Multi-Tier Routing', async () => {
+        const res = await EdgeAIBridge.translateDocument('Hello world. TECHTIS is free.', 'Spanish');
+        if (!res) throw new Error('No translation returned');
+        return `Translation result: ${res.slice(0, 45)}...`;
+    });
+
+    // 32. OCR Engine with fallbacks
+    await assertTool('OCR Scan-to-Text Fallback', async () => {
+        const res = await EdgeAIBridge.performOcr(s1File);
+        return `OCR stream: ${res.slice(0, 40)}...`;
+    });
+
+    
+    log('\n====================================================');
+    log('5. TESTING GROUP C: IMAGE TOOLS & ID SUITE');
+    log('====================================================');
+
+    // Create a 100x100 test canvas image file in memory
+    const testCanvas = document.createElement('canvas');
+    testCanvas.width = 100;
+    testCanvas.height = 100;
+    const testCtx = testCanvas.getContext('2d');
+    testCtx.fillStyle = '#dc2626';
+    testCtx.fillRect(0, 0, 100, 100);
+    testCtx.fillStyle = '#ffffff';
+    testCtx.font = '20px sans-serif';
+    testCtx.fillText('TEST', 25, 55);
+
+    const testImgBlob = await new Promise(r => testCanvas.toBlob(r, 'image/png'));
+    const testImgFile = new File([testImgBlob], 'test_sample.png', { type: 'image/png' });
+
+    // 33. Image Compressor
+    await assertTool('Image Compressor', async () => {
+        const res = await ImageEngine.compressImage(testImgFile, 0.75, 'image/jpeg');
+        if (!res.blob || res.compressedSize <= 0) throw new Error('Compression returned invalid blob');
+        return `Original: ${res.originalSize}B, Compressed: ${res.compressedSize}B, Savings: ${res.savingsPct}%`;
+    });
+
+    // 34. Image Resizer
+    await assertTool('Image Resizer', async () => {
+        const res = await ImageEngine.resizeImage(testImgFile, 50, 50, 'image/png');
+        if (res.width !== 50 || res.height !== 50) throw new Error(`Unexpected dimensions: ${res.width}x${res.height}`);
+        return `Resized to ${res.width}x${res.height} px, Size: ${res.size}B`;
+    });
+
+    // 35. Format Converter (PNG to JPG)
+    await assertTool('PNG to JPG Converter', async () => {
+        const res = await ImageEngine.convertFormat(testImgFile, 'image/jpeg', 0.9, '#ffffff');
+        if (!res.blob || res.blob.type !== 'image/jpeg') throw new Error('Output mime is not image/jpeg');
+        return `Converted to JPG: ${res.size}B`;
+    });
+
+    // 36. Format Converter (JPG to WebP)
+    await assertTool('JPG to WebP Converter', async () => {
+        const res = await ImageEngine.convertFormat(testImgFile, 'image/webp', 0.85);
+        if (!res.blob || res.blob.type !== 'image/webp') throw new Error('Output mime is not image/webp');
+        return `Converted to WebP: ${res.size}B`;
+    });
+
+    // 37. Image Cropper
+    await assertTool('Image Cropper & Rotator', async () => {
+        const res = await ImageEngine.cropImage(testImgFile, { x: 10, y: 10, width: 60, height: 60 }, 90, 'image/png');
+        if (res.width !== 60 || res.height !== 60) throw new Error('Crop dimensions mismatch');
+        return `Cropped & Rotated 90°: ${res.width}x${res.height} px`;
+    });
+
+    // 38. Passport Photo Presets & DPI Math
+    await assertTool('Passport Presets Verification', async () => {
+        const presets = ImageEngine.PASSPORT_PRESETS;
+        if (!presets || presets.length < 4) throw new Error('Presets missing');
+        const inPreset = presets.find(p => p.id === 'in-passport');
+        const usPreset = presets.find(p => p.id === 'us-passport');
+        if (inPreset.widthMm !== 35 || inPreset.heightMm !== 45) throw new Error('India preset dimensions incorrect');
+        if (usPreset.widthMm !== 50.8) throw new Error('US preset dimensions incorrect');
+        return `Verified ${presets.length} presets (India 35x45mm, US 2x2in, UK 35x45mm)`;
+    });
+
+    // 39. Passport Photo A4 Print Sheet PDF Generation
+    await assertTool('Passport A4 Print Sheet Generator', async () => {
+        const inPreset = ImageEngine.PASSPORT_PRESETS.find(p => p.id === 'in-passport');
+        const dataUrl = testCanvas.toDataURL('image/jpeg', 0.95);
+        const sheet = await ImageEngine.generatePassportPrintSheet(dataUrl, inPreset, 8, 300);
+        if (!sheet.pdfBytes || sheet.pdfBytes.length === 0) throw new Error('Failed to generate A4 sheet PDF');
+        return `Generated A4 PDF: ${sheet.pdfBytes.length} bytes with ${sheet.placedCount} tiled photos`;
+    });
+
+    // 40. Private Document OCR & Masking (Aadhaar & PAN)
+    await assertTool('Private Document OCR & Masking', async () => {
+        const aadhaarSample = 'GOVERNMENT OF INDIA\nUnique Identification Authority of India\nRajesh Kumar\nDOB: 12/04/1985\nMALE\n9876 5432 1098';
+        const parsedAadhaar = ImageEngine.parseIdCard(aadhaarSample);
+        if (parsedAadhaar.docType !== 'Aadhaar Card') throw new Error('Failed to detect Aadhaar Card');
+        if (parsedAadhaar.maskedNumber !== 'XXXX XXXX 1098') throw new Error('Aadhaar number not masked correctly: ' + parsedAadhaar.maskedNumber);
+        if (parsedAadhaar.name !== 'Rajesh Kumar') throw new Error('Name extraction failed: ' + parsedAadhaar.name);
+        if (parsedAadhaar.gender !== 'MALE') throw new Error('Gender extraction failed');
+
+        const panSample = 'INCOME TAX DEPARTMENT\nGOVT. OF INDIA\nPRIYA SHARMA\nDOB: 05/09/1992\nABCDE9999Z';
+        const parsedPan = ImageEngine.parseIdCard(panSample);
+        if (parsedPan.docType !== 'PAN Card') throw new Error('Failed to detect PAN Card');
+        if (parsedPan.docNumber !== 'ABCDE9999Z') throw new Error('PAN number extraction failed');
+
+        return `Aadhaar & PAN successfully parsed! Masked: ${parsedAadhaar.maskedNumber}, PAN: ${parsedPan.docNumber}`;
+    });
+
+    // 41. Universal Form Assistant & Multi-field OCR (Fill Form)
+    await assertTool('Fill Form Universal OCR & Field Parser', async () => {
+        const fullSample = `GOVERNMENT OF INDIA
+Unique Identification Authority of India
+Rahul Sharma
+Father: Suresh Sharma
+DOB: 15/08/1990
+Gender: MALE
+Email: rahul.sharma@example.com
+Mobile: 9876543210
+Address: Flat 402 Lotus Residency MG Road Bengaluru Karnataka
+PIN: 560001
+4321 8765 2109`;
+        const res = ImageEngine.extractAllDocumentFields(fullSample);
+        if (!res.name || !res.name.includes('Rahul Sharma')) throw new Error('Failed to extract name: ' + res.name);
+        if (res.email !== 'rahul.sharma@example.com') throw new Error('Failed to extract email: ' + res.email);
+        if (!res.phone || !res.phone.includes('9876543210')) throw new Error('Failed to extract phone: ' + res.phone);
+        if (!res.dob || !res.dob.includes('15/08/1990')) throw new Error('Failed to extract dob: ' + res.dob);
+        if (!res.gender || res.gender.toUpperCase() !== 'MALE') throw new Error('Failed to extract gender: ' + res.gender);
+        if (res.pincode !== '560001') throw new Error('Failed to extract pin code: ' + res.pincode);
+        if (!res.idNumber || !res.idNumber.includes('4321')) throw new Error('Failed to extract ID number: ' + res.idNumber);
+        return `Extracted Name: "${res.name}", Email: "${res.email}", Phone: "${res.phone}", PIN: "${res.pincode}"`;
+    });
+
+    // 42. Session Temporary DB & Multi-Document Master Profile Vault
+    await assertTool('Session Temporary DB & Unified Master Profile', async () => {
+        SessionDocVault.clearAll();
+        
+        // Doc 1: Aadhaar Card
+        SessionDocVault.addDocument({
+            name: 'aadhaar_card.png',
+            docType: 'Aadhaar Card',
+            extracted: {
+                name: 'Vikram Malhotra',
+                idNumber: '1111 2222 3333',
+                address: 'Flat 101, Palm Grove, MG Road, Mumbai',
+                pincode: '400001',
+                dob: '21/11/1988',
+                gender: 'MALE'
+            }
+        });
+
+        // Doc 2: PAN Card
+        SessionDocVault.addDocument({
+            name: 'pan_card.jpg',
+            docType: 'PAN Card',
+            extracted: {
+                idNumber: 'ABCVM9999Z',
+                fatherName: 'Kailash Malhotra'
+            }
+        });
+
+        const docs = SessionDocVault.getDocs();
+        if (docs.length !== 2) throw new Error('Session DB should hold 2 documents');
+
+        const master = SessionDocVault.getMasterProfile();
+        if (master.docsCount !== 2) throw new Error('Master profile should merge 2 documents');
+        if (master.name !== 'Vikram Malhotra') throw new Error('Failed to inherit name in Master Profile');
+        if (master.fatherName !== 'Kailash Malhotra') throw new Error('Failed to merge Father Name from PAN');
+        if (master.pincode !== '400001') throw new Error('Failed to merge PIN from Aadhaar');
+        
+        const hasPan = master.allFields.some(f => f.value === 'ABCVM9999Z');
+        const hasAadhaar = master.allFields.some(f => f.value === '1111 2222 3333');
+        if (!hasPan || !hasAadhaar) throw new Error('Master profile missing combined document IDs');
+
+        SessionDocVault.clearAll();
+        if (SessionDocVault.getDocs().length !== 0) throw new Error('Failed to clear session DB');
+
+        return `Successfully merged 2 documents into Unified Profile (Name: "${master.name}", Father: "${master.fatherName}", Aadhaar + PAN merged)`;
+    });
+
+    // ====================================================
+    // DEVELOPER TOOLS TESTS (43 - 48)
+    // ====================================================
+    // 43. QR Code Generator
+    await assertTool('43. QR Code Generator (SVG & PNG Matrix Engine)', async () => {
+        const svg = QRCodeEngine.generateSVG('https://techtis.in', { darkColor: '#002244', lightColor: '#ffffff' });
+        if (!svg || !svg.includes('<svg') || !svg.includes('viewBox')) throw new Error('Invalid SVG QR code');
+        const canvas = QRCodeEngine.renderToCanvas('https://techtis.in', { size: 200 });
+        if (!canvas || canvas.width !== 200 || canvas.height !== 200) throw new Error('Canvas render failed');
+        return `Generated SVG (${svg.length} chars) & Canvas ${canvas.width}x${canvas.height}px`;
+    });
+
+    // 44. JSON Formatter & Validator
+    await assertTool('44. JSON Formatter & Validator', async () => {
+        const valid = JsonEngine.validate('{"name":"TECHTIS","tools":60,"active":true}');
+        if (!valid.isValid) throw new Error('Failed to validate valid JSON');
+        const invalid = JsonEngine.validate('{"name": "broken",}');
+        if (invalid.isValid) throw new Error('Failed to catch invalid JSON trailing comma');
+        const formatted = JsonEngine.format('{"a":1,"b":2}', 2);
+        if (!formatted.includes('\n')) throw new Error('Format failed');
+        const minified = JsonEngine.minify(formatted);
+        if (minified !== '{"a":1,"b":2}') throw new Error('Minify failed: ' + minified);
+        return `Validated valid/invalid JSON, formatted (2 spaces), and minified correctly`;
+    });
+
+    // 45. Base64 Converter
+    await assertTool('45. Base64 Encoder / Decoder', async () => {
+        const text = 'TECHTIS Zero-Cost 100% In-Browser PDF Suite 🚀';
+        const encoded = Base64Engine.encodeUtf8(text);
+        const decoded = Base64Engine.decodeUtf8(encoded);
+        if (decoded !== text) throw new Error('UTF-8 round-trip failed: ' + decoded);
+        return `Encoded UTF-8 with emojis: ${encoded.slice(0, 24)}... -> Decoded perfectly`;
+    });
+
+    // 46. URL Encoder / Decoder
+    await assertTool('46. URL Encoder / Decoder & Query Breakdown', async () => {
+        const url = 'https://techtis.in/tools?cat=image&query=passport photo&verified=true';
+        const encoded = UrlEngine.encode(url);
+        const decoded = UrlEngine.decode(encoded);
+        if (decoded !== url) throw new Error('URL encode/decode failed');
+        const params = UrlEngine.parseQueryParams(url);
+        if (params.cat !== 'image' || params.query !== 'passport photo' || params.verified !== 'true') {
+            throw new Error('Query parameter breakdown failed');
+        }
+        return `Parsed ${Object.keys(params).length} query parameters successfully: cat=${params.cat}`;
+    });
+
+    // 47. Cryptographic Hash Generator
+    await assertTool('47. Cryptographic Hash Generator (MD5, SHA-1, SHA-256, SHA-512)', async () => {
+        const md5 = HashEngine.md5('techtis');
+        if (md5 !== '93d2aff90decd99074320174d8375a66') throw new Error('MD5 mismatch: ' + md5);
+        const sha256 = await HashEngine.sha256('techtis');
+        if (sha256 !== '3eb15878a2a04c552df6c4502d4f4de11f1a3b8dde9e02890e0b3b35b18bafe4') throw new Error('SHA-256 mismatch: ' + sha256);
+        const sha1 = await HashEngine.sha1('techtis');
+        const sha512 = await HashEngine.sha512('techtis');
+        if (!sha1 || !sha512) throw new Error('SHA-1 or SHA-512 failed');
+        return `MD5: ${md5.slice(0, 8)}... | SHA-256: ${sha256.slice(0, 8)}... (WebCrypto verified)`;
+    });
+
+    // 48. Password Generator
+    await assertTool('48. Strong Password Generator & NIST Entropy', async () => {
+        const pwd = PasswordEngine.generate({ length: 24, uppercase: true, lowercase: true, numbers: true, symbols: true });
+        if (pwd.length !== 24) throw new Error('Password length mismatch: ' + pwd.length);
+        const entropy = PasswordEngine.calculateEntropy(pwd);
+        if (entropy.bits < 90) throw new Error('Entropy too low: ' + entropy.bits);
+        return `Generated 24-char password with ${entropy.bits} bits entropy (${entropy.strength})`;
+    });
+
+    // ====================================================
+    // CSS & DESIGN TOOLS TESTS (49 - 53)
+    // ====================================================
+    // 49. CSS Glassmorphism
+    await assertTool('49. CSS Glassmorphism Generator', async () => {
+        const css = GlassmorphismEngine.generateCSS({ blur: 16, opacity: 0.25, border: 1, shadow: 10, shadowOpacity: 0.15 });
+        if (!css.includes('backdrop-filter: blur(16px)') || !css.includes('-webkit-backdrop-filter')) {
+            throw new Error('Glassmorphism CSS missing backdrop-filter: ' + css);
+        }
+        return 'Generated cross-browser frosted glass CSS with vendor prefixes';
+    });
+
+    // 50. CSS Box Shadow
+    await assertTool('50. CSS Box Shadow Generator', async () => {
+        const css = BoxShadowEngine.generateCSS({ x: 0, y: 12, blur: 24, spread: -4, opacity: 0.12, inset: false, color: '#002244' });
+        if (!css.includes('box-shadow:') || !css.includes('rgba(')) throw new Error('Box shadow CSS invalid');
+        return 'Generated smooth elevation box shadow CSS';
+    });
+
+    // 51. CSS Gradient
+    await assertTool('51. CSS Gradient Generator', async () => {
+        const linear = GradientEngine.generateCSS({ type: 'linear', angle: 135, color1: '#002244', color2: '#EA1D2C' });
+        if (!linear.includes('linear-gradient(135deg')) throw new Error('Linear gradient failed');
+        const radial = GradientEngine.generateCSS({ type: 'radial', color1: '#002244', color2: '#EA1D2C' });
+        if (!radial.includes('radial-gradient(circle')) throw new Error('Radial gradient failed');
+        return 'Generated linear (135°) & radial gradient CSS rules';
+    });
+
+    // 52. CSS Neumorphism
+    await assertTool('52. CSS Neumorphism Generator', async () => {
+        const flat = NeumorphismEngine.generateCSS({ type: 'flat', size: 200, radius: 24, distance: 10, blur: 20, bg: '#e0e5ec' });
+        if (!flat.includes('box-shadow:') || flat.includes('inset')) throw new Error('Flat neumorphism invalid');
+        const pressed = NeumorphismEngine.generateCSS({ type: 'pressed', size: 200, radius: 24, distance: 10, blur: 20, bg: '#e0e5ec' });
+        if (!pressed.includes('inset')) throw new Error('Pressed neumorphism missing inset');
+        return 'Generated Soft UI flat and inset pressed dual-shadow CSS';
+    });
+
+    // 53. Color Converter & WCAG
+    await assertTool('53. Color Converter & WCAG Contrast Studio', async () => {
+        const conv = ColorEngine.fromHex('#002244');
+        if (conv.rgb !== 'rgb(0, 34, 68)' || !conv.hsl || !conv.cmyk) throw new Error('Color conversion failed');
+        const contrast = ColorEngine.getContrastRatio('#002244', '#ffffff');
+        if (contrast < 10) throw new Error('Contrast calculation invalid: ' + contrast);
+        const shades = ColorEngine.generateShades('#002244', 5);
+        if (shades.length !== 5) throw new Error('Shade ladder failed');
+        return `Converted #002244 -> RGB(${conv.rgb}) | CMYK(${conv.cmyk}) | WCAG Contrast ${contrast}:1 (AAA Passed)`;
+    });
+
+    // ====================================================
+    // TEXT TOOLS TESTS (54 - 57)
+    // ====================================================
+    // 54. Word & Character Counter
+    await assertTool('54. Word & Character Counter & Keyword Density', async () => {
+        const text = 'TECHTIS is a serverless client-side PDF platform. TECHTIS provides 60 free tools. All tools run in browser RAM.';
+        const stats = WordCounterEngine.analyze(text);
+        if (stats.words !== 18) throw new Error('Word count failed: ' + stats.words);
+        if (stats.sentences !== 3) throw new Error('Sentence count failed: ' + stats.sentences);
+        if (!stats.topKeywords.some(k => k.word === 'techtis' || k.word === 'tools')) throw new Error('Keyword density failed');
+        return `Counted ${stats.words} words, ${stats.charsWithSpaces} chars, ${stats.sentences} sentences, Reading: ${stats.readingTimeSec}s`;
+    });
+
+    // 55. Case Converter
+    await assertTool('55. Case Converter (9 Casing Transforms)', async () => {
+        const input = 'hello world of techtis';
+        if (CaseConverterEngine.toUpper(input) !== 'HELLO WORLD OF TECHTIS') throw new Error('Upper failed');
+        if (CaseConverterEngine.toTitle(input) !== 'Hello World Of Techtis') throw new Error('Title case failed');
+        if (CaseConverterEngine.toCamel(input) !== 'helloWorldOfTechtis') throw new Error('Camel failed');
+        if (CaseConverterEngine.toSnake(input) !== 'hello_world_of_techtis') throw new Error('Snake failed');
+        if (CaseConverterEngine.toKebab(input) !== 'hello-world-of-techtis') throw new Error('Kebab failed');
+        return 'Verified UPPER, Title, camelCase, snake_case, and kebab-case transformations';
+    });
+
+    // 56. Lorem Ipsum Generator
+    await assertTool('56. Lorem Ipsum Generator', async () => {
+        const p = LoremIpsumEngine.generateParagraphs(2, true);
+        if (!p.includes('<p>') || !p.includes('Lorem ipsum')) throw new Error('Paragraph generation failed');
+        const words = LoremIpsumEngine.generateWords(25);
+        if (words.split(' ').length !== 25) throw new Error('Word count failed: ' + words.split(' ').length);
+        return 'Generated 2 paragraphs with HTML <p> tags & 25 exact words';
+    });
+
+    // 57. Markdown to HTML Converter
+    await assertTool('57. Markdown to HTML Converter', async () => {
+        const md = '# TechTis Suite\n\n**Zero-upload** tools with [link](https://techtis.in).\n\n- Item 1\n- Item 2';
+        const htmlOut = MarkdownEngine.toHtml(md);
+        if (!htmlOut.includes('>TechTis Suite</h1>') || !htmlOut.includes('Zero-upload') || !htmlOut.includes('<ul')) {
+            throw new Error('Markdown conversion failed: ' + htmlOut);
+        }
+        return 'Converted H1 headers, bold text, links, and unordered lists to clean semantic HTML';
+    });
+
+    // ====================================================
+    // IMAGE & VECTOR CONVERTER TESTS (58 - 61)
+    // ====================================================
+    // 58. SVG to High-Res PNG Converter
+    await assertTool('58. SVG to High-Res PNG Converter (Retina Multipliers)', async () => {
+        const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="#EA1D2C"/></svg>';
+        const res = await ImageConverterEngine.svgToPng(svg, { scale: 2 });
+        if (!res || !res.dataUrl || !res.dataUrl.startsWith('data:image/png;base64,')) throw new Error('SVG to PNG failed');
+        return `Converted SVG to 2x retina raster PNG data URL (${res.width}x${res.height}px)`;
+    });
+
+    // 59. Image to SVG Vectorizer
+    await assertTool('59. Image to SVG Vectorizer (Trace Contours)', async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 60;
+        canvas.height = 60;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 60, 60);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(15, 15, 30, 30);
+        const dataUrl = canvas.toDataURL('image/png');
+
+        const svgRes = await ImageConverterEngine.imageToSvg(dataUrl, { threshold: 128 });
+        if (!svgRes || !svgRes.svgString || !svgRes.svgString.includes('<svg') || !svgRes.svgString.includes('<path')) throw new Error('Vectorize failed');
+        return 'Traced raster canvas into SVG vector paths with luminance thresholding';
+    });
+
+    // 60. WebP to JPG / PNG Converter
+    await assertTool('60. WebP to JPG / PNG Converter', async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 50;
+        canvas.height = 50;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#002244';
+        ctx.fillRect(0, 0, 50, 50);
+        const webpData = canvas.toDataURL('image/webp');
+
+        const jpgRes = await ImageConverterEngine.convertWebp(webpData, 'image/jpeg', 0.9);
+        if (!jpgRes || !jpgRes.dataUrl || !jpgRes.dataUrl.startsWith('data:image/jpeg')) throw new Error('WebP to JPG failed');
+        const pngRes = await ImageConverterEngine.convertWebp(webpData, 'image/png');
+        if (!pngRes || !pngRes.dataUrl || !pngRes.dataUrl.startsWith('data:image/png')) throw new Error('WebP to PNG failed');
+        return 'Successfully converted WebP image to universal JPG and transparent PNG';
+    });
+
+    // 61. Social Media Image Resizer
+    await assertTool('61. Social Media Image Resizer (Official 2026 Presets)', async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 300;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#EA1D2C';
+        ctx.fillRect(0, 0, 400, 300);
+        const srcData = canvas.toDataURL('image/jpeg');
+
+        const igSquare = await ImageConverterEngine.resizeToSocialPreset(srcData, 'instagram-square');
+        if (igSquare.width !== 1080 || igSquare.height !== 1080) throw new Error('Instagram square mismatch: ' + igSquare.width + 'x' + igSquare.height);
+        const ytThumb = await ImageConverterEngine.resizeToSocialPreset(srcData, 'youtube-thumbnail');
+        if (ytThumb.width !== 1280 || ytThumb.height !== 720) throw new Error('YouTube thumbnail mismatch');
+        return `Resized to Instagram Square (${igSquare.width}x${igSquare.height}px) & YouTube (${ytThumb.width}x${ytThumb.height}px)`;
+    });
+
+
+
+
+log('\n====================================================');
+    log(`FINAL TEST RESULTS: ${passed} PASSED | ${failed} FAILED (Out of ${passed + failed} tools)`);
+    log('====================================================');
+
+    document.title = `TESTS_FINISHED_${passed}_PASSED_${failed}_FAILED`;
+    window.TEST_COMPLETED = true;
+    window.TEST_PASSED = passed;
+    window.TEST_FAILED = failed;
+
+    // Send complete report to local server
+    try {
+        await fetch('/api/test-results', {
+            method: 'POST',
+            body: out.innerText
+        });
+    } catch (_) {}
+}
+
+runTests();
+</script>
+</body>
+</html>

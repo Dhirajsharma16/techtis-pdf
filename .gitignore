@@ -10,7 +10,6 @@ scratch/
 
 # Node / package artifacts (if any used later)
 node_modules/
-dist/
 .wrangler/
 
 # Test sample files (keep repository lightweight)

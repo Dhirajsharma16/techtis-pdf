@@ -1,0 +1,6 @@
+# TECHTIS (techtis.in) Robots Configuration
+User-agent: *
+Allow: /
+
+# Canonical XML Sitemap
+Sitemap: https://techtis.in/sitemap.xml

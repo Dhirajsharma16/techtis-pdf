@@ -1,0 +1,383 @@
+/* Modern, High-Performance PDF Platform Styling */
+:root {
+    /* TechTis Brand Colors from Official Logo */
+    --brand-navy: #002244;       /* Deep Tech Navy */
+    --brand-navy-light: #003366;
+    --brand-navy-bg: #f0f4f9;
+    --brand-red: #ea1d2c;        /* Vibrant Tis Crimson Red */
+    --brand-red-hover: #cf1523;
+    --brand-red-light: #fef2f2;
+    --brand-red-ring: rgba(234, 29, 44, 0.2);
+    
+    --primary: var(--brand-red);
+    --primary-hover: var(--brand-red-hover);
+    --primary-light: var(--brand-red-light);
+    --primary-ring: var(--brand-red-ring);
+
+    --navy-primary: var(--brand-navy);
+    --navy-hover: var(--brand-navy-light);
+
+    --surface-bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #002244;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --success: #10b981;
+    --success-bg: #ecfdf5;
+    --accent: #002244;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Glass & Header with TechTis Signature Brand Stripe */
+.header-glass {
+    position: relative;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-color);
+}
+.header-glass::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #002244 0%, #002244 48%, #ea1d2c 52%, #ea1d2c 100%);
+    z-index: 50;
+}
+
+.privacy-banner {
+    background: linear-gradient(90deg, #ecfdf5 0%, #f0fdf4 100%);
+    border: 1px solid #a7f3d0;
+}
+
+/* Upper Navigation Category Bar */
+.top-nav-cat {
+    transition: all 0.15s ease;
+}
+.top-nav-cat.active {
+    background-color: var(--brand-navy) !important;
+    color: #ffffff !important;
+    border-color: var(--brand-navy) !important;
+    box-shadow: 0 2px 8px rgba(0, 34, 68, 0.22);
+}
+.top-nav-cat:hover:not(.active) {
+    background-color: #f1f5f9;
+    color: var(--brand-navy);
+    border-color: #cbd5e1;
+}
+
+/* Universal Action Hub */
+.hub-cat-tab {
+    transition: all 0.15s ease;
+}
+.hub-cat-tab.active {
+    background-color: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+}
+
+.hub-action-card {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+}
+.hub-action-card:hover {
+    transform: translateY(-2px);
+    border-color: #f87171;
+    box-shadow: 0 10px 20px -8px rgba(220, 38, 38, 0.12);
+}
+.hub-action-card:hover .hub-action-icon {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border-color: #fca5a5;
+}
+
+/* Hide scrollbar for category strip */
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Tool Cards */
+.tool-card {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+}
+
+.tool-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    border-color: #cbd5e1;
+}
+
+.tool-card:active {
+    transform: translateY(-1px);
+}
+
+/* Dropzone Styles */
+.dropzone {
+    border: 2px dashed #cbd5e1;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+}
+
+.dropzone.drag-active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    transform: scale(1.008);
+}
+
+/* Skeleton loader shimmer */
+.skeleton-shimmer {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* File list card animation */
+.file-item-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.file-item-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Progress bar animation */
+.progress-bar-fill {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page Thumbnail Tiles */
+.page-thumbnail-tile {
+    position: relative;
+    border: 2px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.page-thumbnail-tile.selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-ring);
+}
+
+.page-thumbnail-tile.marked-for-removal {
+    border-color: #ef4444;
+    opacity: 0.55;
+    background-color: #fef2f2;
+}
+
+.page-thumbnail-tile.marked-for-removal::after {
+    content: "✕ DELETE";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #dc2626;
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+    pointer-events: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.page-thumbnail-tile.selected-for-extract {
+    border-color: #2563eb;
+    background-color: #eff6ff;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.page-thumbnail-tile.selected-for-extract::after {
+    content: "✓ EXTRACT";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 5px;
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.page-thumbnail-tile:hover {
+    transform: scale(1.02);
+}
+
+/* Signature Pad Canvas */
+#signature-pad-canvas {
+    touch-action: none;
+    cursor: crosshair;
+    background-color: #ffffff;
+}
+
+/* Toast Notifications */
+#toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    background: #1e293b;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.875rem;
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.toast-success {
+    border-left: 4px solid var(--success);
+}
+.toast.toast-error {
+    border-left: 4px solid var(--primary);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+/* ================= ZERO-SCROLL WORKSPACE OPTIMIZATIONS ================= */
+.dropzone {
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 1.25rem !important;
+    padding: 1.5rem 1rem !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04) !important;
+}
+
+@media (min-width: 640px) {
+    .dropzone {
+        padding: 2.25rem 1.5rem !important;
+    }
+}
+
+.dropzone:hover {
+    border-color: #ef4444 !important;
+    background: #fffcfc !important;
+}
+
+.dropzone.drag-active {
+    border-color: #dc2626 !important;
+    background: #fef2f2 !important;
+    transform: scale(1.01) !important;
+}
+
+/* Compact dropzone icons to keep entire interface above the fold */
+.dropzone .w-16.h-16,
+.dropzone .w-14.h-14 {
+    width: 3.25rem !important;
+    height: 3.25rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.dropzone .w-8.h-8,
+.dropzone .w-7.h-7 {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+}
+
+/* Prominent, vibrant call-to-action button */
+.dropzone button[type="button"] {
+    padding: 0.75rem 2rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.75rem !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.35) !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.dropzone button[type="button"]:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 6px 20px 0 rgba(220, 38, 38, 0.45) !important;
+}
+
+/* Constrain internal editor lists & grids so action buttons stay visible without webpage scrolling */
+#merge-file-list,
+#split-page-grid,
+#rotate-page-grid,
+#remove-page-grid,
+#extract-page-grid,
+#organize-page-grid {
+    max-height: 46vh !important;
+    overflow-y: auto !important;
+    padding: 0.25rem !important;
+}
+
+/* Sticky Action Bar for Workspaces when files are loaded */
+.workspace-actions-sticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 0.75rem 0;
+    border-top: 1px solid #e2e8f0;
+}

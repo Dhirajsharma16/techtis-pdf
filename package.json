@@ -4,8 +4,8 @@
   "description": "Serverless $0-Cost PDF Platform with 32 Client-Side Tools & Dedicated SEO Pages",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-seo.js",
-    "deploy": "wrangler deploy",
+    "build": "node scripts/build-dist.js",
+    "deploy": "node scripts/build-dist.js && wrangler deploy",
     "start": "node server.js",
     "server:ps": "powershell -ExecutionPolicy Bypass -File server.ps1"
   },
