@@ -7,6 +7,7 @@ import { ImageEngine } from './image-engine.js';
 import { PdfHelpers } from '../utils/pdf-helpers.js';
 import { StorageManager } from '../utils/storage.js';
 import { EdgeAIBridge, AIQuotaManager } from '../edge/ai-bridge.js';
+import { SessionDocVault } from '../utils/session-vault.js';
 
 export function registerImageWorkspaces(AppClass) {
 
@@ -1699,8 +1700,8 @@ export function registerImageWorkspaces(AppClass) {
             aiEnhanceBtn.innerHTML = '<span class="animate-spin inline-block mr-1">⏳</span> Analyzing with AI...';
 
             try {
-                this.showToast('Analyzing text with neural AI...', 'info');
-                const aiResult = await EdgeAIBridge.extractFieldsWithAI(lastRecognizedText);
+                this.showToast('Analyzing document with AI neural vision...', 'info');
+                const aiResult = await EdgeAIBridge.extractFieldsWithAI(lastRecognizedText, docPreview.src || null);
 
                 currentExtracted = {
                     ...currentExtracted,
@@ -1823,8 +1824,13 @@ export function registerImageWorkspaces(AppClass) {
                         ` : ''}
                     </div>
                     <div class="relative">
-                        <input type="text" id="field-${f.key}" value="${f.isMaskable ? (extracted.maskedIdNumber || f.value) : f.value}" placeholder="${f.placeholder}"
-                               class="w-full pl-3 pr-9 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-medium text-slate-900 bg-white">
+                        ${(f.key === 'address' || (f.value && f.value.length > 50)) ? `
+                            <textarea id="field-${f.key}" rows="3" placeholder="${f.placeholder}"
+                                      class="w-full pl-3 pr-9 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-medium text-slate-900 bg-white resize-y break-words leading-relaxed whitespace-pre-wrap">${f.value}</textarea>
+                        ` : `
+                            <input type="text" id="field-${f.key}" value="${f.isMaskable ? (extracted.maskedIdNumber || f.value) : f.value}" placeholder="${f.placeholder}"
+                                   class="w-full pl-3 pr-9 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-medium text-slate-900 bg-white break-words">
+                        `}
                         <button type="button" class="btn-copy-field absolute right-2 top-2 text-slate-400 hover:text-red-600 transition" title="Copy ${f.label}">
                             <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                         </button>
@@ -1832,7 +1838,7 @@ export function registerImageWorkspaces(AppClass) {
                 `;
 
                 const copyBtn = row.querySelector('.btn-copy-field');
-                const inputEl = row.querySelector('input');
+                const inputEl = row.querySelector('input, textarea');
                 copyBtn?.addEventListener('click', () => {
                     if (inputEl && inputEl.value) {
                         navigator.clipboard.writeText(inputEl.value);
@@ -1861,7 +1867,7 @@ export function registerImageWorkspaces(AppClass) {
         }
 
         copyAllBtn?.addEventListener('click', () => {
-            const inputs = fieldsContainer.querySelectorAll('input');
+            const inputs = fieldsContainer.querySelectorAll('input, textarea');
             const lines = [];
             inputs.forEach(inp => {
                 if (inp.value && inp.value.trim()) {
@@ -1888,22 +1894,23 @@ export function registerImageWorkspaces(AppClass) {
         this.refreshLucideIcons();
     };
 
-    // ================= 7. NEW TOOL: "FILL FORM" (UNIVERSAL OCR ASSISTANT WITH DOCK-TO-SIDE) =================
+    // ================= 7. NEW TOOL: "FILL FORM" (UNIVERSAL OCR ASSISTANT WITH DOCK-TO-SIDE & SESSION VAULT) =================
     AppClass.prototype.renderFillFormWorkspace = function(container) {
         container.innerHTML = `
             <div id="fill-form-main-container" class="space-y-6">
-                <!-- Dropzone -->
+                <!-- Dropzone (Shown when no documents uploaded yet) -->
                 <div id="ff-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer relative group">
                     <input type="file" id="ff-input" accept="image/*,.pdf" class="hidden">
+                    <input type="file" id="ff-add-doc-input" accept="image/*,.pdf" class="hidden">
                     <div class="max-w-md mx-auto space-y-3 pointer-events-none">
                         <div class="w-16 h-16 mx-auto rounded-2xl bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-110 transition shadow-sm">
                             <i data-lucide="clipboard-paste" class="w-8 h-8"></i>
                         </div>
                         <h4 class="text-base sm:text-lg font-bold text-slate-800">Upload Image or PDF to Fill Any Form</h4>
-                        <p class="text-xs text-slate-500">Upload Aadhaar, PAN, Passport, Resume, Marks, or Docs. Extracts all fields with 1-click copy &amp; floating side assistant.</p>
+                        <p class="text-xs text-slate-500">Supports multiple documents in one session (Aadhaar, PAN, Marksheets, Passports). Merges all data into a Unified Master Profile.</p>
                         <div class="pt-2">
                             <button type="button" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
-                                Select Image or PDF
+                                Select Document or Photo
                             </button>
                         </div>
                     </div>
@@ -1916,58 +1923,83 @@ export function registerImageWorkspaces(AppClass) {
                     <p class="text-[11px] text-slate-500">100% In-Browser RAM execution. Zero data leaves your device.</p>
                 </div>
 
-                <!-- Active Editor Workspace -->
-                <div id="ff-editor" class="hidden space-y-6">
-                    <!-- Top Action Bar -->
-                    <div class="p-4 bg-white border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
-                        <div class="flex items-center gap-3">
-                            <span id="ff-doc-badge" class="px-3 py-1 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                                <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
-                                <span id="ff-doc-type-text">Document</span>
-                            </span>
-                            <span class="text-xs text-slate-500" id="ff-fields-count">0 fields extracted</span>
+                <!-- Active Editor Workspace with Session DB Vault -->
+                <div id="ff-editor" class="hidden space-y-5">
+                    <!-- Session Document Vault Navigation Bar -->
+                    <div class="p-3 bg-white border border-slate-200 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
+                        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none flex-1" id="ff-vault-tabs">
+                            <!-- Populated dynamically with document tabs & master profile -->
                         </div>
 
-                        <div class="flex items-center gap-2 w-full sm:w-auto">
-                            <!-- Game-changing Dock-to-Side Button -->
-                            <button id="btn-ff-dock" class="flex-1 sm:flex-none px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
-                                <i data-lucide="panel-right" class="w-4 h-4"></i>
-                                <span>Dock to Side (Fill Any Form)</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <!-- Add Document Button -->
+                            <button type="button" id="btn-ff-add-doc" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs">
+                                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                                <span>Add Document</span>
                             </button>
 
-                            <button id="btn-ff-copy-all" class="px-3 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-semibold shadow-xs transition flex items-center gap-1.5">
+                            <!-- Dock to Side Button -->
+                            <button type="button" id="btn-ff-dock" class="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center gap-1.5">
+                                <i data-lucide="panel-right" class="w-3.5 h-3.5"></i>
+                                <span>Dock to Side</span>
+                            </button>
+
+                            <!-- Copy All Button -->
+                            <button type="button" id="btn-ff-copy-all" class="px-3 py-1.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-semibold shadow-xs transition flex items-center gap-1.5">
                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                                 <span>Copy All</span>
                             </button>
 
-                            <button id="btn-ff-reset" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">
-                                New File
+                            <!-- Clear Session DB Button -->
+                            <button type="button" id="btn-ff-clear-db" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Clear Session Database">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <!-- Left Column: Document Preview -->
-                        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[320px] max-h-[500px] overflow-hidden bg-slate-900/5 relative">
-                            <img id="ff-preview-img" src="" alt="Document Preview" class="max-h-[420px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
+                        <!-- Left Column: Document Preview (or Master Summary when on Master tab) -->
+                        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[340px] max-h-[540px] overflow-hidden bg-slate-900/5 relative select-none">
+                            <img id="ff-preview-img" src="" alt="Document Preview" class="max-h-[460px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200 block">
+                            
+                            <!-- Master Profile Info Graphic when Master Profile tab is selected -->
+                            <div id="ff-master-graphic" class="hidden text-center p-6 space-y-3">
+                                <div class="w-16 h-16 mx-auto rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shadow-xs">
+                                    <i data-lucide="layers" class="w-8 h-8"></i>
+                                </div>
+                                <h4 class="text-sm font-bold text-slate-900" id="ff-master-title">Unified Master Profile</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed" id="ff-master-desc">
+                                    All extracted information from your uploaded documents combined into one comprehensive profile.
+                                </p>
+                                <div class="pt-1">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <i data-lucide="shield-check" class="w-3 h-3"></i> Zero-Server Session Memory
+                                    </span>
+                                </div>
+                            </div>
+
                             <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded font-mono flex items-center gap-1">
                                 <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i>
-                                <span>100% Client-Side Private</span>
+                                <span id="ff-preview-badge">100% Client-Side Private</span>
                             </div>
                         </div>
 
-                        <!-- Right Column: Extracted Cards & 1-Click Copy -->
+                        <!-- Right Column: Extracted Cards & 1-Click Copy (Never Truncates Info) -->
                         <div class="lg:col-span-7 space-y-4">
                             <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
                                 <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                        <i data-lucide="list" class="w-4 h-4 text-red-600"></i>
-                                        <span>Extracted Form Fields</span>
-                                    </h3>
-                                    <span class="text-[11px] text-slate-400">Click icon or value to copy</span>
+                                    <div>
+                                        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2" id="ff-section-title">
+                                            <i data-lucide="list" class="w-4 h-4 text-red-600"></i>
+                                            <span>Document Form Fields</span>
+                                        </h3>
+                                        <span class="text-[11px] text-slate-400" id="ff-fields-count">0 fields detected</span>
+                                    </div>
+
+                                    <span class="text-[11px] text-slate-400">All information displayed without truncation</span>
                                 </div>
 
-                                <!-- AI Smart Enhancement Toolbar with Strict Rate-Limit Safeguard -->
+                                <!-- AI Smart Enhancement Toolbar with Strict Rate-Limit Safeguard & Multimodal Vision -->
                                 <div class="p-3 bg-gradient-to-r from-red-50 to-amber-50 border border-red-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
                                     <div class="flex items-center gap-2">
                                         <div class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center shadow-xs shrink-0">
@@ -1975,12 +2007,12 @@ export function registerImageWorkspaces(AppClass) {
                                         </div>
                                         <div>
                                             <div class="text-xs font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
-                                                <span>AI Form Field Extraction</span>
+                                                <span>AI Neural Field Intelligence</span>
                                                 <span id="ff-ai-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-red-700 border border-red-200 shadow-2xs">
                                                     5/5 Free Left Today
                                                 </span>
                                             </div>
-                                            <p class="text-[10px] text-slate-500">Auto-clean typos, detect all fields, and format for rapid form copy.</p>
+                                            <p class="text-[10px] text-slate-500">Gemini Vision &amp; Llama 3.3 70B inspect pixels and format noisy text with near 100% precision.</p>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-2 shrink-0">
@@ -1994,7 +2026,8 @@ export function registerImageWorkspaces(AppClass) {
                                     </div>
                                 </div>
 
-                                <div id="ff-cards-list" class="space-y-2.5">
+                                <!-- Dynamically Rendered Field Cards (Auto-Expanding for Long Addresses) -->
+                                <div id="ff-cards-list" class="space-y-3">
                                     <!-- Rendered dynamically -->
                                 </div>
                             </div>
@@ -2005,14 +2038,17 @@ export function registerImageWorkspaces(AppClass) {
                 <!-- DOCKED SIDEBAR ASSISTANT OVERLAY (ACTIVATES ON "DOCK TO SIDE") -->
                 <div id="ff-docked-sidebar" class="hidden fixed top-0 right-0 h-screen w-96 bg-white border-l border-slate-300 shadow-2xl z-50 flex flex-col animate-slide-left">
                     <!-- Dock Header -->
-                    <div class="p-3.5 bg-slate-900 text-white flex items-center justify-between shadow-xs">
+                    <div class="p-3 bg-slate-900 text-white flex items-center justify-between shadow-xs">
                         <div class="flex items-center gap-2">
                             <div class="w-6 h-6 rounded bg-red-600 flex items-center justify-center text-white font-bold text-xs">
                                 <i data-lucide="clipboard-paste" class="w-3.5 h-3.5"></i>
                             </div>
-                            <span class="text-xs font-bold tracking-tight">TECHTIS Form Assistant</span>
+                            <span class="text-xs font-bold tracking-tight">Form Assistant</span>
                         </div>
                         <div class="flex items-center gap-1.5">
+                            <button id="btn-ff-dock-add" class="p-1 hover:bg-slate-800 text-emerald-400 rounded text-xs flex items-center gap-1" title="Add Another Document">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
+                            </button>
                             <button id="btn-ff-undock" class="p-1 hover:bg-slate-800 text-slate-300 rounded" title="Expand Fullscreen">
                                 <i data-lucide="maximize-2" class="w-4 h-4"></i>
                             </button>
@@ -2022,23 +2058,31 @@ export function registerImageWorkspaces(AppClass) {
                         </div>
                     </div>
 
+                    <!-- Dock Document Selector Dropdown -->
+                    <div class="p-2 border-b border-slate-200 bg-slate-100 flex items-center gap-1.5 text-xs">
+                        <label class="font-bold text-slate-600 text-[10px] uppercase shrink-0">Profile:</label>
+                        <select id="ff-dock-doc-select" class="flex-1 px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-red-500">
+                            <!-- Populated with Master Profile + Documents -->
+                        </select>
+                    </div>
+
                     <!-- Search Input inside Dock -->
                     <div class="p-2.5 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
                         <div class="relative flex-1">
-                            <input type="text" id="ff-dock-search" placeholder="Filter fields (e.g. pan, dob, phone)..."
+                            <input type="text" id="ff-dock-search" placeholder="Filter fields (e.g. pan, address, dob, name)..."
                                    class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
                             <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400"></i>
                         </div>
                     </div>
 
-                    <!-- Scrollable Field List with 1-Click Copy -->
+                    <!-- Scrollable Field List with 1-Click Copy (Fully Wrapped, Never Hidden) -->
                     <div id="ff-dock-fields" class="flex-1 overflow-y-auto p-3 space-y-2 text-xs">
                         <!-- Populated dynamically -->
                     </div>
 
                     <!-- Dock Footer with Portal Quick Links -->
                     <div class="p-3 bg-slate-50 border-t border-slate-200 space-y-2">
-                        <div class="text-[10px] uppercase font-bold text-slate-500">Open Target Form:</div>
+                        <div class="text-[10px] uppercase font-bold text-slate-500">Quick Open Target Form:</div>
                         <div class="flex flex-wrap gap-1.5 text-[11px]">
                             <a href="https://passportindia.gov.in" target="_blank" rel="noopener" class="px-2 py-0.5 bg-white border border-slate-200 rounded hover:border-red-500 hover:text-red-600 transition">Passport Seva</a>
                             <a href="https://www.incometax.gov.in" target="_blank" rel="noopener" class="px-2 py-0.5 bg-white border border-slate-200 rounded hover:border-red-500 hover:text-red-600 transition">Income Tax</a>
@@ -2052,33 +2096,39 @@ export function registerImageWorkspaces(AppClass) {
 
         const dropzone = document.getElementById('ff-dropzone');
         const input = document.getElementById('ff-input');
+        const addDocInput = document.getElementById('ff-add-doc-input');
         const progressCard = document.getElementById('ff-progress-card');
         const progressText = document.getElementById('ff-progress-text');
         const editor = document.getElementById('ff-editor');
         const previewImg = document.getElementById('ff-preview-img');
-        const docTypeText = document.getElementById('ff-doc-type-text');
+        const previewBadge = document.getElementById('ff-preview-badge');
+        const masterGraphic = document.getElementById('ff-master-graphic');
+        const sectionTitle = document.getElementById('ff-section-title');
         const fieldsCount = document.getElementById('ff-fields-count');
         const cardsList = document.getElementById('ff-cards-list');
+        const vaultTabs = document.getElementById('ff-vault-tabs');
         const dockBtn = document.getElementById('btn-ff-dock');
         const copyAllBtn = document.getElementById('btn-ff-copy-all');
-        const resetBtn = document.getElementById('btn-ff-reset');
+        const clearDbBtn = document.getElementById('btn-ff-clear-db');
+        const addDocBtn = document.getElementById('btn-ff-add-doc');
         const dockedSidebar = document.getElementById('ff-docked-sidebar');
         const undockBtn = document.getElementById('btn-ff-undock');
         const closeDockBtn = document.getElementById('btn-ff-close-dock');
         const dockSearch = document.getElementById('ff-dock-search');
         const dockFieldsList = document.getElementById('ff-dock-fields');
+        const dockDocSelect = document.getElementById('ff-dock-doc-select');
+        const dockAddBtn = document.getElementById('btn-ff-dock-add');
         const aiEnhanceBtn = document.getElementById('btn-ff-ai-enhance');
         const aiBadge = document.getElementById('ff-ai-badge');
         const aiSettingsBtn = document.getElementById('btn-ff-open-settings');
 
-        let currentExtracted = null;
-        let lastExtractedText = '';
+        let activeTab = 'master'; // 'master' or doc.id
 
         function updateAiQuotaBadge() {
             const quota = AIQuotaManager.getQuota();
             if (aiBadge) {
                 if (quota.hasCustomKey) {
-                    aiBadge.textContent = 'Unlimited (Personal Key)';
+                    aiBadge.textContent = 'Unlimited (Personal Key Active)';
                     aiBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs';
                 } else if (quota.remaining <= 0) {
                     aiBadge.textContent = '0/5 Free Left Today';
@@ -2091,79 +2141,41 @@ export function registerImageWorkspaces(AppClass) {
         }
         updateAiQuotaBadge();
 
+        // Check if vault already has documents on page render
+        function checkExistingVault() {
+            const docs = SessionDocVault.getDocs();
+            if (docs.length > 0) {
+                dropzone.classList.add('hidden');
+                editor.classList.remove('hidden');
+                activeTab = SessionDocVault.getActiveId() || 'master';
+                renderAll();
+            }
+        }
+        checkExistingVault();
+
         dropzone?.addEventListener('click', () => input?.click());
         input?.addEventListener('change', (e) => {
             if (e.target?.files?.length) {
-                runUniversalExtraction(e.target.files[0]);
+                processDocumentUpload(e.target.files[0]);
+            }
+        });
+
+        addDocBtn?.addEventListener('click', () => addDocInput?.click());
+        dockAddBtn?.addEventListener('click', () => addDocInput?.click());
+        addDocInput?.addEventListener('change', (e) => {
+            if (e.target?.files?.length) {
+                processDocumentUpload(e.target.files[0]);
             }
         });
 
         aiSettingsBtn?.addEventListener('click', () => this.openSettingsModal());
 
-        aiEnhanceBtn?.addEventListener('click', async () => {
-            if (!lastExtractedText || !lastExtractedText.trim()) {
-                this.showToast('Please upload a document or image first.', 'warning');
-                return;
-            }
-
-            const quota = AIQuotaManager.getQuota();
-            if (!quota.canUseAi && !quota.isUnlimited) {
-                this.showToast('Daily free AI limit reached (5/5). Add your free Groq API key in Settings for unlimited AI!', 'warning');
-                this.openSettingsModal();
-                return;
-            }
-
-            aiEnhanceBtn.disabled = true;
-            aiEnhanceBtn.innerHTML = '<span class="animate-spin inline-block mr-1">⏳</span> AI Analyzing...';
-
-            try {
-                this.showToast('Analyzing text with neural AI...', 'info');
-                const aiResult = await EdgeAIBridge.extractFieldsWithAI(lastExtractedText);
-
-                // Build merged allFields list
-                const newAllFields = [];
-                if (aiResult.name) newAllFields.push({ key: 'name', label: 'Full Name', value: aiResult.name, icon: 'user' });
-                if (aiResult.email) newAllFields.push({ key: 'email', label: 'Email Address', value: aiResult.email, icon: 'mail' });
-                if (aiResult.phone) newAllFields.push({ key: 'phone', label: 'Phone / Mobile', value: aiResult.phone, icon: 'phone' });
-                if (aiResult.idNumber) newAllFields.push({ key: 'idNumber', label: `${aiResult.docType} Number`, value: aiResult.idNumber, icon: 'credit-card' });
-                if (aiResult.dob) newAllFields.push({ key: 'dob', label: 'Date of Birth', value: aiResult.dob, icon: 'calendar' });
-                if (aiResult.gender) newAllFields.push({ key: 'gender', label: 'Gender', value: aiResult.gender, icon: 'user-check' });
-                if (aiResult.fatherName) newAllFields.push({ key: 'fatherName', label: "Father / Guardian", value: aiResult.fatherName, icon: 'users' });
-                if (aiResult.pincode) newAllFields.push({ key: 'pincode', label: 'PIN Code', value: aiResult.pincode, icon: 'map-pin' });
-                if (aiResult.address) newAllFields.push({ key: 'address', label: 'Full Address', value: aiResult.address, icon: 'home' });
-
-                currentExtracted = {
-                    ...currentExtracted,
-                    docType: aiResult.docType || currentExtracted.docType,
-                    allFields: newAllFields.length > 0 ? newAllFields : currentExtracted.allFields
-                };
-
-                docTypeText.textContent = currentExtracted.docType;
-                fieldsCount.textContent = `${currentExtracted.allFields.length} fields detected`;
-
-                renderCards(currentExtracted);
-                renderDockFields(currentExtracted.allFields);
-                updateAiQuotaBadge();
-                this.showToast('Document details enhanced with AI precision!', 'success');
-            } catch (err) {
-                if (err.message.includes('NO_API_KEY')) {
-                    this.showToast('Please add your personal free Groq API key in Settings.', 'info');
-                    this.openSettingsModal();
-                } else {
-                    this.showToast(err.message, 'error');
-                }
-            } finally {
-                aiEnhanceBtn.disabled = false;
-                aiEnhanceBtn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span>Enhance with AI</span>';
-                this.refreshLucideIcons();
-            }
-        });
-
-        async function runUniversalExtraction(file) {
+        async function processDocumentUpload(file) {
             dropzone.classList.add('hidden');
             progressCard.classList.remove('hidden');
 
             let extractedText = '';
+            let previewUrl = '';
 
             try {
                 if (file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
@@ -2173,7 +2185,7 @@ export function registerImageWorkspaces(AppClass) {
 
                     try {
                         const pdfCanvas = await ImageEngine.renderPdfToCanvas(file, 1);
-                        previewImg.src = pdfCanvas.dataUrl;
+                        previewUrl = pdfCanvas.dataUrl;
 
                         if (extractedText.trim().length < 25) {
                             if (progressText) progressText.textContent = 'Running WASM OCR on scanned PDF pages...';
@@ -2183,7 +2195,7 @@ export function registerImageWorkspaces(AppClass) {
                     } catch (_) {}
                 } else {
                     const img = await ImageEngine.loadImage(file);
-                    previewImg.src = img._dataUrl || img.src;
+                    previewUrl = img._dataUrl || img.src;
 
                     if (progressText) progressText.textContent = 'Running client-side WebAssembly OCR...';
                     extractedText = await ImageEngine.performClientOcr(file, (p) => {
@@ -2191,65 +2203,199 @@ export function registerImageWorkspaces(AppClass) {
                     });
                 }
 
-                lastExtractedText = extractedText;
-                currentExtracted = ImageEngine.extractAllDocumentFields(extractedText);
-                docTypeText.textContent = currentExtracted.docType;
-                fieldsCount.textContent = `${currentExtracted.allFields.length} fields detected`;
+                const extracted = ImageEngine.extractAllDocumentFields(extractedText);
 
-                renderCards(currentExtracted);
-                renderDockFields(currentExtracted.allFields);
-                updateAiQuotaBadge();
+                // Add to Session Vault!
+                const newDoc = SessionDocVault.addDocument({
+                    name: file.name,
+                    docType: extracted.docType,
+                    previewUrl,
+                    extracted
+                });
 
+                activeTab = newDoc.id;
                 progressCard.classList.add('hidden');
                 editor.classList.remove('hidden');
 
-                StorageManager.logActivity('fill-form', 'Fill Form Assistant', `Extracted ${currentExtracted.allFields.length} fields from ${currentExtracted.docType}`);
+                StorageManager.logActivity('fill-form', 'Fill Form Assistant', `Added ${newDoc.name} (${extracted.docType}) to session database`);
                 this.updateHistoryCounter();
-                this.showToast('All fields extracted! Ready to fill forms.', 'success');
+                this.showToast(`Added ${newDoc.name} to Session Vault!`, 'success');
+
+                renderAll();
             } catch (err) {
                 progressCard.classList.add('hidden');
-                dropzone.classList.remove('hidden');
-                this.showToast(`Error: ${err.message}`, 'error');
+                if (SessionDocVault.getDocs().length === 0) {
+                    dropzone.classList.remove('hidden');
+                }
+                this.showToast(`Extraction Error: ${err.message}`, 'error');
             }
         }
 
-        function renderCards(extracted) {
+        // Render everything based on activeTab
+        function renderAll() {
+            renderVaultTabs();
+            renderDockSelector();
+            renderCurrentView();
+            updateAiQuotaBadge();
+        }
+
+        function renderVaultTabs() {
+            vaultTabs.innerHTML = '';
+            const docs = SessionDocVault.getDocs();
+
+            // Tab 1: Master Profile (Combined)
+            const masterTab = document.createElement('button');
+            masterTab.type = 'button';
+            const isMaster = (activeTab === 'master');
+            masterTab.className = `px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap shadow-2xs ${
+                isMaster ? 'bg-red-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            }`;
+            masterTab.innerHTML = `
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 ${isMaster ? 'text-amber-300' : 'text-amber-500'}"></i>
+                <span>Master Profile</span>
+                <span class="px-1.5 py-0.2 rounded-full text-[10px] font-semibold ${isMaster ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'}">
+                    ${docs.length} Doc${docs.length > 1 ? 's' : ''}
+                </span>
+            `;
+            masterTab.addEventListener('click', () => {
+                activeTab = 'master';
+                SessionDocVault.setActiveId('master');
+                renderAll();
+            });
+            vaultTabs.appendChild(masterTab);
+
+            // Document Tabs
+            docs.forEach((doc, idx) => {
+                const docTab = document.createElement('button');
+                docTab.type = 'button';
+                const isActive = (activeTab === doc.id);
+                docTab.className = `px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap border ${
+                    isActive ? 'border-red-500 bg-red-50 text-red-700 font-bold' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                }`;
+                docTab.innerHTML = `
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 ${isActive ? 'text-red-600' : 'text-slate-400'}"></i>
+                    <span class="max-w-[120px] truncate">${doc.docType || `Doc ${idx + 1}`}</span>
+                `;
+                docTab.addEventListener('click', () => {
+                    activeTab = doc.id;
+                    SessionDocVault.setActiveId(doc.id);
+                    renderAll();
+                });
+                vaultTabs.appendChild(docTab);
+            });
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        function renderDockSelector() {
+            dockDocSelect.innerHTML = '';
+            const docs = SessionDocVault.getDocs();
+
+            const optMaster = document.createElement('option');
+            optMaster.value = 'master';
+            optMaster.textContent = `⭐ Master Profile (${docs.length} Documents Combined)`;
+            if (activeTab === 'master') optMaster.selected = true;
+            dockDocSelect.appendChild(optMaster);
+
+            docs.forEach((doc, idx) => {
+                const opt = document.createElement('option');
+                opt.value = doc.id;
+                opt.textContent = `📄 ${doc.docType || `Doc ${idx + 1}`}: ${doc.name}`;
+                if (activeTab === doc.id) opt.selected = true;
+                dockDocSelect.appendChild(opt);
+            });
+
+            dockDocSelect.onchange = (e) => {
+                activeTab = e.target.value;
+                SessionDocVault.setActiveId(activeTab);
+                renderAll();
+            };
+        }
+
+        function renderCurrentView() {
+            const docs = SessionDocVault.getDocs();
+
+            if (activeTab === 'master') {
+                const master = SessionDocVault.getMasterProfile();
+                previewImg.classList.add('hidden');
+                masterGraphic.classList.remove('hidden');
+                previewBadge.textContent = `${docs.length} Documents Merged`;
+                sectionTitle.querySelector('span').textContent = 'Unified Master Profile';
+                fieldsCount.textContent = `${master.allFields.length} combined fields`;
+
+                renderCards(master);
+                renderDockFields(master.allFields, dockSearch.value.toLowerCase().trim());
+            } else {
+                const doc = docs.find(d => d.id === activeTab) || docs[0];
+                if (!doc) return;
+
+                previewImg.classList.remove('hidden');
+                masterGraphic.classList.add('hidden');
+                previewImg.src = doc.previewUrl || '';
+                previewBadge.textContent = doc.docType || 'Document';
+                sectionTitle.querySelector('span').textContent = `${doc.docType} (${doc.name})`;
+                fieldsCount.textContent = `${(doc.extracted?.allFields || []).length} fields`;
+
+                renderCards(doc.extracted, doc);
+                renderDockFields(doc.extracted?.allFields || [], dockSearch.value.toLowerCase().trim());
+            }
+        }
+
+        // Render fields with NO TRUNCATION - full auto-expanding visibility!
+        function renderCards(extracted, activeDoc = null) {
             cardsList.innerHTML = '';
-            const fields = extracted.allFields;
+            const fields = extracted.allFields || [];
 
             if (fields.length === 0) {
-                cardsList.innerHTML = '<div class="p-6 text-center text-xs text-slate-400">No structured fields detected. Try uploading a clearer document.</div>';
+                cardsList.innerHTML = '<div class="p-6 text-center text-xs text-slate-400">No fields detected. Try uploading another document or enhance with AI.</div>';
                 return;
             }
 
             fields.forEach(f => {
+                const isLongText = (f.value && f.value.length > 50) || f.isMultiLine || f.key === 'address';
                 const card = document.createElement('div');
-                card.className = 'p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-3 hover:border-slate-300 transition';
+                card.className = 'p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 hover:border-slate-300 transition shadow-2xs';
+
                 card.innerHTML = `
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0">
-                            <i data-lucide="${f.icon || 'file-text'}" class="w-4 h-4"></i>
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-6 h-6 rounded bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="${f.icon || 'file-text'}" class="w-3.5 h-3.5"></i>
+                            </div>
+                            <span class="text-[11px] font-bold text-slate-700 uppercase tracking-tight">${f.label}</span>
+                            ${f.docSource ? `<span class="px-1.5 py-0.5 bg-slate-200 text-slate-600 rounded text-[9px] font-medium shrink-0">${f.docSource}</span>` : ''}
                         </div>
-                        <div class="min-w-0">
-                            <div class="text-[10px] uppercase font-bold text-slate-400">${f.label}</div>
-                            <input type="text" value="${f.value}" class="text-xs font-semibold text-slate-800 bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-red-400 rounded px-1 py-0.5 truncate w-full">
-                        </div>
+                        <button type="button" class="btn-copy-card px-2.5 py-1 bg-white border border-slate-200 hover:border-red-500 hover:text-red-600 rounded-lg text-xs font-semibold text-slate-700 transition flex items-center gap-1 shrink-0 shadow-2xs">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            <span>Copy</span>
+                        </button>
                     </div>
-                    <button type="button" class="btn-copy-card px-3 py-1.5 bg-white border border-slate-200 hover:border-red-500 hover:text-red-600 rounded-lg text-xs font-semibold text-slate-700 transition flex items-center gap-1 shrink-0">
-                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                        <span>Copy</span>
-                    </button>
+                    ${isLongText ? `
+                        <textarea rows="${Math.min(6, Math.max(2, Math.ceil((f.value || '').length / 50))) }" class="w-full p-2.5 text-xs font-semibold text-slate-800 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-400 resize-y break-words leading-relaxed whitespace-pre-wrap">${f.value}</textarea>
+                    ` : `
+                        <input type="text" value="${f.value}" class="w-full px-3 py-2 text-xs font-semibold text-slate-800 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-400 break-words">
+                    `}
                 `;
 
                 const copyBtn = card.querySelector('.btn-copy-card');
-                const inp = card.querySelector('input');
+                const inputEl = card.querySelector('input, textarea');
                 copyBtn?.addEventListener('click', () => {
-                    navigator.clipboard.writeText(inp.value);
-                    copyBtn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i><span class="text-emerald-600 font-bold">Copied!</span>';
-                    setTimeout(() => {
-                        copyBtn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i><span>Copy</span>';
-                        if (window.lucide) window.lucide.createIcons();
-                    }, 1500);
+                    if (inputEl && inputEl.value) {
+                        navigator.clipboard.writeText(inputEl.value);
+                        copyBtn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i><span class="text-emerald-600 font-bold">Copied!</span>';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i><span>Copy</span>';
+                            if (window.lucide) window.lucide.createIcons();
+                        }, 1400);
+                        this.showToast(`Copied ${f.label}!`, 'success');
+                    }
+                });
+
+                inputEl?.addEventListener('input', (e) => {
+                    f.value = e.target.value;
+                    if (activeDoc && activeDoc.id !== 'master') {
+                        SessionDocVault.updateDocumentFields(activeDoc.id, { [f.key]: e.target.value });
+                    }
                 });
 
                 cardsList.appendChild(card);
@@ -2261,7 +2407,7 @@ export function registerImageWorkspaces(AppClass) {
         function renderDockFields(fields, filterQuery = '') {
             dockFieldsList.innerHTML = '';
             const filtered = filterQuery 
-                ? fields.filter(f => f.label.toLowerCase().includes(filterQuery) || f.value.toLowerCase().includes(filterQuery))
+                ? fields.filter(f => f.label.toLowerCase().includes(filterQuery) || (f.value || '').toLowerCase().includes(filterQuery))
                 : fields;
 
             if (filtered.length === 0) {
@@ -2271,15 +2417,18 @@ export function registerImageWorkspaces(AppClass) {
 
             filtered.forEach(f => {
                 const item = document.createElement('div');
-                item.className = 'p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-red-400 transition cursor-pointer group';
+                item.className = 'p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-red-400 transition cursor-pointer group space-y-1';
                 item.innerHTML = `
-                    <div class="flex items-center justify-between mb-0.5">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">${f.label}</span>
-                        <span class="text-[10px] text-red-600 group-hover:underline font-semibold flex items-center gap-0.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
+                            <span>${f.label}</span>
+                            ${f.docSource ? `<span class="px-1 py-0.2 bg-slate-200 text-slate-600 rounded text-[8px] font-medium">${f.docSource}</span>` : ''}
+                        </span>
+                        <span class="text-[10px] text-red-600 group-hover:underline font-semibold flex items-center gap-0.5 shrink-0">
                             <i data-lucide="copy" class="w-3 h-3"></i> Copy
                         </span>
                     </div>
-                    <div class="text-xs font-semibold text-slate-800 break-all select-all">${f.value}</div>
+                    <div class="text-xs font-semibold text-slate-900 break-words whitespace-pre-wrap select-all leading-relaxed">${f.value}</div>
                 `;
 
                 item.addEventListener('click', () => {
@@ -2301,8 +2450,74 @@ export function registerImageWorkspaces(AppClass) {
         }
 
         dockSearch?.addEventListener('input', (e) => {
-            if (currentExtracted) {
-                renderDockFields(currentExtracted.allFields, e.target.value.toLowerCase().trim());
+            const docs = SessionDocVault.getDocs();
+            let fieldsToSearch = [];
+            if (activeTab === 'master') {
+                fieldsToSearch = SessionDocVault.getMasterProfile().allFields;
+            } else {
+                const doc = docs.find(d => d.id === activeTab);
+                fieldsToSearch = doc?.extracted?.allFields || [];
+            }
+            renderDockFields(fieldsToSearch, e.target.value.toLowerCase().trim());
+        });
+
+        // AI Enhancement Button
+        aiEnhanceBtn?.addEventListener('click', async () => {
+            const docs = SessionDocVault.getDocs();
+            if (docs.length === 0) {
+                this.showToast('Please upload a document first.', 'warning');
+                return;
+            }
+
+            const quota = AIQuotaManager.getQuota();
+            if (!quota.canUseAi && !quota.isUnlimited) {
+                this.showToast('Daily free AI limit reached (5/5). Add your own free Groq/Gemini key in Settings for unlimited AI!', 'warning');
+                this.openSettingsModal();
+                return;
+            }
+
+            // Target document to enhance
+            const targetDoc = (activeTab === 'master') ? docs[0] : (docs.find(d => d.id === activeTab) || docs[0]);
+            const rawText = targetDoc.extracted?.rawText || '';
+            const previewData = targetDoc.previewUrl || null;
+
+            aiEnhanceBtn.disabled = true;
+            aiEnhanceBtn.innerHTML = '<span class="animate-spin inline-block mr-1">⏳</span> Analyzing with AI Vision...';
+
+            try {
+                this.showToast('Analyzing with multimodal AI vision...', 'info');
+                const aiResult = await EdgeAIBridge.extractFieldsWithAI(rawText, previewData);
+
+                const newAllFields = [];
+                if (aiResult.name) newAllFields.push({ key: 'name', label: 'Full Name', value: aiResult.name, icon: 'user' });
+                if (aiResult.email) newAllFields.push({ key: 'email', label: 'Email Address', value: aiResult.email, icon: 'mail' });
+                if (aiResult.phone) newAllFields.push({ key: 'phone', label: 'Phone / Mobile', value: aiResult.phone, icon: 'phone' });
+                if (aiResult.idNumber) newAllFields.push({ key: 'idNumber', label: `${aiResult.docType} Number`, value: aiResult.idNumber, icon: 'credit-card' });
+                if (aiResult.dob) newAllFields.push({ key: 'dob', label: 'Date of Birth', value: aiResult.dob, icon: 'calendar' });
+                if (aiResult.gender) newAllFields.push({ key: 'gender', label: 'Gender', value: aiResult.gender, icon: 'user-check' });
+                if (aiResult.fatherName) newAllFields.push({ key: 'fatherName', label: "Father / Guardian", value: aiResult.fatherName, icon: 'users' });
+                if (aiResult.pincode) newAllFields.push({ key: 'pincode', label: 'PIN Code', value: aiResult.pincode, icon: 'map-pin' });
+                if (aiResult.address) newAllFields.push({ key: 'address', label: 'Full Address', value: aiResult.address, icon: 'home', isMultiLine: true });
+
+                SessionDocVault.updateDocumentFields(targetDoc.id, {
+                    ...targetDoc.extracted,
+                    ...aiResult,
+                    allFields: newAllFields.length > 0 ? newAllFields : targetDoc.extracted.allFields
+                });
+
+                renderAll();
+                this.showToast(`${targetDoc.docType} fields enhanced with AI precision!`, 'success');
+            } catch (err) {
+                if (err.message.includes('NO_API_KEY')) {
+                    this.showToast('Please add your personal free Groq or Gemini API key in Settings.', 'info');
+                    this.openSettingsModal();
+                } else {
+                    this.showToast(err.message, 'error');
+                }
+            } finally {
+                aiEnhanceBtn.disabled = false;
+                aiEnhanceBtn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span>Enhance with AI</span>';
+                this.refreshLucideIcons();
             }
         });
 
@@ -2312,29 +2527,33 @@ export function registerImageWorkspaces(AppClass) {
             this.showToast('Form Assistant docked to right! You can now browse any site and 1-click copy fields.', 'info');
         });
 
-        undockBtn?.addEventListener('click', () => {
-            dockedSidebar?.classList.add('hidden');
-        });
-
-        closeDockBtn?.addEventListener('click', () => {
-            dockedSidebar?.classList.add('hidden');
-        });
+        undockBtn?.addEventListener('click', () => dockedSidebar?.classList.add('hidden'));
+        closeDockBtn?.addEventListener('click', () => dockedSidebar?.classList.add('hidden'));
 
         copyAllBtn?.addEventListener('click', () => {
-            if (!currentExtracted || !currentExtracted.allFields) return;
-            const text = currentExtracted.allFields.map(f => `${f.label}: ${f.value}`).join('\n');
+            let fieldsToCopy = [];
+            if (activeTab === 'master') {
+                fieldsToCopy = SessionDocVault.getMasterProfile().allFields;
+            } else {
+                const doc = SessionDocVault.getDocs().find(d => d.id === activeTab);
+                fieldsToCopy = doc?.extracted?.allFields || [];
+            }
+            if (fieldsToCopy.length === 0) return;
+            const text = fieldsToCopy.map(f => `${f.label}: ${f.value}`).join('\n');
             navigator.clipboard.writeText(text);
             this.showToast('All fields copied to clipboard!', 'success');
         });
 
-        resetBtn?.addEventListener('click', () => {
-            currentExtracted = null;
-            lastExtractedText = '';
-            previewImg.src = '';
-            editor.classList.add('hidden');
-            dockedSidebar?.classList.add('hidden');
-            dropzone.classList.remove('hidden');
-            input.value = '';
+        clearDbBtn?.addEventListener('click', () => {
+            if (confirm('Clear all session documents from temporary database?')) {
+                SessionDocVault.clearAll();
+                editor.classList.add('hidden');
+                dockedSidebar?.classList.add('hidden');
+                dropzone.classList.remove('hidden');
+                input.value = '';
+                addDocInput.value = '';
+                this.showToast('Session database cleared!', 'info');
+            }
         });
 
         this.refreshLucideIcons();

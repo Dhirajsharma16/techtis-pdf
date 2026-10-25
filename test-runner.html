@@ -19,6 +19,7 @@ import { AllToolsEngine } from './js/tools/all-tools-engine.js';
 import { EdgeAIBridge } from './js/edge/ai-bridge.js';
 import { StorageManager } from './js/utils/storage.js';
 import { ImageEngine } from './js/tools/image-engine.js';
+import { SessionDocVault } from './js/utils/session-vault.js';
 
 const out = document.getElementById('output');
 function log(msg) {
@@ -425,6 +426,54 @@ PIN: 560001
         if (!res.idNumber || !res.idNumber.includes('4321')) throw new Error('Failed to extract ID number: ' + res.idNumber);
         return `Extracted Name: "${res.name}", Email: "${res.email}", Phone: "${res.phone}", PIN: "${res.pincode}"`;
     });
+
+    // 42. Session Temporary DB & Multi-Document Master Profile Vault
+    await assertTool('Session Temporary DB & Unified Master Profile', async () => {
+        SessionDocVault.clearAll();
+        
+        // Doc 1: Aadhaar Card
+        SessionDocVault.addDocument({
+            name: 'aadhaar_card.png',
+            docType: 'Aadhaar Card',
+            extracted: {
+                name: 'Vikram Malhotra',
+                idNumber: '1111 2222 3333',
+                address: 'Flat 101, Palm Grove, MG Road, Mumbai',
+                pincode: '400001',
+                dob: '21/11/1988',
+                gender: 'MALE'
+            }
+        });
+
+        // Doc 2: PAN Card
+        SessionDocVault.addDocument({
+            name: 'pan_card.jpg',
+            docType: 'PAN Card',
+            extracted: {
+                idNumber: 'ABCVM9999Z',
+                fatherName: 'Kailash Malhotra'
+            }
+        });
+
+        const docs = SessionDocVault.getDocs();
+        if (docs.length !== 2) throw new Error('Session DB should hold 2 documents');
+
+        const master = SessionDocVault.getMasterProfile();
+        if (master.docsCount !== 2) throw new Error('Master profile should merge 2 documents');
+        if (master.name !== 'Vikram Malhotra') throw new Error('Failed to inherit name in Master Profile');
+        if (master.fatherName !== 'Kailash Malhotra') throw new Error('Failed to merge Father Name from PAN');
+        if (master.pincode !== '400001') throw new Error('Failed to merge PIN from Aadhaar');
+        
+        const hasPan = master.allFields.some(f => f.value === 'ABCVM9999Z');
+        const hasAadhaar = master.allFields.some(f => f.value === '1111 2222 3333');
+        if (!hasPan || !hasAadhaar) throw new Error('Master profile missing combined document IDs');
+
+        SessionDocVault.clearAll();
+        if (SessionDocVault.getDocs().length !== 0) throw new Error('Failed to clear session DB');
+
+        return `Successfully merged 2 documents into Unified Profile (Name: "${master.name}", Father: "${master.fatherName}", Aadhaar + PAN merged)`;
+    });
+
 
 
 log('\n====================================================');

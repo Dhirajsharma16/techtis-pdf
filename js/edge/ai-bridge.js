@@ -390,7 +390,7 @@ ${text.slice(0, 25000)}`;
      * AI-Powered Structured Document Field Extraction with Strict Rate Limiting
      * Prevents excessive API hits and protects owner against billing charges ($0 guarantee)
      */
-    async extractFieldsWithAI(rawText) {
+    async extractFieldsWithAI(rawText, imageBase64 = null) {
         if (!rawText || !rawText.trim()) {
             throw new Error('No text content available for AI field extraction.');
         }
@@ -426,33 +426,37 @@ Return only JSON. Do not include markdown code fences or any conversational text
 
         // 1. Personal Groq Key (if user provided one in Settings -> 100% free 14,400 req/day direct)
         if (groqKey) {
-            try {
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${groqKey}`
-                    },
-                    body: JSON.stringify({
-                        model: 'llama-3.1-8b-instant',
-                        messages: [
-                            { role: 'system', content: systemPrompt },
-                            { role: 'user', content: userPrompt }
-                        ],
-                        temperature: 0.1,
-                        response_format: { type: 'json_object' }
-                    })
-                });
+            const groqModels = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+            for (const model of groqModels) {
+                try {
+                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${groqKey}`
+                        },
+                        body: JSON.stringify({
+                            model,
+                            messages: [
+                                { role: 'system', content: systemPrompt },
+                                { role: 'user', content: userPrompt }
+                            ],
+                            temperature: 0.1,
+                            response_format: { type: 'json_object' }
+                        })
+                    });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    const jsonText = data.choices?.[0]?.message?.content;
-                    if (jsonText) {
-                        parsedFields = JSON.parse(jsonText);
+                    if (res.ok) {
+                        const data = await res.json();
+                        const jsonText = data.choices?.[0]?.message?.content;
+                        if (jsonText) {
+                            parsedFields = JSON.parse(jsonText);
+                            break;
+                        }
                     }
+                } catch (err) {
+                    console.warn(`Groq model ${model} fallback:`, err);
                 }
-            } catch (err) {
-                console.warn('Groq direct AI extraction fallback:', err);
             }
         }
 
@@ -460,11 +464,22 @@ Return only JSON. Do not include markdown code fences or any conversational text
         if (!parsedFields && geminiKey) {
             try {
                 const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+                
+                const parts = [];
+                if (imageBase64) {
+                    const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+                    const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+                    parts.push({ text: `${systemPrompt}\n\nInspect this document image directly with multimodal vision and extract all structured data accurately:` });
+                    parts.push({ inline_data: { mime_type: mime, data: cleanData } });
+                } else {
+                    parts.push({ text: `${systemPrompt}\n\n${userPrompt}` });
+                }
+
                 const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
+                        contents: [{ parts }],
                         generationConfig: { responseMimeType: 'application/json' }
                     })
                 });
@@ -487,7 +502,7 @@ Return only JSON. Do not include markdown code fences or any conversational text
                 const serverRes = await fetch('/api/ai/extract', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: rawText.slice(0, 8000) })
+                    body: JSON.stringify({ text: rawText.slice(0, 10000), image: imageBase64 })
                 });
 
                 if (serverRes.status === 429) {

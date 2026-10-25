@@ -94,10 +94,12 @@ function createServer(port) {
                     parsed = JSON.parse(body);
                 } catch (_) {}
 
-                const text = (parsed.text || '').slice(0, 8000);
-                if (!text) {
+                const text = (parsed.text || '').slice(0, 10000);
+                const imageBase64 = parsed.image || null;
+
+                if (!text && !imageBase64) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: false, error: 'No text provided for AI extraction.' }));
+                    res.end(JSON.stringify({ success: false, error: 'No text or image provided for AI extraction.' }));
                     return;
                 }
 
@@ -109,16 +111,16 @@ function createServer(port) {
                     res.end(JSON.stringify({
                         success: false,
                         needsUserKey: true,
-                        message: 'No server AI key configured. Please add your personal free Groq key in Settings (14,400 free requests/day).'
+                        message: 'No server AI key configured. Please add your personal free Groq or Gemini key in Settings (100% free tiers).'
                     }));
                     return;
                 }
 
                 try {
-                    const systemPrompt = `You are an expert OCR document analyst. Extract structured personal and identity information from the provided text into clean JSON format.
+                    const systemPrompt = `You are an expert OCR document analyst. Extract structured personal and identity information from the provided document into clean JSON format.
 Return ONLY valid JSON matching this exact structure:
 {
-  "docType": "Aadhaar Card" | "PAN Card" | "Passport" | "Driving License" | "Voter ID" | "Invoice" | "Certificate" | "General Document",
+  "docType": "Aadhaar Card" | "PAN Card" | "Passport" | "Driving License" | "Voter ID" | "Invoice" | "Certificate" | "Marksheet" | "General Document",
   "name": "Full name of the individual (clean without prefixes)",
   "email": "Email address if present, else empty string",
   "phone": "Phone or mobile number if present, else empty string",
@@ -126,46 +128,90 @@ Return ONLY valid JSON matching this exact structure:
   "gender": "Male" | "Female" | "Other" | "",
   "idNumber": "Document / ID / Registration / Tax number without masking",
   "fatherName": "Father's or Guardian's name if present, else empty string",
-  "address": "Full permanent or communication address if found, else empty string",
+  "address": "Full permanent or residential address if found, else empty string",
   "pincode": "6-digit postal PIN code if found, else empty string"
 }
-Return only JSON. Do not include markdown code ticks.`;
+Return only JSON. Do not include markdown ticks.`;
 
+                    // Option A: Direct Multimodal Vision with Gemini (if image provided and Gemini key available)
+                    if (serverGeminiKey && imageBase64) {
+                        try {
+                            const cleanB64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+                            const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+                            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${serverGeminiKey}`;
+
+                            const geminiRes = await fetch(endpoint, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [{
+                                        parts: [
+                                            { text: `${systemPrompt}\n\nAnalyze this document image with multimodal vision and extract all fields:` },
+                                            { inline_data: { mime_type: mime, data: cleanB64 } }
+                                        ]
+                                    }],
+                                    generationConfig: { responseMimeType: 'application/json' }
+                                })
+                            });
+
+                            if (geminiRes.ok) {
+                                const data = await geminiRes.json();
+                                const textRes = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                                if (textRes) {
+                                    const fields = JSON.parse(textRes);
+                                    record.count++;
+                                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({ success: true, fields, isVision: true, remaining: DAILY_IP_AI_LIMIT - record.count }));
+                                    return;
+                                }
+                            }
+                        } catch (visionErr) {
+                            console.warn('Server Gemini vision fallback to Groq:', visionErr);
+                        }
+                    }
+
+                    // Option B: Flagship Llama 3.3 70B Versatile on Groq (with 8B instant fallback)
                     if (serverGroqKey) {
-                        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${serverGroqKey}`
-                            },
-                            body: JSON.stringify({
-                                model: 'llama-3.1-8b-instant',
-                                messages: [
-                                    { role: 'system', content: systemPrompt },
-                                    { role: 'user', content: `Document OCR Text:\n${text}` }
-                                ],
-                                temperature: 0.1,
-                                response_format: { type: 'json_object' }
-                            })
-                        });
+                        const modelsToTry = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+                        for (const model of modelsToTry) {
+                            try {
+                                const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${serverGroqKey}`
+                                    },
+                                    body: JSON.stringify({
+                                        model,
+                                        messages: [
+                                            { role: 'system', content: systemPrompt },
+                                            { role: 'user', content: `Document OCR Text:\n${text || 'Extract document info'}` }
+                                        ],
+                                        temperature: 0.1,
+                                        response_format: { type: 'json_object' }
+                                    })
+                                });
 
-                        if (groqRes.ok) {
-                            const groqData = await groqRes.json();
-                            const rawJson = groqData.choices?.[0]?.message?.content || '{}';
-                            const fields = JSON.parse(rawJson);
-                            record.count++;
-                            res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify({
-                                success: true,
-                                fields,
-                                remaining: DAILY_IP_AI_LIMIT - record.count
-                            }));
-                            return;
+                                if (groqRes.ok) {
+                                    const groqData = await groqRes.json();
+                                    const rawJson = groqData.choices?.[0]?.message?.content || '{}';
+                                    const fields = JSON.parse(rawJson);
+                                    record.count++;
+                                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({
+                                        success: true,
+                                        fields,
+                                        model,
+                                        remaining: DAILY_IP_AI_LIMIT - record.count
+                                    }));
+                                    return;
+                                }
+                            } catch (_) {}
                         }
                     }
 
                     res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: false, error: 'AI provider temporarily unavailable' }));
+                    res.end(JSON.stringify({ success: false, error: 'AI providers currently unavailable' }));
                 } catch (err) {
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ success: false, error: err.message }));
