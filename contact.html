@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us – Support & Feedback | TECHTIS</title>
+    <meta name="description" content="Contact TECHTIS (techtis.in). Reach out for user support, bug reporting, feature suggestions, or business inquiries.">
+    <link rel="canonical" href="https://techtis.in/contact.html">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="vendor/lucide.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="header-glass sticky top-0 z-40 px-4 lg:px-8 py-3 flex items-center justify-between border-b border-slate-200">
+        <a href="./" class="flex items-center space-x-2.5">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-white shadow-md shadow-red-500/20">
+                <i data-lucide="file-text" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <span class="text-lg font-extrabold tracking-tight text-slate-900">TECH<span class="text-red-600">TIS</span></span>
+                <span class="text-[9px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 ml-1.5">techtis.in</span>
+            </div>
+        </a>
+
+        <div class="flex items-center gap-3 text-xs font-semibold">
+            <a href="./" class="text-slate-600 hover:text-red-600 transition">&larr; Back to Tools</a>
+            <div class="hidden sm:flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Zero Server Uploads</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+        <div class="space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-50 text-red-700 border border-red-200 rounded-full text-xs font-bold">
+                <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                <span>Get in Touch</span>
+            </div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Contact Us</h1>
+            <p class="text-sm text-slate-500">Have questions, feedback, or a tool request? We would love to hear from you.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <!-- Contact Channels -->
+            <div class="md:col-span-5 space-y-4">
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+                    <h3 class="text-base font-bold text-slate-900">Direct Support Channels</h3>
+                    
+                    <div class="space-y-3 text-xs text-slate-600">
+                        <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <i data-lucide="mail" class="w-4 h-4 text-red-600 mt-0.5 shrink-0"></i>
+                            <div>
+                                <div class="font-bold text-slate-800">Support &amp; Feedback</div>
+                                <a href="mailto:support@techtis.in" class="text-red-600 hover:underline font-mono">support@techtis.in</a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <i data-lucide="shield" class="w-4 h-4 text-emerald-600 mt-0.5 shrink-0"></i>
+                            <div>
+                                <div class="font-bold text-slate-800">Privacy &amp; Security Inquiries</div>
+                                <a href="mailto:privacy@techtis.in" class="text-red-600 hover:underline font-mono">privacy@techtis.in</a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <i data-lucide="github" class="w-4 h-4 text-slate-800 mt-0.5 shrink-0"></i>
+                            <div>
+                                <div class="font-bold text-slate-800">GitHub Community</div>
+                                <a href="https://github.com/Dhirajsharma16/techtis-pdf" target="_blank" rel="noopener" class="text-red-600 hover:underline font-mono">Dhirajsharma16/techtis-pdf</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-900 space-y-1">
+                    <div class="font-bold flex items-center gap-1.5">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Privacy Reminder</span>
+                    </div>
+                    <p class="leading-relaxed">
+                        Please do not email personal documents or identity cards to our support email. TECHTIS processes files strictly inside your browser, not via email.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Interactive Message Form -->
+            <div class="md:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
+                <h3 class="text-base font-bold text-slate-900">Send Us a Direct Message</h3>
+
+                <form id="contact-form" class="space-y-3.5 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Your Name</label>
+                        <input type="text" id="contact-name" required placeholder="Alex Morgan" 
+                               class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Your Email</label>
+                        <input type="email" id="contact-email" required placeholder="alex@example.com" 
+                               class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Subject</label>
+                        <select id="contact-subject" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
+                            <option value="feedback">General Feedback &amp; Suggestion</option>
+                            <option value="bug">Bug Report / Tool Issue</option>
+                            <option value="tool-request">Request a New Tool</option>
+                            <option value="privacy">Privacy Question</option>
+                            <option value="other">Other Inquiry</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Message</label>
+                        <textarea id="contact-msg" required rows="4" placeholder="How can we help or improve TECHTIS?" 
+                                  class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                    </div>
+
+                    <div class="pt-1">
+                        <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Send Message</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div id="contact-success" class="hidden p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 text-center font-semibold">
+                    Thank you! Your feedback has been received. We will get back to you shortly.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto bg-white border-t border-slate-200 py-6 px-4 text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>&copy; 2026 TECHTIS (techtis.in). All rights reserved. 100% Client-Side Privacy Guarantee.</div>
+            <div class="flex items-center gap-4 text-slate-600 font-medium">
+                <a href="about.html" class="hover:text-red-600 transition">About Us</a>
+                <span>&bull;</span>
+                <a href="privacy.html" class="hover:text-red-600 transition">Privacy Policy</a>
+                <span>&bull;</span>
+                <a href="terms.html" class="hover:text-red-600 transition">Terms of Service</a>
+                <span>&bull;</span>
+                <a href="contact.html" class="text-red-600 font-bold transition">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
+
+        document.getElementById('contact-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            document.getElementById('contact-form').classList.add('hidden');
+            document.getElementById('contact-success').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>

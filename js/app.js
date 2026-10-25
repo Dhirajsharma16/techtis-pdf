@@ -12,6 +12,7 @@ import { SplitTool } from './tools/split.js';
 import { RotateTool } from './tools/rotate.js';
 import { EdgeAIBridge } from './edge/ai-bridge.js';
 import { AllToolsEngine } from './tools/all-tools-engine.js';
+import { registerImageWorkspaces } from './tools/image-workspaces.js';
 
 class App {
     constructor() {
@@ -683,6 +684,30 @@ class App {
                 break;
             case 'ppt-to-pdf':
                 this.renderPptToPdfWorkspace(container);
+                break;
+            case 'image-compressor':
+                this.renderImageCompressorWorkspace(container);
+                break;
+            case 'image-resizer':
+                this.renderImageResizerWorkspace(container);
+                break;
+            case 'jpg-to-png':
+                this.renderFormatConverterWorkspace(container, 'image/png');
+                break;
+            case 'png-to-jpg':
+                this.renderFormatConverterWorkspace(container, 'image/jpeg');
+                break;
+            case 'jpg-to-webp':
+                this.renderFormatConverterWorkspace(container, 'image/webp');
+                break;
+            case 'image-cropper':
+                this.renderImageCropperWorkspace(container);
+                break;
+            case 'passport-photo-maker':
+                this.renderPassportPhotoWorkspace(container);
+                break;
+            case 'id-card-ocr':
+                this.renderIdCardOcrWorkspace(container);
                 break;
             default:
                 this.renderGenericWorkspace(container, tool);
@@ -3875,6 +3900,8 @@ This document was compiled directly in your browser using zero-cost serverless P
 }
 
 // Instantiate application on DOM ready
+registerImageWorkspaces(App);
+
 document.addEventListener('DOMContentLoaded', () => {
     window.TECHTISApp = new App();
     window.PDFPulseApp = window.TECHTISApp; // backward compatibility

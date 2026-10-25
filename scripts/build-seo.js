@@ -397,16 +397,18 @@ for (const tool of TOOLS) {
                     <span class="font-extrabold text-xs sm:text-sm text-slate-900 tracking-tight">TECH<span class="text-red-600">TIS</span></span>
                     <span class="text-[10px] text-slate-400">&bull; Serverless Zero-Cost Document Platform</span>
                 </div>
-                <div class="flex items-center gap-3 text-xs font-medium">
+                <div class="flex flex-wrap items-center gap-3 text-xs font-medium">
                     <a href="../" class="hover:text-red-600 transition">Home</a>
-                    <a href="../#tools-list" class="hover:text-red-600 transition">32 Tools Catalog</a>
-                    <a href="https://techtis.in" class="hover:text-red-600 transition font-semibold text-slate-700">techtis.in</a>
+                    <a href="../about.html" class="hover:text-red-600 transition">About</a>
+                    <a href="../privacy.html" class="hover:text-red-600 transition">Privacy</a>
+                    <a href="../terms.html" class="hover:text-red-600 transition">Terms</a>
+                    <a href="../contact.html" class="hover:text-red-600 transition">Contact</a>
                 </div>
             </div>
 
             <!-- Footer Tools Directory Grid -->
             <div class="space-y-2">
-                <div class="font-bold text-slate-800 text-[10px] uppercase tracking-wider">All 32 Free Online PDF Tools:</div>
+                <div class="font-bold text-slate-800 text-[10px] uppercase tracking-wider">All 40 Free Online PDF & Image Tools:</div>
                 <div class="flex flex-wrap gap-1.5 text-[11px]">
                     ${TOOLS.map(t => `<a href="../${t.id}/" class="px-2 py-0.5 bg-slate-50 border border-slate-200 rounded hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition">${escapeHtml(t.name)}</a>`).join('\n                    ')}
                 </div>
@@ -450,7 +452,33 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
         <priority>1.0</priority>
     </url>
 
-    <!-- 32 Dedicated Tool Landing Pages -->
+    <!-- Compliance & Policy Pages -->
+    <url>
+        <loc>${BASE_URL}/about.html</loc>
+        <lastmod>${TODAY}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+    <url>
+        <loc>${BASE_URL}/privacy.html</loc>
+        <lastmod>${TODAY}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+    <url>
+        <loc>${BASE_URL}/terms.html</loc>
+        <lastmod>${TODAY}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+    <url>
+        <loc>${BASE_URL}/contact.html</loc>
+        <lastmod>${TODAY}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+
+    <!-- 40 Dedicated Tool Landing Pages -->
 ${TOOLS.map((t, idx) => `    <!-- ${idx + 1}. ${escapeHtml(t.name)} -->
     <url>
         <loc>${BASE_URL}/${t.id}/</loc>
@@ -461,7 +489,7 @@ ${TOOLS.map((t, idx) => `    <!-- ${idx + 1}. ${escapeHtml(t.name)} -->
 </urlset>`;
 
 fs.writeFileSync(path.join(ROOT_DIR, 'sitemap.xml'), sitemapXml, 'utf8');
-console.log(`[SEO Generator] Successfully updated sitemap.xml with all 32 canonical URLs!`);
+console.log(`[SEO Generator] Successfully updated sitemap.xml with all 40 tool pages & compliance pages!`);
 
 // 3. Update robots.txt
 const robotsTxt = `# TECHTIS (techtis.in) Robots Configuration

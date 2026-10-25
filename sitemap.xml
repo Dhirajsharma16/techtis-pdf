@@ -9,7 +9,33 @@
         <priority>1.0</priority>
     </url>
 
-    <!-- 32 Dedicated Tool Landing Pages -->
+    <!-- Compliance & Policy Pages -->
+    <url>
+        <loc>https://techtis.in/about.html</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+    <url>
+        <loc>https://techtis.in/privacy.html</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+    <url>
+        <loc>https://techtis.in/terms.html</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+    <url>
+        <loc>https://techtis.in/contact.html</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+
+    <!-- 40 Dedicated Tool Landing Pages -->
     <!-- 1. Merge PDF -->
     <url>
         <loc>https://techtis.in/merge-pdf/</loc>
@@ -264,5 +290,69 @@
         <lastmod>2026-10-25</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
+    </url>
+
+    <!-- 33. Image Compressor -->
+    <url>
+        <loc>https://techtis.in/image-compressor/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 34. Image Resizer -->
+    <url>
+        <loc>https://techtis.in/image-resizer/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 35. JPG to PNG -->
+    <url>
+        <loc>https://techtis.in/jpg-to-png/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 36. PNG to JPG -->
+    <url>
+        <loc>https://techtis.in/png-to-jpg/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 37. JPG to WebP -->
+    <url>
+        <loc>https://techtis.in/jpg-to-webp/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 38. Image Cropper -->
+    <url>
+        <loc>https://techtis.in/image-cropper/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 39. Passport &amp; ID Photo Maker -->
+    <url>
+        <loc>https://techtis.in/passport-photo-maker/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 40. Private Document OCR -->
+    <url>
+        <loc>https://techtis.in/id-card-ocr/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
     </url>
 </urlset>

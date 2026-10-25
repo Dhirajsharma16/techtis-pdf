@@ -103,7 +103,15 @@
             { "@type": "ListItem", "position": 29, "name": "AI Summarizer", "url": "https://techtis.in/ai-summarizer/", "description": "Generate executive summaries and key takeaways with Edge AI." },
             { "@type": "ListItem", "position": 30, "name": "AI Translator", "url": "https://techtis.in/ai-translator/", "description": "Translate document content into 50+ languages with Edge AI." },
             { "@type": "ListItem", "position": 31, "name": "Form Blank Detector", "url": "https://techtis.in/form-blank-detector/", "description": "Inspect contracts to locate unfilled blanks and missing signatures." },
-            { "@type": "ListItem", "position": 32, "name": "Scan to PDF", "url": "https://techtis.in/scan-to-pdf/", "description": "Capture paper documents using your webcam or phone camera." }
+            { "@type": "ListItem", "position": 32, "name": "Scan to PDF", "url": "https://techtis.in/scan-to-pdf/", "description": "Capture paper documents using your webcam or phone camera." },
+            { "@type": "ListItem", "position": 33, "name": "Image Compressor", "url": "https://techtis.in/image-compressor/", "description": "Compress JPG, PNG, and WebP images directly in your browser with quality slider." },
+            { "@type": "ListItem", "position": 34, "name": "Image Resizer", "url": "https://techtis.in/image-resizer/", "description": "Resize images by pixels, percentage, or physical units with aspect ratio lock." },
+            { "@type": "ListItem", "position": 35, "name": "JPG to PNG", "url": "https://techtis.in/jpg-to-png/", "description": "Convert JPEG photos to lossless PNG format in browser memory." },
+            { "@type": "ListItem", "position": 36, "name": "PNG to JPG", "url": "https://techtis.in/png-to-jpg/", "description": "Convert transparent PNG images to compact JPG format with background color fill." },
+            { "@type": "ListItem", "position": 37, "name": "JPG to WebP", "url": "https://techtis.in/jpg-to-webp/", "description": "Convert images to ultra-efficient WebP format for fast web performance." },
+            { "@type": "ListItem", "position": 38, "name": "Image Cropper", "url": "https://techtis.in/image-cropper/", "description": "Crop and rotate photos with ratio presets (1:1, 4:3, 16:9, Passport) and 90° rotation." },
+            { "@type": "ListItem", "position": 39, "name": "Passport & ID Photo Maker", "url": "https://techtis.in/passport-photo-maker/", "description": "Generate compliant passport and ID photos with official country presets, face guides, and A4 print sheets." },
+            { "@type": "ListItem", "position": 40, "name": "Private Document OCR", "url": "https://techtis.in/id-card-ocr/", "description": "Extract text from Aadhaar and PAN cards with 100% in-browser WebAssembly privacy and sensitive number masking." }
           ]
         },
         {
@@ -207,7 +215,7 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                 <i data-lucide="search" class="w-4 h-4"></i>
             </div>
-            <input type="text" id="tool-search-input" placeholder="Search 32 PDF tools (e.g. form, merge, split, sign, compress...)" 
+            <input type="text" id="tool-search-input" placeholder="Search 40 PDF & Image tools (e.g. passport, ocr, compress, resize, merge...)" 
                    class="w-full pl-9 pr-10 py-2 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-red-500 rounded-xl text-xs shadow-xs focus:outline-none focus:ring-2 focus:ring-red-500/20 transition placeholder-slate-400">
             <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
                 <kbd class="px-1.5 py-0.5 text-[9px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs">/</kbd>
@@ -225,7 +233,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-start md:justify-center gap-1.5 sm:gap-2 py-2">
             <button class="top-nav-cat active flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-red-50 text-red-700 border border-red-200 transition whitespace-nowrap" data-fcat="all">
                 <i data-lucide="grid" class="w-3.5 h-3.5"></i>
-                <span>All Tools (32)</span>
+                <span>All Tools (40)</span>
             </button>
             <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="organize">
                 <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-500"></i>
@@ -246,6 +254,10 @@
             <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="ai-smart">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
                 <span>AI &amp; Smart Tools</span>
+            </button>
+            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="image">
+                <i data-lucide="image" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>Image Tools (8)</span>
             </button>
         </div>
     </nav>
@@ -675,21 +687,23 @@
     </main>
 
     <!-- Footer -->
-    <footer class="mt-auto bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-500">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <footer class="mt-auto bg-white border-t border-slate-200 py-6 px-4 text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-2">
-                <a href="https://techtis.in" target="_blank" rel="noopener" class="font-bold text-slate-800 hover:text-red-600 transition">TECHTIS (techtis.in)</a>
+                <a href="https://techtis.in" class="font-bold text-slate-800 hover:text-red-600 transition">TECHTIS (techtis.in)</a>
                 <span>&bull;</span>
-                <span>Sub-100ms Serverless Architecture</span>
+                <span>100% Client-Side Privacy</span>
+                <span>&bull;</span>
+                <span class="text-emerald-600 font-medium">Zero Server Uploads</span>
             </div>
-            <div class="flex items-center space-x-4 text-slate-600">
-                <span class="inline-flex items-center gap-1 text-emerald-600 font-medium">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Zero File Retention
-                </span>
+            <div class="flex flex-wrap items-center justify-center gap-4 text-slate-600 font-medium">
+                <a href="about.html" class="hover:text-red-600 transition">About Us</a>
                 <span>&bull;</span>
-                <span>No Database Fees</span>
+                <a href="privacy.html" class="hover:text-red-600 transition">Privacy Policy</a>
                 <span>&bull;</span>
-                <span>100% Free Tier</span>
+                <a href="terms.html" class="hover:text-red-600 transition">Terms of Service</a>
+                <span>&bull;</span>
+                <a href="contact.html" class="hover:text-red-600 transition">Contact Us</a>
             </div>
         </div>
     </footer>

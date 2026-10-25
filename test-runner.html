@@ -18,6 +18,7 @@ import { RotateTool } from './js/tools/rotate.js';
 import { AllToolsEngine } from './js/tools/all-tools-engine.js';
 import { EdgeAIBridge } from './js/edge/ai-bridge.js';
 import { StorageManager } from './js/utils/storage.js';
+import { ImageEngine } from './js/tools/image-engine.js';
 
 const out = document.getElementById('output');
 function log(msg) {
@@ -46,8 +47,27 @@ async function runTests() {
     log('====================================================');
     log('1. FETCHING TEST SAMPLES');
     log('====================================================');
-    const s1Bytes = await fetch('sample1.pdf').then(r => r.arrayBuffer());
-    const s2Bytes = await fetch('sample2.pdf').then(r => r.arrayBuffer());
+    let s1Bytes, s2Bytes;
+    try {
+        const r1 = await fetch('sample1.pdf');
+        if (!r1.ok) throw new Error();
+        s1Bytes = await r1.arrayBuffer();
+        s2Bytes = await fetch('sample2.pdf').then(r => r.arrayBuffer());
+    } catch (_) {
+        log('Generating test PDF samples dynamically via PDF-Lib...');
+        const doc1 = await window.PDFLib.PDFDocument.create();
+        const font = await doc1.embedFont(window.PDFLib.StandardFonts.Helvetica);
+        const p1 = doc1.addPage([600, 400]);
+        p1.drawText('TECHTIS Test Document Page 1', { x: 50, y: 350, font, size: 18 });
+        const p2 = doc1.addPage([600, 400]);
+        p2.drawText('TECHTIS Test Document Page 2', { x: 50, y: 350, font, size: 18 });
+        s1Bytes = await doc1.save();
+
+        const doc2 = await window.PDFLib.PDFDocument.create();
+        const p3 = doc2.addPage([600, 400]);
+        p3.drawText('TECHTIS Test Document 2', { x: 50, y: 350, font, size: 18 });
+        s2Bytes = await doc2.save();
+    }
     const s1File = new File([s1Bytes], 'sample1.pdf', { type: 'application/pdf' });
     const s2File = new File([s2Bytes], 'sample2.pdf', { type: 'application/pdf' });
 
@@ -291,7 +311,98 @@ async function runTests() {
         return `OCR stream: ${res.slice(0, 40)}...`;
     });
 
+    
     log('\n====================================================');
+    log('5. TESTING GROUP C: IMAGE TOOLS & ID SUITE');
+    log('====================================================');
+
+    // Create a 100x100 test canvas image file in memory
+    const testCanvas = document.createElement('canvas');
+    testCanvas.width = 100;
+    testCanvas.height = 100;
+    const testCtx = testCanvas.getContext('2d');
+    testCtx.fillStyle = '#dc2626';
+    testCtx.fillRect(0, 0, 100, 100);
+    testCtx.fillStyle = '#ffffff';
+    testCtx.font = '20px sans-serif';
+    testCtx.fillText('TEST', 25, 55);
+
+    const testImgBlob = await new Promise(r => testCanvas.toBlob(r, 'image/png'));
+    const testImgFile = new File([testImgBlob], 'test_sample.png', { type: 'image/png' });
+
+    // 33. Image Compressor
+    await assertTool('Image Compressor', async () => {
+        const res = await ImageEngine.compressImage(testImgFile, 0.75, 'image/jpeg');
+        if (!res.blob || res.compressedSize <= 0) throw new Error('Compression returned invalid blob');
+        return `Original: ${res.originalSize}B, Compressed: ${res.compressedSize}B, Savings: ${res.savingsPct}%`;
+    });
+
+    // 34. Image Resizer
+    await assertTool('Image Resizer', async () => {
+        const res = await ImageEngine.resizeImage(testImgFile, 50, 50, 'image/png');
+        if (res.width !== 50 || res.height !== 50) throw new Error(`Unexpected dimensions: ${res.width}x${res.height}`);
+        return `Resized to ${res.width}x${res.height} px, Size: ${res.size}B`;
+    });
+
+    // 35. Format Converter (PNG to JPG)
+    await assertTool('PNG to JPG Converter', async () => {
+        const res = await ImageEngine.convertFormat(testImgFile, 'image/jpeg', 0.9, '#ffffff');
+        if (!res.blob || res.blob.type !== 'image/jpeg') throw new Error('Output mime is not image/jpeg');
+        return `Converted to JPG: ${res.size}B`;
+    });
+
+    // 36. Format Converter (JPG to WebP)
+    await assertTool('JPG to WebP Converter', async () => {
+        const res = await ImageEngine.convertFormat(testImgFile, 'image/webp', 0.85);
+        if (!res.blob || res.blob.type !== 'image/webp') throw new Error('Output mime is not image/webp');
+        return `Converted to WebP: ${res.size}B`;
+    });
+
+    // 37. Image Cropper
+    await assertTool('Image Cropper & Rotator', async () => {
+        const res = await ImageEngine.cropImage(testImgFile, { x: 10, y: 10, width: 60, height: 60 }, 90, 'image/png');
+        if (res.width !== 60 || res.height !== 60) throw new Error('Crop dimensions mismatch');
+        return `Cropped & Rotated 90°: ${res.width}x${res.height} px`;
+    });
+
+    // 38. Passport Photo Presets & DPI Math
+    await assertTool('Passport Presets Verification', async () => {
+        const presets = ImageEngine.PASSPORT_PRESETS;
+        if (!presets || presets.length < 4) throw new Error('Presets missing');
+        const inPreset = presets.find(p => p.id === 'in-passport');
+        const usPreset = presets.find(p => p.id === 'us-passport');
+        if (inPreset.widthMm !== 35 || inPreset.heightMm !== 45) throw new Error('India preset dimensions incorrect');
+        if (usPreset.widthMm !== 50.8) throw new Error('US preset dimensions incorrect');
+        return `Verified ${presets.length} presets (India 35x45mm, US 2x2in, UK 35x45mm)`;
+    });
+
+    // 39. Passport Photo A4 Print Sheet PDF Generation
+    await assertTool('Passport A4 Print Sheet Generator', async () => {
+        const inPreset = ImageEngine.PASSPORT_PRESETS.find(p => p.id === 'in-passport');
+        const dataUrl = testCanvas.toDataURL('image/jpeg', 0.95);
+        const sheet = await ImageEngine.generatePassportPrintSheet(dataUrl, inPreset, 8, 300);
+        if (!sheet.pdfBytes || sheet.pdfBytes.length === 0) throw new Error('Failed to generate A4 sheet PDF');
+        return `Generated A4 PDF: ${sheet.pdfBytes.length} bytes with ${sheet.placedCount} tiled photos`;
+    });
+
+    // 40. Private Document OCR & Masking (Aadhaar & PAN)
+    await assertTool('Private Document OCR & Masking', async () => {
+        const aadhaarSample = 'GOVERNMENT OF INDIA\nUnique Identification Authority of India\nRajesh Kumar\nDOB: 12/04/1985\nMALE\n9876 5432 1098';
+        const parsedAadhaar = ImageEngine.parseIdCard(aadhaarSample);
+        if (parsedAadhaar.docType !== 'Aadhaar Card') throw new Error('Failed to detect Aadhaar Card');
+        if (parsedAadhaar.maskedNumber !== 'XXXX XXXX 1098') throw new Error('Aadhaar number not masked correctly: ' + parsedAadhaar.maskedNumber);
+        if (parsedAadhaar.name !== 'Rajesh Kumar') throw new Error('Name extraction failed: ' + parsedAadhaar.name);
+        if (parsedAadhaar.gender !== 'MALE') throw new Error('Gender extraction failed');
+
+        const panSample = 'INCOME TAX DEPARTMENT\nGOVT. OF INDIA\nPRIYA SHARMA\nDOB: 05/09/1992\nABCDE9999Z';
+        const parsedPan = ImageEngine.parseIdCard(panSample);
+        if (parsedPan.docType !== 'PAN Card') throw new Error('Failed to detect PAN Card');
+        if (parsedPan.docNumber !== 'ABCDE9999Z') throw new Error('PAN number extraction failed');
+
+        return `Aadhaar & PAN successfully parsed! Masked: ${parsedAadhaar.maskedNumber}, PAN: ${parsedPan.docNumber}`;
+    });
+
+log('\n====================================================');
     log(`FINAL TEST RESULTS: ${passed} PASSED | ${failed} FAILED (Out of ${passed + failed} tools)`);
     log('====================================================');
 

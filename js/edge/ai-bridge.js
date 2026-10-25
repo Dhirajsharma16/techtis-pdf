@@ -320,8 +320,7 @@ ${text.slice(0, 25000)}`;
             formData.append('apikey', apiKey);
 
             const response = await fetch('https://api.ocr.space/parse/image', {
-                method: 'POST',
-                body: formData
+                method: 'POST', body: formData, signal: (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) ? AbortSignal.timeout(2500) : undefined
             });
 
             if (response.ok) {

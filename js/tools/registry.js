@@ -22,12 +22,13 @@ export const TOOL_CATEGORIES = {
 };
 
 export const FUNCTIONAL_CATEGORIES = [
-    { id: 'all', name: 'All Tools', icon: 'grid', count: 32 },
+    { id: 'all', name: 'All Tools', icon: 'grid', count: 40 },
     { id: 'organize', name: 'Organize PDF', icon: 'layers', count: 6, desc: 'Merge, split, rotate, extract, reorder' },
     { id: 'edit-sign', name: 'Edit & Sign', icon: 'pen-tool', count: 6, desc: 'Sign, annotate, watermark, page numbers' },
     { id: 'security', name: 'Security & Lock', icon: 'lock', count: 5, desc: 'Protect, unlock, flatten, metadata' },
     { id: 'convert', name: 'Convert & Optimize', icon: 'arrow-left-right', count: 10, desc: 'PDF to JPG, JPG to PDF, Compress, Office' },
-    { id: 'ai-smart', name: 'AI & Edge Tools', icon: 'sparkles', count: 5, desc: 'Summarizer, OCR scan, translator, blank detector' }
+    { id: 'ai-smart', name: 'AI & Edge Tools', icon: 'sparkles', count: 5, desc: 'Summarizer, OCR scan, translator, blank detector' },
+    { id: 'image', name: 'Image Tools', icon: 'image', count: 8, desc: 'Compress, resize, crop, convert, ID photo & private OCR' }
 ];
 
 export const TOOLS = [
@@ -522,5 +523,131 @@ export const TOOLS = [
         multiple: false,
         actionPrompt: 'Capture paper documents with your webcam and apply contrast filter',
         description: 'Captures physical papers via browser getUserMedia, applies client-side perspective correction and exports to PDF.'
+    }
+,
+    // Image Tools & ID Suite (100% Client-Side Canvas & WASM)
+    {
+        id: 'image-compressor',
+        name: 'Image Compressor',
+        tagline: 'Compress JPG, PNG & WebP images with custom quality and byte savings',
+        group: 'group-a',
+        category: 'Image Tools',
+        functionalCategory: 'image',
+        icon: 'image-minus',
+        badge: '100% Client-Side',
+        status: 'ready',
+        isPopular: true,
+        accept: 'image/*',
+        multiple: false,
+        actionPrompt: 'Compress image size with live quality slider and instant byte comparison',
+        description: 'Compress JPG, PNG, and WebP images directly in your browser using client-side canvas. Fast, private, and preserves visual quality.'
+    },
+    {
+        id: 'image-resizer',
+        name: 'Image Resizer',
+        tagline: 'Resize images by pixels, percentage, or physical dimensions with aspect ratio lock',
+        group: 'group-a',
+        category: 'Image Tools',
+        functionalCategory: 'image',
+        icon: 'maximize-2',
+        badge: '100% Client-Side',
+        status: 'ready',
+        isPopular: true,
+        accept: 'image/*',
+        multiple: false,
+        actionPrompt: 'Resize image dimensions with aspect ratio preservation and custom units',
+        description: 'Resize image width and height in pixels, percentages, centimeters, or inches with aspect ratio lock and high-quality bicubic resampling.'
+    },
+    {
+        id: 'jpg-to-png',
+        name: 'JPG to PNG',
+        tagline: 'Convert JPEG photos to lossless PNG format with zero compression artifacts',
+        group: 'group-a',
+        category: 'Image Tools',
+        functionalCategory: 'image',
+        icon: 'image',
+        badge: '100% Client-Side',
+        status: 'ready',
+        accept: '.jpg,.jpeg,image/jpeg',
+        multiple: false,
+        actionPrompt: 'Convert JPG images to clean lossless PNG format in browser memory',
+        description: 'Convert JPG photos to lossless PNG format instantly in your browser without quality loss or server uploads.'
+    },
+    {
+        id: 'png-to-jpg',
+        name: 'PNG to JPG',
+        tagline: 'Convert PNG images to lightweight JPG with custom background fill',
+        group: 'group-a',
+        category: 'Image Tools',
+        functionalCategory: 'image',
+        icon: 'file-image',
+        badge: '100% Client-Side',
+        status: 'ready',
+        accept: '.png,image/png',
+        multiple: false,
+        actionPrompt: 'Convert transparent PNG images to compact JPG format with background color fill',
+        description: 'Convert PNG graphics and screenshots to lightweight JPG format with selectable background color fill for transparent areas.'
+    },
+    {
+        id: 'jpg-to-webp',
+        name: 'JPG to WebP',
+        tagline: 'Convert JPG and PNG images to ultra-efficient next-gen WebP format',
+        group: 'group-a',
+        category: 'Image Tools',
+        functionalCategory: 'image',
+        icon: 'zap',
+        badge: '100% Client-Side',
+        status: 'ready',
+        accept: 'image/*',
+        multiple: false,
+        actionPrompt: 'Convert images to high-performance WebP format for fast web loading',
+        description: 'Convert images to Google next-gen WebP format for 30%+ file size reduction while maintaining crystal-clear visual quality.'
+    },
+    {
+        id: 'image-cropper',
+        name: 'Image Cropper',
+        tagline: 'Crop and rotate images with freeform or fixed aspect ratio presets',
+        group: 'group-a',
+        category: 'Image Tools',
+        functionalCategory: 'image',
+        icon: 'crop',
+        badge: '100% Client-Side',
+        status: 'ready',
+        accept: 'image/*',
+        multiple: false,
+        actionPrompt: 'Crop, frame, and rotate images with visual ratio guides and 90° rotation',
+        description: 'Crop and rotate photos with preset aspect ratios (1:1 Square, 4:3, 16:9, Passport 35:45) and 90-degree rotation tools in browser memory.'
+    },
+    {
+        id: 'passport-photo-maker',
+        name: 'Passport & ID Photo Maker',
+        tagline: 'Create compliant passport photos with official presets & A4 print sheet tiling',
+        group: 'group-a',
+        category: 'Image Tools',
+        functionalCategory: 'image',
+        icon: 'user-check',
+        badge: '100% Client-Side',
+        status: 'ready',
+        isPopular: true,
+        accept: 'image/*',
+        multiple: false,
+        actionPrompt: 'Generate compliant passport photos with framing guide and A4 print PDF export',
+        description: 'Create standard passport and visa photos with official country presets (India 35x45mm, US 2x2 inch, UK/Schengen), biometric face guides, single photo download, and multi-up A4 printable PDF tiling.'
+    },
+    {
+        id: 'id-card-ocr',
+        name: 'Private Document OCR',
+        tagline: 'Extract text from Aadhaar, PAN & ID cards with 100% in-browser privacy',
+        group: 'group-a',
+        category: 'Image Tools',
+        functionalCategory: 'image',
+        icon: 'scan-line',
+        badge: '100% In-Browser WASM',
+        status: 'ready',
+        isPopular: true,
+        accept: 'image/*,.pdf',
+        multiple: false,
+        actionPrompt: 'Extract name, DOB, and document numbers locally with sensitive number masking',
+        description: 'Extract text and fields from Aadhaar and PAN cards strictly in browser memory using Tesseract.js WebAssembly. Features automatic number masking (XXXX XXXX 1234), editable fields, and instant clear-memory control.'
     }
 ];

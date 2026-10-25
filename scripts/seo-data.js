@@ -1028,4 +1028,261 @@ export const SEO_DATA = {
         ],
         relatedTools: ['jpg-to-pdf', 'crop-pdf', 'ocr-pdf', 'compress-pdf', 'rotate-pdf', 'pdf-to-jpg']
     }
+,
+
+    'image-compressor': {
+        title: 'Image Compressor Online Free – Reduce JPG, PNG & WebP Size | TECHTIS',
+        metaDescription: 'Compress images online for free with TECHTIS. Reduce JPG, PNG, and WebP file sizes with customizable quality slider. 100% private in-browser compression.',
+        keywords: 'compress image, image compressor, reduce image size, compress jpg online, compress png, webp compressor, image compression without quality loss, tinypng alternative',
+        h1: 'Compress Images Online Free',
+        subtitle: 'Reduce image file size by up to 85% while preserving visual clarity using client-side HTML5 Canvas.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Image', desc: 'Select or drag your JPG, PNG, or WebP photo into the workspace.' },
+            { step: 2, title: 'Adjust Quality Slider', desc: 'Use the interactive quality slider (10% to 95%) and see real-time byte savings.' },
+            { step: 3, title: 'Download Compressed Image', desc: 'Download your optimized image instantly with zero server latency.' }
+        ],
+        features: [
+            { title: 'Zero File Uploads', desc: 'Compression happens 100% inside your browser memory using HTML5 Canvas. No photos reach external servers.' },
+            { title: 'Real-Time Byte Comparison', desc: 'Instantly view original size, compressed size, and exact KB savings as you move the slider.' },
+            { title: 'Multi-Format Support', desc: 'Supports JPG, PNG, and next-generation WebP image formats.' },
+            { title: 'Unlimited & Free', desc: 'No daily image quotas, no file size limits, and no registration required.' }
+        ],
+        content: `
+            <p>High-resolution photos from modern smartphones and digital cameras can easily weigh 5 MB to 15 MB each. Heavy images slow down website loading speeds, fail to upload on job portals and government forms, and quickly consume mobile email attachments. TECHTIS Image Compressor solves this challenge directly inside your browser.</p>
+            <p>Unlike cloud image compressors like TinyPNG or iLoveIMG that require sending your personal family photos or confidential scans to remote commercial servers, TECHTIS processes image compression entirely in your computer or phone's local RAM. Using hardware-accelerated HTML5 Canvas bicubic resampling, TECHTIS strips redundant EXIF metadata and optimizes image quantization with zero server latency.</p>
+            <p>Take full control over your compression ratio with our interactive quality slider, compare before-and-after image byte savings in real time, and download optimized files ready for web publishing, email sending, and online form submissions.</p>
+        `,
+        faqs: [
+            { q: 'How does in-browser image compression work?', a: 'TECHTIS loads your image into local HTML5 Canvas memory and re-encodes it at your selected quality level using client-side browser APIs. Your photo is never sent to any server.' },
+            { q: 'Will compressing my image reduce its physical pixel dimensions?', a: 'No, the compression tool reduces file size in kilobytes by optimizing color quantization and removing metadata, without altering pixel dimensions.' },
+            { q: 'What is the recommended quality setting for web images?', a: 'A quality level between 75% and 85% provides significant file size reduction (often 60-80% savings) with no discernible loss in visual quality.' },
+            { q: 'Can I compress WebP and PNG images as well as JPG?', a: 'Yes! TECHTIS supports JPG, PNG, and modern WebP image formats.' }
+        ],
+        relatedTools: ['image-resizer', 'image-cropper', 'jpg-to-webp', 'jpg-to-png', 'png-to-jpg', 'jpg-to-pdf']
+    },
+
+    'image-resizer': {
+        title: 'Image Resizer Online Free – Resize Photos by Pixels, Percent & CM | TECHTIS',
+        metaDescription: 'Resize image dimensions online for free. Change width and height in pixels, percentages, centimeters, or inches with aspect ratio lock. 100% in-browser privacy.',
+        keywords: 'resize image, image resizer online, change photo dimensions, resize picture free, photo resizer cm inches, resize image without losing quality, iloveimg resizer alternative',
+        h1: 'Resize Images Online Free',
+        subtitle: 'Resize image width and height by exact pixels, percentage, or physical units with aspect ratio lock.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Image', desc: 'Drop your photo into the workspace or browse from your device.' },
+            { step: 2, title: 'Set Target Dimensions', desc: 'Enter custom width or height, choose a scale preset (25%, 50%, 75%), or lock aspect ratio.' },
+            { step: 3, title: 'Download Resized Image', desc: 'Export your resized image in crisp PNG, JPG, or WebP format instantly.' }
+        ],
+        features: [
+            { title: 'Aspect Ratio Lock', desc: 'Maintain proportions automatically so your images never look stretched or distorted.' },
+            { title: 'Bicubic Image Resampling', desc: 'High-quality interpolation guarantees smooth gradients and crisp edges at any dimension.' },
+            { title: 'Quick Scale Presets', desc: 'One-click buttons to downscale to 25%, 50%, 75%, or upscale to 200% in a fraction of a second.' },
+            { title: 'Zero Cloud Uploads', desc: 'All image rendering executes locally in your browser memory for total privacy.' }
+        ],
+        content: `
+            <p>Whether you need to resize a photo for an online passport application, fit an avatar image into a forum profile, or scale down product photography for an ecommerce website, TECHTIS Image Resizer provides millimeter and pixel-level precision.</p>
+            <p>Our client-side resizing engine employs high-quality bicubic interpolation algorithms directly inside browser RAM. With our built-in aspect ratio lock, entering a new width automatically computes the mathematically proportional height, preventing accidental image stretching or squishing.</p>
+            <p>Because processing runs on your local CPU and GPU, you can resize high-resolution images instantly without waiting for slow cloud uploads or paying for subscription software.</p>
+        `,
+        faqs: [
+            { q: 'Will resizing an image distort its proportions?', a: 'Not if you keep the "Lock Aspect Ratio" box checked. When locked, changing the width automatically updates the height proportionally.' },
+            { q: 'Can I enlarge a small photo?', a: 'Yes, you can upscale images, though substantial enlargement beyond original resolution may result in softness.' },
+            { q: 'Are my images stored or saved anywhere?', a: 'No. TECHTIS processes your images completely inside your device RAM with zero file retention.' },
+            { q: 'Which output formats can I choose?', a: 'You can export resized images as PNG (lossless), JPEG (compressed), or next-gen WebP.' }
+        ],
+        relatedTools: ['image-compressor', 'image-cropper', 'passport-photo-maker', 'jpg-to-png', 'jpg-to-pdf']
+    },
+
+    'jpg-to-png': {
+        title: 'JPG to PNG Converter Online Free – Convert JPEG to Lossless PNG | TECHTIS',
+        metaDescription: 'Convert JPG to PNG online free in seconds. Transform lossy JPEG images into lossless PNG format with crystal-clear quality and 100% in-browser privacy.',
+        keywords: 'jpg to png, convert jpg to png, jpeg to png converter free, convert photo to png online, lossless png converter, client side image converter',
+        h1: 'Convert JPG to PNG Online Free',
+        subtitle: 'Transform JPEG photos into lossless PNG format with zero compression artifacts and complete client-side confidentiality.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Select JPG Photo', desc: 'Drop your JPEG or JPG file into the converter zone.' },
+            { step: 2, title: 'Instant Preview', desc: 'Inspect your image in the high-DPI viewer with natural dimensions.' },
+            { step: 3, title: 'Download PNG', desc: 'Click download to save your crisp, lossless PNG file instantly.' }
+        ],
+        features: [
+            { title: 'Lossless Conversion', desc: 'Re-encodes JPEG data into uncompressed PNG pixels with zero additional compression loss.' },
+            { title: 'Sub-100ms Speed', desc: 'Local HTML5 Canvas execution converts standard photos in milliseconds.' },
+            { title: '100% Private', desc: 'No photos leave your phone or computer; zero server uploads guaranteed.' },
+            { title: 'Universal Compatibility', desc: 'Works seamlessly on all browsers across Windows, Mac, iOS, Android, and Linux.' }
+        ],
+        content: `
+            <p>JPEG is the standard format for digital photography due to its efficient file size, but its lossy compression introduces subtle artifacts and prevents transparency. When you need to prepare an image for graphic editing, digital illustration, or software UI design, converting JPG to PNG provides a stable, lossless foundation.</p>
+            <p>TECHTIS JPG to PNG converter decodes your JPEG image directly in browser RAM and converts pixel data into standard 24-bit RGB PNG format. The resulting PNG file preserves all color depth and prevents further compression degradation during subsequent edits.</p>
+        `,
+        faqs: [
+            { q: 'Does converting JPG to PNG improve image quality?', a: 'Converting to PNG cannot recover data lost in the original JPEG compression, but it prevents any further degradation when editing or saving.' },
+            { q: 'Does PNG support transparency?', a: 'Yes, PNG natively supports full alpha transparency channels.' },
+            { q: 'Is there a limit on file size?', a: 'Because processing happens on your local device CPU, there are no artificial file size caps.' }
+        ],
+        relatedTools: ['png-to-jpg', 'jpg-to-webp', 'image-compressor', 'image-resizer', 'jpg-to-pdf']
+    },
+
+    'png-to-jpg': {
+        title: 'PNG to JPG Converter Online Free – Convert PNG to Lightweight JPEG | TECHTIS',
+        metaDescription: 'Convert PNG to JPG online for free. Compress heavy PNG images into lightweight JPG format with customizable background color. 100% private in-browser tool.',
+        keywords: 'png to jpg, convert png to jpg online, png to jpeg free, convert png to jpg with white background, reduce png size to jpg, transparent png to jpg',
+        h1: 'Convert PNG to JPG Online Free',
+        subtitle: 'Convert heavy PNG graphics, screenshots, and logos into lightweight JPG format with selectable background fill.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload PNG Graphic', desc: 'Choose your PNG image or screenshot from your device.' },
+            { step: 2, title: 'Select Background Fill', desc: 'Choose a background color (default white) to cleanly replace transparent regions.' },
+            { step: 3, title: 'Download JPG', desc: 'Save your compact JPEG photo with instant client-side download.' }
+        ],
+        features: [
+            { title: 'Custom Background Fill', desc: 'Replaces transparent PNG backgrounds with clean white or custom color fill to avoid black borders.' },
+            { title: 'Drastic File Size Reduction', desc: 'Reduces large screenshot and graphic PNGs by up to 70% in lightweight JPG format.' },
+            { title: 'Zero Server Logs', desc: 'All operations execute locally in your browser memory for absolute data security.' }
+        ],
+        content: `
+            <p>PNG graphics, screenshots, and artwork often consume excessive megabytes of storage because PNG is a lossless format. Converting PNG files to JPG is the quickest way to reduce attachment sizes for email submissions, speed up web page load times, and meet strict file size limits on online job portals.</p>
+            <p>Because the JPEG format does not support transparency, transparent areas in a PNG can turn black or distorted in substandard converters. TECHTIS automatically fills transparent background pixels with clean, crisp white (or any custom color you pick), ensuring that your converted JPEG looks professional and accurate.</p>
+        `,
+        faqs: [
+            { q: 'What happens to transparent backgrounds when converting to JPG?', a: 'Because JPG does not support transparency, TECHTIS fills transparent areas with a clean white background (or your chosen color).' },
+            { q: 'Why is my converted JPG so much smaller than the PNG?', a: 'JPEG uses lossy DCT quantization designed for human vision, resulting in up to 70% smaller file sizes without noticeable loss in visual quality.' },
+            { q: 'Are my private screenshots uploaded to your servers?', a: 'Never. TECHTIS processes everything locally inside your browser memory.' }
+        ],
+        relatedTools: ['jpg-to-png', 'jpg-to-webp', 'image-compressor', 'image-resizer', 'jpg-to-pdf']
+    },
+
+    'jpg-to-webp': {
+        title: 'JPG to WebP Converter Online Free – Convert Images to Next-Gen WebP | TECHTIS',
+        metaDescription: 'Convert JPG and PNG images to next-gen WebP online free. Reduce image size by 30%+ with superior visual quality. 100% client-side in-browser conversion.',
+        keywords: 'jpg to webp, convert jpg to webp, png to webp, webp converter online free, convert photo to webp, next gen image format, faster website images',
+        h1: 'Convert Images to WebP Online Free',
+        subtitle: 'Transform JPG and PNG photos into Google next-generation WebP format for 30%+ smaller file sizes and faster web loading.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Select Image', desc: 'Choose any JPG, PNG, or photo from your computer or phone.' },
+            { step: 2, title: 'Set Quality Level', desc: 'Configure compression balance with live size calculation.' },
+            { step: 3, title: 'Download WebP', desc: 'Save your ultra-compact WebP image ready for modern websites.' }
+        ],
+        features: [
+            { title: '30%+ Smaller File Sizes', desc: 'WebP provides superior compression compared to traditional JPEG and PNG formats.' },
+            { title: 'Boost Google Core Web Vitals', desc: 'Smaller images load faster, improving LCP (Largest Contentful Paint) and SEO rankings.' },
+            { title: 'Zero Cloud Transmission', desc: 'Conversion runs locally inside your browser engine without sending data across the network.' }
+        ],
+        content: `
+            <p>WebP is modern Google image technology developed specifically to make the web faster. According to Google developer benchmarks, WebP lossless images are 26% smaller than PNGs, and WebP lossy images are 25-34% smaller than comparable JPEGs at identical SSIM quality index.</p>
+            <p>Switching your website photography and blog graphics to WebP dramatically boosts Google Core Web Vitals, reduces mobile bandwidth consumption, and improves your organic search ranking. TECHTIS empowers web developers, designers, and site owners to convert photos to WebP directly in browser memory without installing complex command-line utilities.</p>
+        `,
+        faqs: [
+            { q: 'Is WebP supported by all modern browsers?', a: 'Yes! WebP is fully supported by Google Chrome, Apple Safari (iOS 14+ and macOS Big Sur+), Mozilla Firefox, Microsoft Edge, and Opera.' },
+            { q: 'Does WebP support transparency?', a: 'Yes, WebP supports both 8-bit alpha transparency (like PNG) and lossy photographic compression (like JPG).' },
+            { q: 'Are my images secure?', a: 'Yes, 100% secure. Processing happens in your browser RAM without any server uploads.' }
+        ],
+        relatedTools: ['image-compressor', 'jpg-to-png', 'png-to-jpg', 'image-resizer', 'jpg-to-pdf']
+    },
+
+    'image-cropper': {
+        title: 'Image Cropper Online Free – Crop & Rotate Photos with Aspect Ratios | TECHTIS',
+        metaDescription: 'Crop and rotate photos online for free. Visual crop box with 1:1, 4:3, 16:9, and passport ratio presets, plus 90-degree rotation. 100% client-side privacy.',
+        keywords: 'crop image, image cropper online, crop photo free, photo rotator online, rotate image 90 degrees, square photo cropper, passport photo crop, crop picture in browser',
+        h1: 'Crop & Rotate Images Online Free',
+        subtitle: 'Frame, crop, and rotate images with fixed aspect ratio presets (1:1, 4:3, 16:9, Passport) and 90° rotation controls in browser memory.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Photo', desc: 'Drop your photo into the cropping canvas.' },
+            { step: 2, title: 'Select Ratio & Rotate', desc: 'Pick an aspect ratio (Free, 1:1 Square, 4:3, 16:9, Passport) and rotate if needed.' },
+            { step: 3, title: 'Download Cropped Image', desc: 'Export your framed picture in high resolution with zero latency.' }
+        ],
+        features: [
+            { title: 'Aspect Ratio Presets', desc: 'Instant presets for 1:1 Square (Instagram/Avatar), 16:9 Widescreen, 4:3 Standard, and 35:45 Passport.' },
+            { title: '90° Lossless Rotation', desc: 'Rotate photos clockwise or counter-clockwise to correct sideways smartphone orientation.' },
+            { title: '100% In-Browser Memory', desc: 'Zero file uploads. Your private personal photos remain strictly confidential.' }
+        ],
+        content: `
+            <p>Trimming unwanted background clutter, centering a portrait subject, and correcting sideways camera orientation are essential steps before sharing photos online or submitting documents for verification. TECHTIS Image Cropper provides intuitive framing tools directly in your browser.</p>
+            <p>With dedicated aspect ratio presets for social media avatars (1:1), YouTube thumbnails and desktop wallpapers (16:9), classic photography (4:3 and 3:2), and official biometric documents (35:45), you can achieve exact geometric proportions in seconds.</p>
+        `,
+        faqs: [
+            { q: 'Can I crop to a custom freeform shape?', a: 'Yes! Select the "Free" ratio mode to crop to any custom rectangular dimension you desire.' },
+            { q: 'Can I fix sideways or upside-down photos?', a: 'Yes, use the "90° Left" and "90° Right" buttons to rotate your photo before cropping.' },
+            { q: 'Does cropping reduce photo resolution?', a: 'The cropped image retains the original native pixel density of the selected area without artificial downsampling.' }
+        ],
+        relatedTools: ['image-resizer', 'image-compressor', 'passport-photo-maker', 'jpg-to-png', 'jpg-to-pdf']
+    },
+
+    'passport-photo-maker': {
+        title: 'Passport & ID Photo Maker Online Free – Official Presets & A4 Print Sheet | TECHTIS',
+        metaDescription: 'Create compliant passport and ID photos online free. Official presets for India (35x45mm), US (2x2 in), UK/Schengen, face framing guide, and multi-up A4 printable PDF tiling.',
+        keywords: 'passport photo maker, free passport photo online, create passport size photo, india passport photo 35x45, us visa photo 2x2 inch, passport photo a4 print sheet, id photo maker free, biometric photo crop',
+        h1: 'Passport & ID Photo Maker Online Free',
+        subtitle: 'Create compliant passport, visa, and ID photos with official country presets, biometric face framing guides, and multi-up A4 printable PDF tiling.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Portrait Photo', desc: 'Select a clear front-facing portrait photo taken against a plain light background.' },
+            { step: 2, title: 'Align with Biometric Guide', desc: 'Select your country preset (India, US, UK, Schengen) and adjust zoom and pan to fit the face oval.' },
+            { step: 3, title: 'Download Single or A4 Print Sheet', desc: 'Download a high-resolution 300 DPI single photo or an 8-up A4 printable PDF sheet.' }
+        ],
+        features: [
+            { title: 'Verified Country Presets', desc: 'Official dimensions for India Passport/OCI (35x45mm), US Visa (2x2 in / 51x51mm), UK/Schengen (35x45mm), and Student ID (30x40mm).' },
+            { title: 'Biometric Face Oval Guide', desc: 'Visual overlay ensures correct chin-to-crown height and eye horizontal alignment per ICAO 9303 standards.' },
+            { title: 'Multi-Up A4 Print Sheet PDF', desc: 'Tiles photos onto a standard A4 page with cutting border lines, ready for printing at home or at local photo studios.' },
+            { title: '300 DPI High-Resolution Output', desc: 'Generates crisp, laboratory-grade photographic output compliant with embassy submission guidelines.' },
+            { title: '100% Private in Browser RAM', desc: 'Your facial portraits are processed strictly in browser memory and never uploaded to remote servers.' }
+        ],
+        content: `
+            <p>Obtaining passport, visa, and government identity photos at commercial studios can be expensive and time-consuming. Commercial online services often charge recurring subscriptions or watermark your images. TECHTIS Passport &amp; ID Photo Maker provides a completely free, 100% private in-browser solution compliant with international civil aviation standards (ICAO Doc 9303).</p>
+            <p>Our interactive workspace includes verified presets for major international jurisdictions:</p>
+            <ul>
+                <li><strong>India Passport / OCI / Visa:</strong> Standard 35 &times; 45 mm color photo with 70-80% face coverage.</li>
+                <li><strong>United States Visa / Green Card:</strong> Exact 2 &times; 2 inch (50.8 &times; 50.8 mm) square photo with white background.</li>
+                <li><strong>UK / Schengen / European Union:</strong> 35 &times; 45 mm biometric portrait with chin-to-crown height between 32 mm and 36 mm.</li>
+                <li><strong>Universal Student &amp; Employee ID:</strong> 30 &times; 40 mm portrait format suitable for company badges and campus cards.</li>
+            </ul>
+            <p>Our biometric face alignment overlay displays head oval and eye level guides so you can position your portrait with millimeter precision. When finished, you can export a single high-resolution 300 DPI photograph or generate a multi-up A4 printable PDF sheet containing 8 neatly tiled photos with cutting border lines.</p>
+            <p><strong>Printing Tip:</strong> When printing the generated A4 PDF sheet, always select <em>"Actual Size"</em> or <em>100% Scale</em> in your printer dialogue. Never choose "Fit to page", which alters physical dimensions.</p>
+        `,
+        faqs: [
+            { q: 'What are the dimensions for an Indian passport photo?', a: 'The official specification is 35 mm in width by 45 mm in height, with the face covering 70% to 80% of the photo area.' },
+            { q: 'What are the dimensions for a US visa or passport photo?', a: 'The US Department of State requires a 2 x 2 inch (51 x 51 mm) square photograph with a plain white or off-white background.' },
+            { q: 'How should I print the A4 print sheet?', a: 'Print on 4x6 inch or A4 glossy photo paper using your home printer or a local photo lab. Crucially, set printer scale to "Actual Size" or 100% (do NOT select "Fit to Printable Area").' },
+            { q: 'Are my private portrait photos uploaded to any server?', a: 'Never. All cropping, biometric overlay rendering, and PDF sheet generation take place exclusively inside your browser memory.' }
+        ],
+        relatedTools: ['image-cropper', 'image-resizer', 'image-compressor', 'id-card-ocr', 'jpg-to-pdf']
+    },
+
+    'id-card-ocr': {
+        title: 'Private Document OCR Online Free – Extract Aadhaar & PAN Card Data | TECHTIS',
+        metaDescription: 'Extract text from Aadhaar, PAN and ID cards online free with 100% in-browser privacy. Client-side WebAssembly OCR, sensitive number masking, and instant clear-data controls.',
+        keywords: 'aadhaar card ocr, pan card ocr online, extract id card text, client side ocr, private document ocr, in browser tesseract wasm, mask aadhaar number online, free id scanner',
+        h1: 'Private Document OCR Online Free',
+        subtitle: 'Extract text and fields from Aadhaar, PAN, and ID cards with 100% in-browser WebAssembly privacy, sensitive number masking, and instant memory-purge controls.',
+        badge: '100% In-Browser WebAssembly',
+        howTo: [
+            { step: 1, title: 'Upload ID Card Scan or Photo', desc: 'Drop your Aadhaar, PAN, or government ID document into the private workspace.' },
+            { step: 2, title: 'Automatic In-Browser Extraction', desc: 'Client-side WebAssembly reads text locally in RAM with zero network transmission.' },
+            { step: 3, title: 'Inspect, Mask & Copy', desc: 'View extracted Name, Document Number (masked by default), DOB, and Gender. Copy fields with one click.' }
+        ],
+        features: [
+            { title: 'Strict Zero-Server Privacy', desc: 'Runs entirely inside your browser using client-side WebAssembly Tesseract.js. No photos or identity numbers are ever sent over the internet.' },
+            { title: 'Sensitive Number Masking', desc: 'Aadhaar numbers are automatically masked as XXXX XXXX 1234 by default, with a private reveal toggle.' },
+            { title: 'Aadhaar & PAN Auto-Detection', desc: 'Intelligently identifies card format and parses Full Name, Date of Birth, Gender, and ID numbers.' },
+            { title: 'Instant Memory-Purge Button', desc: '"Clear All Data" immediately purges all canvases, inputs, and extracted text from browser RAM.' },
+            { title: 'Editable Verification Fields', desc: 'Easily correct any optical misrecognitions before copying structured fields.' }
+        ],
+        content: `
+            <p>Scanning government identity documents like Indian Aadhaar and PAN cards on commercial cloud platforms poses grave privacy and data breach risks. When users upload identity cards to cloud servers, their biometric details, addresses, and permanent account numbers can be logged, scraped, or retained in unauthorized databases.</p>
+            <p>TECHTIS Private Document OCR redefines document processing by running optical character recognition 100% locally on your device CPU and RAM using client-side WebAssembly. No network requests are made with your documents or extracted information, guaranteeing total immunity against server-side data leaks.</p>
+            <p>Our intelligent parser identifies document types (Aadhaar Card, PAN Card, or generic ID), extracts Name, Date of Birth, Gender, and Document Numbers, and automatically applies privacy masking (e.g. <code>XXXX XXXX 1234</code> for Aadhaar). When you are finished, our "Clear All Data" button permanently purges all data from browser memory.</p>
+            <p><strong>Disclaimer:</strong> Optical character recognition accuracy depends on photo resolution, lighting, and camera focus. Always verify every extracted field before using in official forms.</p>
+        `,
+        faqs: [
+            { q: 'Is it safe to upload my Aadhaar or PAN card here?', a: 'Yes! TECHTIS operates on a 100% client-side WebAssembly architecture. Your document is processed entirely in your device memory and is never transmitted over the internet to any server.' },
+            { q: 'Why is my Aadhaar number masked as XXXX XXXX 1234?', a: 'In compliance with privacy best practices, sensitive 12-digit Aadhaar numbers are masked by default to prevent visual shoulder-surfing. You can click "Reveal Number" to view full digits if needed.' },
+            { q: 'What happens when I click "Clear All Data"?', a: 'The "Clear All Data" button immediately wipes the image preview, recognized text, and form inputs from your browser\'s memory.' },
+            { q: 'Can I copy all extracted fields at once?', a: 'Yes! Click "Copy All Extracted Fields" to copy a cleanly structured summary to your clipboard.' }
+        ],
+        relatedTools: ['passport-photo-maker', 'ocr-pdf', 'form-filler', 'image-compressor', 'protect-pdf']
+    }
+
 };
