@@ -194,22 +194,27 @@
     <script src="vendor/jszip.min.js"></script>
     <script src="vendor/tesseract.min.js"></script>
     <script src="vendor/lucide.min.js"></script>
+
+    <!-- TechTis Official Brand Icons & Favicons -->
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
+    <link rel="apple-touch-icon" href="assets/images/logo.png">
+    <meta property="og:image" content="https://techtis.in/assets/images/logo.png">
+    <meta name="twitter:image" content="https://techtis.in/assets/images/logo.png">
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
 
     <!-- Main Navigation Header -->
     <header class="header-glass sticky top-0 z-40 px-4 lg:px-8 py-2.5 flex items-center justify-between gap-4">
-        <div class="flex items-center space-x-2.5 cursor-pointer shrink-0" id="brand-logo-btn">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-white shadow-md shadow-red-500/20">
-                <i data-lucide="file-text" class="w-5 h-5"></i>
-            </div>
+        <a href="./" class="flex items-center gap-2.5 sm:gap-3 cursor-pointer shrink-0 group" id="brand-logo-btn" title="TechTis — Free PDF and Image Tools">
+            <img src="assets/images/logo.png" alt="TechTis Logo" class="h-9 sm:h-10 w-auto object-contain rounded-lg group-hover:scale-105 transition-transform">
             <div>
-                <div class="flex items-center gap-1.5">
-                    <span class="text-lg font-extrabold tracking-tight text-slate-900">TECH<span class="text-red-600">TIS</span></span>
-                    <span class="text-[9px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200">techtis.in</span>
+                <div class="flex items-center gap-1.5 leading-none">
+                    <span class="text-lg sm:text-xl font-black tracking-tight text-[#002244]">Tech<span class="text-[#EA1D2C]">Tis</span></span>
+                    <span class="text-[9px] font-bold uppercase tracking-wider bg-slate-100 text-[#002244] px-1.5 py-0.5 rounded border border-slate-200">techtis.in</span>
                 </div>
+                <p class="text-[9px] sm:text-[10px] font-semibold text-slate-500 mt-1 leading-none">Free <span class="text-[#EA1D2C] font-bold">PDF</span> and <span class="text-[#EA1D2C] font-bold">Image</span> Tools</p>
             </div>
-        </div>
+        </a>
 
         <!-- Top Header Search Bar -->
         <div class="flex-1 max-w-lg mx-auto relative">
@@ -217,7 +222,7 @@
                 <i data-lucide="search" class="w-4 h-4"></i>
             </div>
             <input type="text" id="tool-search-input" placeholder="Search 41 PDF & Image tools (e.g. passport, ocr, fill form, compress, resize, merge...)" 
-                   class="w-full pl-9 pr-10 py-2 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-red-500 rounded-xl text-xs shadow-xs focus:outline-none focus:ring-2 focus:ring-red-500/20 transition placeholder-slate-400">
+                   class="w-full pl-9 pr-10 py-2 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#EA1D2C] rounded-xl text-xs shadow-xs focus:outline-none focus:ring-2 focus:ring-[#EA1D2C]/20 transition placeholder-slate-400">
             <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
                 <kbd class="px-1.5 py-0.5 text-[9px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs">/</kbd>
             </div>
@@ -688,23 +693,26 @@
     </main>
 
     <!-- Footer -->
-    <footer class="mt-auto bg-white border-t border-slate-200 py-6 px-4 text-xs text-slate-500">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center space-x-2">
-                <a href="https://techtis.in" class="font-bold text-slate-800 hover:text-red-600 transition">TECHTIS (techtis.in)</a>
-                <span>&bull;</span>
-                <span>100% Client-Side Privacy</span>
-                <span>&bull;</span>
-                <span class="text-emerald-600 font-medium">Zero Server Uploads</span>
+    <footer class="mt-auto bg-white border-t border-slate-200 py-8 px-4 text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <img src="assets/images/logo.png" alt="TechTis Logo" class="h-10 w-auto object-contain rounded-lg">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-[#002244] text-sm">Tech<span class="text-[#EA1D2C]">Tis</span></span>
+                        <span class="text-[10px] font-semibold text-slate-400">&bull; techtis.in</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500">Free <span class="text-[#EA1D2C] font-semibold">PDF</span> and <span class="text-[#EA1D2C] font-semibold">Image</span> Tools &bull; 100% In-Browser RAM Privacy</p>
+                </div>
             </div>
             <div class="flex flex-wrap items-center justify-center gap-4 text-slate-600 font-medium">
-                <a href="about.html" class="hover:text-red-600 transition">About Us</a>
+                <a href="about.html" class="hover:text-[#EA1D2C] transition">About Us</a>
                 <span>&bull;</span>
-                <a href="privacy.html" class="hover:text-red-600 transition">Privacy Policy</a>
+                <a href="privacy.html" class="hover:text-[#EA1D2C] transition">Privacy Policy</a>
                 <span>&bull;</span>
-                <a href="terms.html" class="hover:text-red-600 transition">Terms of Service</a>
+                <a href="terms.html" class="hover:text-[#EA1D2C] transition">Terms of Service</a>
                 <span>&bull;</span>
-                <a href="contact.html" class="hover:text-red-600 transition">Contact Us</a>
+                <a href="contact.html" class="hover:text-[#EA1D2C] transition">Contact Us</a>
             </div>
         </div>
     </footer>

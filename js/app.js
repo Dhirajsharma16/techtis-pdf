@@ -442,18 +442,23 @@ class App {
         }
 
         grid.innerHTML = filtered.map(tool => {
+            const isImageOrAi = tool.functionalCategory === 'image' || tool.functionalCategory === 'ai';
+            const iconBg = isImageOrAi 
+                ? 'bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white' 
+                : 'bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white';
+
             return `
-                <a href="${tool.id}/" class="tool-card p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-red-500 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="${tool.id}">
-                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-red-600 group-hover:text-white transition-all shadow-xs">
+                <a href="${tool.id}/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="${tool.id}">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl ${iconBg} flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
                         <i data-lucide="${tool.icon}" class="w-6 h-6 sm:w-7 sm:h-7"></i>
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center justify-between gap-1.5">
-                            <h3 class="text-sm sm:text-base font-bold text-slate-800 group-hover:text-red-600 transition truncate">${tool.name}</h3>
-                            ${tool.isPopular ? '<span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 shrink-0">Popular</span>' : ''}
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">${tool.name}</h3>
+                            ${tool.isPopular ? '<span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>' : ''}
                         </div>
                         <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">${tool.tagline}</p>
-                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-medium text-slate-400 group-hover:text-red-600 transition">
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
                             <span>Open Tool</span>
                             <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
                         </div>

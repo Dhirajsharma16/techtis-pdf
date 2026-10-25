@@ -245,6 +245,12 @@ for (const tool of TOOLS) {
         }
     </script>
 
+    <!-- TechTis Official Brand Icons & Favicons -->
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+    <link rel="apple-touch-icon" href="../assets/images/logo.png">
+    <meta property="og:image" content="https://techtis.in/assets/images/logo.png">
+    <meta name="twitter:image" content="https://techtis.in/assets/images/logo.png">
+
     <!-- Custom Platform Styles -->
     <link rel="stylesheet" href="../css/styles.css">
 
@@ -259,15 +265,14 @@ for (const tool of TOOLS) {
 
     <!-- Slim Navigation Header -->
     <header class="header-glass sticky top-0 z-40 px-3 sm:px-6 py-2 flex items-center justify-between gap-3 border-b border-slate-200">
-        <a href="../" class="flex items-center space-x-2 shrink-0 group" id="brand-logo-btn" title="TECHTIS Home">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-white shadow-md shadow-red-500/20 group-hover:scale-105 transition-transform">
-                <i data-lucide="file-text" class="w-4 h-4"></i>
-            </div>
+        <a href="../" class="flex items-center gap-2.5 shrink-0 group" id="brand-logo-btn" title="TechTis — Free PDF and Image Tools">
+            <img src="../assets/images/logo.png" alt="TechTis Logo" class="h-8 sm:h-9 w-auto object-contain rounded-lg group-hover:scale-105 transition-transform">
             <div>
-                <div class="flex items-center gap-1.5">
-                    <span class="text-base sm:text-lg font-black tracking-tight text-slate-900">TECH<span class="text-red-600">TIS</span></span>
-                    <span class="text-[9px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-1 py-0.2 rounded border border-slate-200">techtis.in</span>
+                <div class="flex items-center gap-1.5 leading-none">
+                    <span class="text-base sm:text-lg font-black tracking-tight text-[#002244]">Tech<span class="text-[#EA1D2C]">Tis</span></span>
+                    <span class="text-[9px] font-bold uppercase tracking-wider bg-slate-100 text-[#002244] px-1 py-0.2 rounded border border-slate-200">techtis.in</span>
                 </div>
+                <p class="text-[9px] font-semibold text-slate-500 mt-0.5 leading-none">Free <span class="text-[#EA1D2C] font-bold">PDF</span> and <span class="text-[#EA1D2C] font-bold">Image</span> Tools</p>
             </div>
         </a>
 
