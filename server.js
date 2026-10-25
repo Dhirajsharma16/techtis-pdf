@@ -1,6 +1,7 @@
 /**
  * Zero-Dependency Local Static HTTP Server for TECHTIS (techtis.in)
- * High-performance, cross-platform static server supporting clean directory URLs.
+ * High-performance, cross-platform static server supporting clean directory URLs
+ * and 100% Free Edge AI Vision Endpoints (Google Gemini 1.5/2.0 Flash & Groq Vision).
  */
 
 import http from 'http';
@@ -11,6 +12,27 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = __dirname;
+
+// Auto-load .env file if present (Zero-dependency .env loader)
+const envPath = path.join(ROOT_DIR, '.env');
+if (fs.existsSync(envPath)) {
+    try {
+        const envContent = fs.readFileSync(envPath, 'utf8');
+        envContent.split(/\r?\n/).forEach(line => {
+            const trimmed = line.trim();
+            if (trimmed && !trimmed.startsWith('#')) {
+                const idx = trimmed.indexOf('=');
+                if (idx > 0) {
+                    const key = trimmed.slice(0, idx).trim();
+                    const val = trimmed.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
+                    if (!process.env[key]) {
+                        process.env[key] = val;
+                    }
+                }
+            }
+        });
+    } catch (_) {}
+}
 
 const MIME_TYPES = {
     '.html': 'text/html; charset=utf-8',
@@ -81,7 +103,7 @@ function createServer(port) {
                 res.writeHead(429, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({
                     success: false,
-                    error: `Daily free AI extraction limit reached for your IP (${DAILY_IP_AI_LIMIT}/${DAILY_IP_AI_LIMIT}). Add your own free Groq API key in Settings for unlimited AI extractions.`
+                    error: `Daily free AI extraction limit reached for your IP (${DAILY_IP_AI_LIMIT}/${DAILY_IP_AI_LIMIT}). Add your own free Groq or Gemini key in Settings for unlimited AI extractions.`
                 }));
                 return;
             }
@@ -111,7 +133,7 @@ function createServer(port) {
                     res.end(JSON.stringify({
                         success: false,
                         needsUserKey: true,
-                        message: 'No server AI key configured. Please add your personal free Groq or Gemini key in Settings (100% free tiers).'
+                        message: 'No server AI key configured. Please add your personal free Google Gemini or Groq key in Settings (100% free tiers).'
                     }));
                     return;
                 }
@@ -120,57 +142,115 @@ function createServer(port) {
                     const systemPrompt = `You are an expert OCR document analyst. Extract structured personal and identity information from the provided document into clean JSON format.
 Return ONLY valid JSON matching this exact structure:
 {
-  "docType": "Aadhaar Card" | "PAN Card" | "Passport" | "Driving License" | "Voter ID" | "Invoice" | "Certificate" | "Marksheet" | "General Document",
-  "name": "Full name of the individual (clean without prefixes)",
+  "docType": "Aadhaar Card" | "PAN Card" | "Passport" | "Driving License" | "Voter ID" | "Marksheet" | "Certificate" | "Invoice" | "Bank Passbook" | "General Document",
+  "name": "Full legal name of the individual (clean without prefixes)",
   "email": "Email address if present, else empty string",
   "phone": "Phone or mobile number if present, else empty string",
   "dob": "Date of birth in DD/MM/YYYY or original format, else empty string",
   "gender": "Male" | "Female" | "Other" | "",
   "idNumber": "Document / ID / Registration / Tax number without masking",
-  "fatherName": "Father's or Guardian's name if present, else empty string",
+  "fatherName": "Father's or Guardian's or Spouse's name if present, else empty string",
   "address": "Full permanent or residential address if found, else empty string",
-  "pincode": "6-digit postal PIN code if found, else empty string"
+  "pincode": "6-digit postal PIN code if found, else empty string",
+  "extraNotes": "Key numbers, marks, roll number, bank IFSC, account number, or notes if found, else empty string"
 }
 Return only JSON. Do not include markdown ticks.`;
 
-                    // Option A: Direct Multimodal Vision with Gemini (if image provided and Gemini key available)
+                    // Tier 1: Direct Multimodal Vision with Google Gemini (Best in the world for document OCR)
                     if (serverGeminiKey && imageBase64) {
-                        try {
-                            const cleanB64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
-                            const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-                            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${serverGeminiKey}`;
+                        const cleanB64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+                        const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+                        const geminiModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-8b'];
 
-                            const geminiRes = await fetch(endpoint, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    contents: [{
-                                        parts: [
-                                            { text: `${systemPrompt}\n\nAnalyze this document image with multimodal vision and extract all fields:` },
-                                            { inline_data: { mime_type: mime, data: cleanB64 } }
-                                        ]
-                                    }],
-                                    generationConfig: { responseMimeType: 'application/json' }
-                                })
-                            });
+                        for (const model of geminiModels) {
+                            try {
+                                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${serverGeminiKey}`;
+                                const geminiRes = await fetch(endpoint, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        contents: [{
+                                            parts: [
+                                                { text: `${systemPrompt}\n\nAnalyze this document image with multimodal vision and extract all fields accurately into clean JSON:` },
+                                                { inline_data: { mime_type: mime, data: cleanB64 } }
+                                            ]
+                                        }],
+                                        generationConfig: { responseMimeType: 'application/json' }
+                                    })
+                                });
 
-                            if (geminiRes.ok) {
-                                const data = await geminiRes.json();
-                                const textRes = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                                if (textRes) {
-                                    const fields = JSON.parse(textRes);
-                                    record.count++;
-                                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                                    res.end(JSON.stringify({ success: true, fields, isVision: true, remaining: DAILY_IP_AI_LIMIT - record.count }));
-                                    return;
+                                if (geminiRes.ok) {
+                                    const data = await geminiRes.json();
+                                    const textRes = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                                    if (textRes) {
+                                        const fields = JSON.parse(textRes);
+                                        record.count++;
+                                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                                        res.end(JSON.stringify({
+                                            success: true,
+                                            fields,
+                                            model,
+                                            provider: 'Google Gemini (Multimodal Vision)',
+                                            isVision: true,
+                                            remaining: DAILY_IP_AI_LIMIT - record.count
+                                        }));
+                                        return;
+                                    }
                                 }
+                            } catch (gemErr) {
+                                console.warn(`Gemini model ${model} notice:`, gemErr.message);
                             }
-                        } catch (visionErr) {
-                            console.warn('Server Gemini vision fallback to Groq:', visionErr);
                         }
                     }
 
-                    // Option B: Flagship Llama 3.3 70B Versatile on Groq (with 8B instant fallback)
+                    // Tier 2: Multimodal Vision with Groq (Llama 3.2 11B Vision Preview)
+                    if (serverGroqKey && imageBase64) {
+                        try {
+                            const groqVisionRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${serverGroqKey}`
+                                },
+                                body: JSON.stringify({
+                                    model: 'llama-3.2-11b-vision-preview',
+                                    messages: [
+                                        { role: 'system', content: systemPrompt },
+                                        {
+                                            role: 'user',
+                                            content: [
+                                                { type: 'text', text: 'Extract all fields from this document image into clean JSON:' },
+                                                { type: 'image_url', image_url: { url: imageBase64 } }
+                                            ]
+                                        }
+                                    ],
+                                    temperature: 0.1,
+                                    response_format: { type: 'json_object' }
+                                })
+                            });
+
+                            if (groqVisionRes.ok) {
+                                const data = await groqVisionRes.json();
+                                const rawJson = data.choices?.[0]?.message?.content || '{}';
+                                const fields = JSON.parse(rawJson);
+                                record.count++;
+                                res.writeHead(200, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({
+                                    success: true,
+                                    fields,
+                                    model: 'llama-3.2-11b-vision-preview',
+                                    provider: 'Groq Cloud (Llama 3.2 Vision)',
+                                    isVision: true,
+                                    remaining: DAILY_IP_AI_LIMIT - record.count
+                                }));
+                                return;
+                            }
+                        } catch (groqVisionErr) {
+                            console.warn('Server Groq vision fallback:', groqVisionErr.message);
+                        }
+                    }
+
+                    // Tier 3: Neural Text Reasoning with Groq (Llama 3.3 70B Versatile & 8B Instant)
                     if (serverGroqKey) {
                         const modelsToTry = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
                         for (const model of modelsToTry) {
@@ -202,6 +282,7 @@ Return only JSON. Do not include markdown ticks.`;
                                         success: true,
                                         fields,
                                         model,
+                                        provider: 'Groq Cloud (Neural Text)',
                                         remaining: DAILY_IP_AI_LIMIT - record.count
                                     }));
                                     return;
@@ -210,8 +291,42 @@ Return only JSON. Do not include markdown ticks.`;
                         }
                     }
 
+                    // Tier 4: Gemini Text-only Fallback
+                    if (serverGeminiKey && text) {
+                        try {
+                            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${serverGeminiKey}`;
+                            const gemRes = await fetch(endpoint, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [{
+                                        parts: [{ text: `${systemPrompt}\n\nDocument text:\n${text}` }]
+                                    }],
+                                    generationConfig: { responseMimeType: 'application/json' }
+                                })
+                            });
+                            if (gemRes.ok) {
+                                const gData = await gemRes.json();
+                                const textRes = gData.candidates?.[0]?.content?.parts?.[0]?.text;
+                                if (textRes) {
+                                    const fields = JSON.parse(textRes);
+                                    record.count++;
+                                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({
+                                        success: true,
+                                        fields,
+                                        model: 'gemini-1.5-flash',
+                                        provider: 'Google Gemini (Text)',
+                                        remaining: DAILY_IP_AI_LIMIT - record.count
+                                    }));
+                                    return;
+                                }
+                            }
+                        } catch (_) {}
+                    }
+
                     res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: false, error: 'AI providers currently unavailable' }));
+                    res.end(JSON.stringify({ success: false, error: 'AI providers currently unavailable. Please verify API keys.' }));
                 } catch (err) {
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ success: false, error: err.message }));
@@ -229,53 +344,59 @@ Return only JSON. Do not include markdown ticks.`;
         // Directory index support (/merge-pdf/ -> /merge-pdf/index.html)
         if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
             filePath = path.join(filePath, 'index.html');
-        } else if (!fs.existsSync(filePath) && fs.existsSync(filePath + '.html')) {
-            filePath = filePath + '.html';
         }
 
-        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-            const ext = path.extname(filePath).toLowerCase();
-            const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-            const stat = fs.statSync(filePath);
+        // Clean URL fallback (/merge-pdf -> /merge-pdf/index.html or /merge-pdf.html)
+        if (!fs.existsSync(filePath)) {
+            const potentialHtml = filePath + '.html';
+            const potentialDirIndex = path.join(filePath, 'index.html');
+            if (fs.existsSync(potentialDirIndex)) {
+                filePath = potentialDirIndex;
+            } else if (fs.existsSync(potentialHtml)) {
+                filePath = potentialHtml;
+            }
+        }
 
-            res.writeHead(200, {
-                'Content-Type': contentType,
-                'Content-Length': stat.size,
-                'Cache-Control': 'no-cache'
-            });
-
-            if (req.method === 'HEAD') {
-                res.end();
+        fs.readFile(filePath, (err, content) => {
+            if (err) {
+                if (err.code === 'ENOENT') {
+                    res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+                    res.end('<h1>404 - Not Found</h1><p>The requested resource was not found on this server.</p>');
+                } else {
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end(`500 - Server Error: ${err.code}`);
+                }
                 return;
             }
 
-            fs.createReadStream(filePath).pipe(res);
-        } else {
-            res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-            res.end(`404 Not Found: ${req.url}`);
-        }
-    });
+            const ext = path.extname(filePath).toLowerCase();
+            const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-    server.on('error', (err) => {
-        if (err.code === 'EADDRINUSE') {
-            console.log(`Port ${port} in use, trying ${port + 1}...`);
-            createServer(port + 1);
-        } else {
-            console.error('Server error:', err);
-        }
-    });
+            // Cache static assets, but don't cache html for instant developer feedback
+            if (ext === '.html') {
+                res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            } else {
+                res.setHeader('Cache-Control', 'public, max-age=3600');
+            }
 
-    server.listen(port, () => {
-        console.log('==========================================================');
-        console.log(' TECHTIS - Serverless Zero-Cost PDF Platform (techtis.in)');
-        console.log('==========================================================');
-        console.log(` Local server running at: http://localhost:${port}/`);
-        console.log(` Root Directory: ${ROOT_DIR}`);
-        console.log(' Press Ctrl+C in this console to stop the server.');
-        console.log('==========================================================');
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(content);
+        });
     });
 
     return server;
 }
 
-createServer(Number(process.env.PORT) || 8080);
+const PORT = parseInt(process.env.PORT || '8080', 10);
+const server = createServer(PORT);
+
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`==========================================================`);
+    console.log(` TECHTIS - Serverless Zero-Cost PDF Platform (techtis.in)`);
+    console.log(`==========================================================`);
+    console.log(` Local server running at: http://localhost:${PORT}/`);
+    console.log(` Root Directory: ${ROOT_DIR}`);
+    console.log(` Vision AI Engine: Gemini 1.5/2.0 Flash & Groq Llama 3.2 Vision`);
+    console.log(` Press Ctrl+C in this console to stop the server.`);
+    console.log(`==========================================================`);
+});

@@ -161,7 +161,7 @@ for (const tool of TOOLS) {
 
     // How-to Steps HTML
     const howToCardsHtml = seo.howTo.map(step => `
-        <div class="p-4 bg-white border border-slate-200/90 rounded-2xl shadow-xs space-y-1.5">
+        <div class="p-5 bg-white border border-slate-200/90 rounded-2xl shadow-xs space-y-2">
             <div class="flex items-center gap-2">
                 <span class="w-5 h-5 rounded-full bg-red-600 text-white flex items-center justify-center text-[11px] font-bold shrink-0">${step.step}</span>
                 <h3 class="font-bold text-slate-900 text-xs sm:text-sm">${escapeHtml(step.title)}</h3>
@@ -172,7 +172,7 @@ for (const tool of TOOLS) {
 
     // Features Grid HTML
     const featuresCardsHtml = seo.features.map(f => `
-        <div class="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-1.5">
+        <div class="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-2">
             <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
                 <i data-lucide="check" class="w-3.5 h-3.5"></i>
             </div>
@@ -283,7 +283,7 @@ for (const tool of TOOLS) {
         <div class="flex items-center gap-2">
             <a href="../" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 bg-white hover:border-red-400 hover:text-red-600 shadow-2xs transition">
                 <i data-lucide="grid" class="w-3.5 h-3.5"></i>
-                <span>All 32 Tools</span>
+                <span>All 41 Tools</span>
             </a>
         </div>
     </header>
@@ -408,7 +408,7 @@ for (const tool of TOOLS) {
 
             <!-- Footer Tools Directory Grid -->
             <div class="space-y-2">
-                <div class="font-bold text-slate-800 text-[10px] uppercase tracking-wider">All 40 Free Online PDF & Image Tools:</div>
+                <div class="font-bold text-slate-800 text-[10px] uppercase tracking-wider">All 41 Free Online PDF & Image Tools:</div>
                 <div class="flex flex-wrap gap-1.5 text-[11px]">
                     ${TOOLS.map(t => `<a href="../${t.id}/" class="px-2 py-0.5 bg-slate-50 border border-slate-200 rounded hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition">${escapeHtml(t.name)}</a>`).join('\n                    ')}
                 </div>

@@ -390,42 +390,151 @@ ${text.slice(0, 25000)}`;
      * AI-Powered Structured Document Field Extraction with Strict Rate Limiting
      * Prevents excessive API hits and protects owner against billing charges ($0 guarantee)
      */
-    async extractFieldsWithAI(rawText, imageBase64 = null) {
-        if (!rawText || !rawText.trim()) {
-            throw new Error('No text content available for AI field extraction.');
+        async extractFieldsWithAI(rawText, imageBase64 = null) {
+        if ((!rawText || !rawText.trim()) && !imageBase64) {
+            throw new Error('No text or image provided for AI field extraction.');
         }
 
         const quota = AIQuotaManager.getQuota();
         if (!quota.canUseAi && !quota.isUnlimited) {
-            throw new Error(`QUOTA_EXHAUSTED: Daily free AI limit reached (${AIQuotaManager.DAILY_LIMIT}/${AIQuotaManager.DAILY_LIMIT}). Local OCR remains 100% free & unlimited. Add your own free Groq API key in Settings for unlimited AI.`);
+            throw new Error(`QUOTA_EXHAUSTED: Daily free AI limit reached (${AIQuotaManager.DAILY_LIMIT}/${AIQuotaManager.DAILY_LIMIT}). Local OCR remains 100% free & unlimited. Add your own free Google Gemini or Groq API key in Settings for unlimited AI.`);
         }
 
         const settings = StorageManager.getSettings();
         const groqKey = settings.groqApiKey;
         const geminiKey = settings.geminiApiKey;
 
-        const systemPrompt = `You are an expert OCR document analyst. Extract structured personal and identity details from the provided text into clean JSON format.
+        const systemPrompt = `You are an expert OCR document analyst. Extract structured personal and identity details from the provided document into clean JSON format.
 Return ONLY a valid JSON object matching this exact schema:
 {
-  "docType": "Aadhaar Card" | "PAN Card" | "Passport" | "Driving License" | "Voter ID" | "Invoice" | "Certificate" | "General Document",
-  "name": "Full name of the individual (clean without prefixes)",
+  "docType": "Aadhaar Card" | "PAN Card" | "Passport" | "Driving License" | "Voter ID" | "Marksheet" | "Certificate" | "Invoice" | "Bank Passbook" | "General Document",
+  "name": "Full legal name of the individual (clean without prefixes)",
   "email": "Email address if present, else empty string",
   "phone": "Phone or mobile number if present, else empty string",
   "dob": "Date of birth in DD/MM/YYYY or original format, else empty string",
   "gender": "Male" | "Female" | "Other" | "",
   "idNumber": "Document / ID / Registration / Tax number without masking",
-  "fatherName": "Father's or Guardian's name if present, else empty string",
+  "fatherName": "Father's or Guardian's or Spouse's name if present, else empty string",
   "address": "Full permanent or communication address if found, else empty string",
-  "pincode": "6-digit postal PIN code if found, else empty string"
+  "pincode": "6-digit postal PIN code if found, else empty string",
+  "extraNotes": "Key numbers, marks, roll number, bank IFSC, account number, or notes if found, else empty string"
 }
 Return only JSON. Do not include markdown code fences or any conversational text.`;
 
-        const userPrompt = `Document OCR Text:\n${rawText.slice(0, 8000)}`;
+        const userPrompt = `Document OCR Text:\n${(rawText || '').slice(0, 8000)}`;
 
         let parsedFields = null;
 
-        // 1. Personal Groq Key (if user provided one in Settings -> 100% free 14,400 req/day direct)
-        if (groqKey) {
+        // 1. Personal Gemini Key (Google AI Studio - #1 Best Multimodal Vision in the world)
+        if (!parsedFields && geminiKey && imageBase64) {
+            try {
+                const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+                const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+                const geminiModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-8b'];
+
+                for (const model of geminiModels) {
+                    try {
+                        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+                        const res = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{
+                                    parts: [
+                                        { text: `${systemPrompt}\n\nInspect this document image directly with multimodal vision and extract all structured data accurately into clean JSON:` },
+                                        { inline_data: { mime_type: mime, data: cleanData } }
+                                    ]
+                                }],
+                                generationConfig: { responseMimeType: 'application/json' }
+                            })
+                        });
+
+                        if (res.ok) {
+                            const data = await res.json();
+                            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                            if (text) {
+                                parsedFields = JSON.parse(text);
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(`Direct Gemini model ${model} notice:`, e);
+                    }
+                }
+            } catch (err) {
+                console.warn('Gemini direct Vision extraction fallback:', err);
+            }
+        }
+
+        // 2. Personal Groq Vision Key (Llama 3.2 11B Vision - 100% Free Multimodal Vision)
+        if (!parsedFields && groqKey && imageBase64) {
+            try {
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${groqKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.2-11b-vision-preview',
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            {
+                                role: 'user',
+                                content: [
+                                    { type: 'text', text: 'Extract all fields from this document image into clean JSON:' },
+                                    { type: 'image_url', image_url: { url: imageBase64 } }
+                                ]
+                            }
+                        ],
+                        temperature: 0.1,
+                        response_format: { type: 'json_object' }
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const jsonText = data.choices?.[0]?.message?.content;
+                    if (jsonText) {
+                        parsedFields = JSON.parse(jsonText);
+                    }
+                }
+            } catch (err) {
+                console.warn('Groq Vision direct extraction fallback:', err);
+            }
+        }
+
+        // 3. Local Server / Edge AI Endpoint (With Multimodal Vision & Strict Daily Rate Limiting)
+        if (!parsedFields) {
+            try {
+                const serverRes = await fetch('/api/ai/extract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: (rawText || '').slice(0, 10000), image: imageBase64 })
+                });
+
+                if (serverRes.status === 429) {
+                    throw new Error(`Daily free AI extraction limit reached (${AIQuotaManager.DAILY_LIMIT}/${AIQuotaManager.DAILY_LIMIT}). Please add your own free Google Gemini or Groq key in Settings for unlimited AI.`);
+                }
+
+                if (serverRes.ok) {
+                    const serverData = await serverRes.json();
+                    if (serverData.success && serverData.fields) {
+                        parsedFields = serverData.fields;
+                    } else if (serverData.needsUserKey) {
+                        // User key needed only if server has no keys configured
+                    }
+                }
+            } catch (serverErr) {
+                if (serverErr.message.includes('Daily free AI')) {
+                    throw serverErr;
+                }
+                console.warn('Server AI endpoint notice:', serverErr);
+            }
+        }
+
+        // 4. Personal Groq Key for Text Reasoning (Llama 3.3 70B Versatile)
+        if (!parsedFields && groqKey && rawText) {
             const groqModels = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
             for (const model of groqModels) {
                 try {
@@ -460,30 +569,18 @@ Return only JSON. Do not include markdown code fences or any conversational text
             }
         }
 
-        // 2. Personal Gemini Key (if user provided one in Settings)
-        if (!parsedFields && geminiKey) {
+        // 5. Personal Gemini Key for Text Reasoning
+        if (!parsedFields && geminiKey && rawText) {
             try {
                 const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-                
-                const parts = [];
-                if (imageBase64) {
-                    const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
-                    const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-                    parts.push({ text: `${systemPrompt}\n\nInspect this document image directly with multimodal vision and extract all structured data accurately:` });
-                    parts.push({ inline_data: { mime_type: mime, data: cleanData } });
-                } else {
-                    parts.push({ text: `${systemPrompt}\n\n${userPrompt}` });
-                }
-
                 const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts }],
+                        contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
                         generationConfig: { responseMimeType: 'application/json' }
                     })
                 });
-
                 if (res.ok) {
                     const data = await res.json();
                     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -491,38 +588,7 @@ Return only JSON. Do not include markdown code fences or any conversational text
                         parsedFields = JSON.parse(text);
                     }
                 }
-            } catch (err) {
-                console.warn('Gemini direct AI extraction fallback:', err);
-            }
-        }
-
-        // 3. Local Server / Edge AI Endpoint (with strict IP daily quota)
-        if (!parsedFields) {
-            try {
-                const serverRes = await fetch('/api/ai/extract', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: rawText.slice(0, 10000), image: imageBase64 })
-                });
-
-                if (serverRes.status === 429) {
-                    throw new Error(`Daily free AI extraction limit reached (${AIQuotaManager.DAILY_LIMIT}/${AIQuotaManager.DAILY_LIMIT}). Please add your own free Groq key in Settings for unlimited AI.`);
-                }
-
-                if (serverRes.ok) {
-                    const serverData = await serverRes.json();
-                    if (serverData.success && serverData.fields) {
-                        parsedFields = serverData.fields;
-                    } else if (serverData.needsUserKey) {
-                        throw new Error('NO_API_KEY: Please add your free Groq API key in Settings (14,400 free requests/day at console.groq.com) to enable AI field extraction.');
-                    }
-                }
-            } catch (serverErr) {
-                if (serverErr.message.includes('Daily free AI') || serverErr.message.includes('NO_API_KEY')) {
-                    throw serverErr;
-                }
-                console.warn('Server AI endpoint unavailable:', serverErr);
-            }
+            } catch (_) {}
         }
 
         if (parsedFields) {
@@ -538,11 +604,12 @@ Return only JSON. Do not include markdown code fences or any conversational text
                 fatherName: (parsedFields.fatherName || '').trim(),
                 address: (parsedFields.address || '').trim(),
                 pincode: (parsedFields.pincode || '').trim(),
-                rawText: rawText
+                extraNotes: (parsedFields.extraNotes || '').trim(),
+                rawText: rawText || ''
             };
         }
 
-        throw new Error('Could not extract fields with AI. Please verify your internet connection or enter your free Groq key in Settings.');
+        throw new Error('Could not extract fields with AI. Please verify your internet connection or enter your free Google Gemini or Groq key in Settings.');
     }
 };
 

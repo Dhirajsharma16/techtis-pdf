@@ -1715,7 +1715,8 @@ export function registerImageWorkspaces(AppClass) {
                     maskedIdNumber: ImageEngine.maskSensitiveNumber(aiResult.idNumber || currentExtracted.idNumber),
                     fatherName: aiResult.fatherName || currentExtracted.fatherName,
                     address: aiResult.address || currentExtracted.address,
-                    pincode: aiResult.pincode || currentExtracted.pincode
+                    pincode: aiResult.pincode || currentExtracted.pincode,
+                    extraNotes: aiResult.extraNotes || currentExtracted.extraNotes
                 };
 
                 badgeDocType.textContent = currentExtracted.docType;
@@ -1807,7 +1808,8 @@ export function registerImageWorkspaces(AppClass) {
                 { key: 'gender', label: 'Gender', value: extracted.gender, placeholder: 'MALE / FEMALE' },
                 { key: 'fatherName', label: "Father / Guardian's Name", value: extracted.fatherName, placeholder: 'Father or Guardian name' },
                 { key: 'pincode', label: 'PIN / Postal Code', value: extracted.pincode, placeholder: '6-digit PIN' },
-                { key: 'address', label: 'Full Address', value: extracted.address, placeholder: 'Street, City, State' }
+                { key: 'address', label: 'Full Address', value: extracted.address, placeholder: 'Street, City, State' },
+                { key: 'extraNotes', label: 'Additional Document Details', value: extracted.extraNotes, placeholder: 'Roll number, marks, IFSC, or registration info' }
             ].filter(f => f.value || f.key === 'name' || f.key === 'idNumber');
 
             fields.forEach(f => {
@@ -2498,6 +2500,7 @@ export function registerImageWorkspaces(AppClass) {
                 if (aiResult.fatherName) newAllFields.push({ key: 'fatherName', label: "Father / Guardian", value: aiResult.fatherName, icon: 'users' });
                 if (aiResult.pincode) newAllFields.push({ key: 'pincode', label: 'PIN Code', value: aiResult.pincode, icon: 'map-pin' });
                 if (aiResult.address) newAllFields.push({ key: 'address', label: 'Full Address', value: aiResult.address, icon: 'home', isMultiLine: true });
+                if (aiResult.extraNotes) newAllFields.push({ key: 'extraNotes', label: 'Additional Details', value: aiResult.extraNotes, icon: 'file-text', isMultiLine: true });
 
                 SessionDocVault.updateDocumentFields(targetDoc.id, {
                     ...targetDoc.extracted,
