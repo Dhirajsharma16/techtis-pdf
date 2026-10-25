@@ -13,6 +13,7 @@ import { RotateTool } from './tools/rotate.js';
 import { EdgeAIBridge } from './edge/ai-bridge.js';
 import { AllToolsEngine } from './tools/all-tools-engine.js';
 import { registerImageWorkspaces } from './tools/image-workspaces.js';
+import { UtilityWorkspaces } from './tools/utility-workspaces.js';
 
 class App {
     constructor() {
@@ -720,6 +721,67 @@ class App {
                 break;
             case 'fill-form':
                 this.renderFillFormWorkspace(container);
+                break;
+            // Developer Tools
+            case 'qr-code-generator':
+                UtilityWorkspaces.renderQrCodeWorkspace(container, tool);
+                break;
+            case 'json-formatter':
+                UtilityWorkspaces.renderJsonFormatterWorkspace(container, tool);
+                break;
+            case 'base64-converter':
+                UtilityWorkspaces.renderBase64Workspace(container, tool);
+                break;
+            case 'url-encoder-decoder':
+                UtilityWorkspaces.renderUrlEncoderWorkspace(container, tool);
+                break;
+            case 'hash-generator':
+                UtilityWorkspaces.renderHashGeneratorWorkspace(container, tool);
+                break;
+            case 'password-generator':
+                UtilityWorkspaces.renderPasswordGeneratorWorkspace(container, tool);
+                break;
+            // CSS & Design Tools
+            case 'css-glassmorphism':
+                UtilityWorkspaces.renderGlassmorphismWorkspace(container, tool);
+                break;
+            case 'css-box-shadow':
+                UtilityWorkspaces.renderBoxShadowWorkspace(container, tool);
+                break;
+            case 'css-gradient':
+                UtilityWorkspaces.renderGradientWorkspace(container, tool);
+                break;
+            case 'css-neumorphism':
+                UtilityWorkspaces.renderNeumorphismWorkspace(container, tool);
+                break;
+            case 'color-converter':
+                UtilityWorkspaces.renderColorConverterWorkspace(container, tool);
+                break;
+            // Text Tools
+            case 'word-counter':
+                UtilityWorkspaces.renderWordCounterWorkspace(container, tool);
+                break;
+            case 'case-converter':
+                UtilityWorkspaces.renderCaseConverterWorkspace(container, tool);
+                break;
+            case 'lorem-ipsum-generator':
+                UtilityWorkspaces.renderLoremIpsumWorkspace(container, tool);
+                break;
+            case 'markdown-to-html':
+                UtilityWorkspaces.renderMarkdownToHtmlWorkspace(container, tool);
+                break;
+            // Image & Vector Converters
+            case 'svg-to-png':
+                UtilityWorkspaces.renderSvgToPngWorkspace(container, tool);
+                break;
+            case 'image-to-svg':
+                UtilityWorkspaces.renderImageToSvgWorkspace(container, tool);
+                break;
+            case 'webp-to-jpg':
+                UtilityWorkspaces.renderWebpToJpgWorkspace(container, tool);
+                break;
+            case 'social-media-resizer':
+                UtilityWorkspaces.renderSocialMediaResizerWorkspace(container, tool);
                 break;
             default:
                 this.renderGenericWorkspace(container, tool);

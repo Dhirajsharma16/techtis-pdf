@@ -35,7 +35,7 @@
         <priority>0.70</priority>
     </url>
 
-    <!-- 41 Dedicated Tool Landing Pages -->
+    <!-- 60 Dedicated Tool Landing Pages -->
     <!-- 1. Merge PDF -->
     <url>
         <loc>https://techtis.in/merge-pdf/</loc>
@@ -359,6 +359,158 @@
     <!-- 41. Fill Form (OCR Assistant) -->
     <url>
         <loc>https://techtis.in/fill-form/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 42. QR Code Generator -->
+    <url>
+        <loc>https://techtis.in/qr-code-generator/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 43. JSON Formatter &amp; Validator -->
+    <url>
+        <loc>https://techtis.in/json-formatter/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 44. Base64 Encoder / Decoder -->
+    <url>
+        <loc>https://techtis.in/base64-converter/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 45. URL Encoder / Decoder -->
+    <url>
+        <loc>https://techtis.in/url-encoder-decoder/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 46. Hash Generator -->
+    <url>
+        <loc>https://techtis.in/hash-generator/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 47. Password Generator -->
+    <url>
+        <loc>https://techtis.in/password-generator/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 48. CSS Glassmorphism Generator -->
+    <url>
+        <loc>https://techtis.in/css-glassmorphism/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 49. CSS Box Shadow Generator -->
+    <url>
+        <loc>https://techtis.in/css-box-shadow/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 50. CSS Gradient Generator -->
+    <url>
+        <loc>https://techtis.in/css-gradient/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 51. CSS Neumorphism Generator -->
+    <url>
+        <loc>https://techtis.in/css-neumorphism/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 52. Color Converter &amp; Palette -->
+    <url>
+        <loc>https://techtis.in/color-converter/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 53. Word &amp; Character Counter -->
+    <url>
+        <loc>https://techtis.in/word-counter/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 54. Case Converter -->
+    <url>
+        <loc>https://techtis.in/case-converter/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 55. Lorem Ipsum Generator -->
+    <url>
+        <loc>https://techtis.in/lorem-ipsum-generator/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 56. Markdown to HTML Converter -->
+    <url>
+        <loc>https://techtis.in/markdown-to-html/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 57. SVG to High-Res PNG -->
+    <url>
+        <loc>https://techtis.in/svg-to-png/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 58. Image to SVG Vectorizer -->
+    <url>
+        <loc>https://techtis.in/image-to-svg/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 59. WebP to JPG / PNG -->
+    <url>
+        <loc>https://techtis.in/webp-to-jpg/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- 60. Social Media Image Resizer -->
+    <url>
+        <loc>https://techtis.in/social-media-resizer/</loc>
         <lastmod>2026-10-25</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
