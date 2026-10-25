@@ -5,10 +5,12 @@
 
 import { StorageManager } from './storage.js';
 
-// Initialize PDF.js worker with fallback
+// Initialize PDF.js worker with fallback (resolves path properly in root and subdirectories)
 if (typeof window !== 'undefined' && window.pdfjsLib) {
     try {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
+        const isSubdir = document.body && document.body.dataset && document.body.dataset.toolId;
+        const workerRelative = isSubdir ? '../vendor/pdf.worker.min.js' : 'vendor/pdf.worker.min.js';
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(workerRelative, window.location.href).href;
     } catch (e) {
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }

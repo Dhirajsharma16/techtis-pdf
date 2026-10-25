@@ -10,7 +10,7 @@ Write-Host " TECHTIS -> GitHub Deployment Helper ($GitHubUser)" -ForegroundColor
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 # Ensure git is available
-$minGit = "C:\Users\PEL\AppData\Local\Programs\MinGit\cmd"
+$minGit = "$env:LOCALAPPDATA\Programs\MinGit\cmd"
 if (Test-Path "$minGit\git.exe") {
     $env:Path = "$minGit;" + $env:Path
 }
@@ -32,7 +32,7 @@ git add .
 
 # 3. Commit
 Write-Host "[3/4] Committing code..." -ForegroundColor Green
-git commit -m "Initial commit: TECHTIS Serverless $0-Cost PDF Platform (techtis.in)"
+git commit -m "Add dedicated SEO landing pages, canonical sitemap, structured data & build pipeline for all 32 tools"
 
 # 4. Set Remote
 $remoteUrl = "https://github.com/$GitHubUser/$RepoName.git"
@@ -47,10 +47,7 @@ Write-Host "`nPushing to GitHub..." -ForegroundColor Green
 git push -u origin main
 
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "`nSUCCESS! Your project is now on GitHub!" -ForegroundColor Green
-    Write-Host "Repository: https://github.com/$GitHubUser/$RepoName" -ForegroundColor Cyan
+    Write-Host "`nSUCCESS! Your project is now on GitHub with dedicated SEO pages for all 32 tools!" -ForegroundColor Green
 } else {
-    Write-Host "`nIf Git asked for credentials, generate a GitHub Personal Access Token at:" -ForegroundColor Yellow
-    Write-Host "  https://github.com/settings/tokens (classic token with 'repo' scope)" -ForegroundColor White
-    Write-Host "Use your GitHub username and the token as your password." -ForegroundColor Yellow
+    Write-Warning "`nPush failed. Check your GitHub authentication or repository access permissions."
 }

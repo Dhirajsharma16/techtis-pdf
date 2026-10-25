@@ -1,5 +1,5 @@
 # Zero-Dependency Local Static HTTP Server for Windows
-# Serves the TECHTIS platform at http://localhost:8080 with proper MIME types
+# Serves the TECHTIS platform at http://localhost:8080 with proper MIME types & clean URLs
 
 param(
     [int]$Port = 8080
@@ -7,7 +7,7 @@ param(
 
 $rootDir = $PSScriptRoot
 if (-not $rootDir -or -not (Test-Path "$rootDir\index.html")) {
-    $rootDir = "C:\Users\PEL\.gemini\antigravity\scratch\zerocost-pdf-suite"
+    $rootDir = "C:\Users\jdhir\.gemini\antigravity\scratch\techtis-pdf"
 }
 
 $listener = New-Object System.Net.HttpListener
@@ -48,6 +48,8 @@ $mimeTypes = @{
     ".svg"  = "image/svg+xml"
     ".pdf"  = "application/pdf"
     ".wasm" = "application/wasm"
+    ".xml"  = "application/xml; charset=utf-8"
+    ".txt"  = "text/plain; charset=utf-8"
 }
 
 while ($listener.IsListening) {
@@ -84,6 +86,13 @@ while ($listener.IsListening) {
 
         $relativePath = $rawUrl.TrimStart("/").Replace("/", [System.IO.Path]::DirectorySeparatorChar)
         $filePath = [System.IO.Path]::Combine($rootDir, $relativePath)
+
+        # Support clean directory URLs (e.g., /merge-pdf/ -> /merge-pdf/index.html)
+        if ([System.IO.Directory]::Exists($filePath)) {
+            $filePath = [System.IO.Path]::Combine($filePath, "index.html")
+        } elseif (-not [System.IO.File]::Exists($filePath) -and [System.IO.File]::Exists("$filePath.html")) {
+            $filePath = "$filePath.html"
+        }
 
         if ([System.IO.File]::Exists($filePath)) {
             $ext = [System.IO.Path]::GetExtension($filePath).ToLower()

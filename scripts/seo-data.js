@@ -1,0 +1,1031 @@
+/**
+ * TECHTIS SEO Knowledge Base & Structured Data Dictionary
+ * Exhaustive on-page metadata, semantic content, FAQs, HowTo steps, and LSI keywords
+ * for all 32 PDF & AI utilities.
+ */
+
+export const SEO_DATA = {
+    'merge-pdf': {
+        title: 'Merge PDF Online Free – Combine PDF Files Securely in Browser | TECHTIS',
+        metaDescription: 'Merge PDF files online free with TECHTIS. Combine multiple documents into one in seconds. 100% private client-side processing, zero file uploads, unlimited use.',
+        keywords: 'merge pdf, combine pdf files, join pdf online, free pdf merger, merge pdf without uploading, combine pdfs in browser, ilovepdf alternative merge, safe pdf combiner',
+        h1: 'Merge PDF Online Free',
+        subtitle: 'Combine multiple PDF files into a single unified document in any order with instant client-side processing.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Choose PDF Files', desc: 'Click "Select PDF Files" or drag and drop two or more documents from your device.' },
+            { step: 2, title: 'Reorder Pages & Files', desc: 'Drag and drop file thumbnails to arrange the exact sequence you want them combined.' },
+            { step: 3, title: 'Merge & Download', desc: 'Click "Merge PDF" and your merged file is ready instantly in browser memory.' }
+        ],
+        features: [
+            { title: 'Zero File Uploads', desc: 'Files are processed inside browser RAM using WebAssembly. No sensitive docs reach external servers.' },
+            { title: 'Sub-100ms Merging', desc: 'No upload queues or slow cloud processing. Local execution handles 50+ pages in a fraction of a second.' },
+            { title: 'Unlimited & Free', desc: 'No daily quota, no page limits, no watermarks, and no sign-up required.' },
+            { title: 'Works on All Devices', desc: 'Compatible with Chrome, Safari, Edge, Firefox on Windows, Mac, Linux, iOS, and Android.' }
+        ],
+        content: `
+            <p>Combining multiple PDF documents into a single consolidated file is essential for preparing business proposals, compiling invoices, submitting multi-page job applications, and organizing academic research. While traditional cloud converters require uploading your confidential files to remote servers, TECHTIS processes your entire PDF merger locally in your device's memory.</p>
+            <p>Our client-side WebAssembly engine reads each document's byte stream, merges cross-reference tables, consolidates embedded fonts, and rebuilds the catalog hierarchy directly in RAM. Whether you are merging two contracts or assembling fifty scanned receipts, your confidential data never leaves your computer or phone.</p>
+            <p>With intuitive drag-and-drop file reordering, you can arrange files in the exact sequence you need before generating the final output. TECHTIS guarantees zero server latency, zero bandwidth consumption, and total confidentiality for all legal, medical, and financial documents.</p>
+        `,
+        faqs: [
+            { q: 'Is there a limit to how many PDF files I can merge at once?', a: 'Because merging runs locally in your device memory rather than on a congested cloud server, there is no artificial limit on the number of files or total page count. You can easily merge dozens of PDFs at once.' },
+            { q: 'Are my confidential documents uploaded to any server?', a: 'No. TECHTIS operates on a strict zero-upload architecture. All file parsing, byte reordering, and PDF assembly happen inside your browser using client-side JavaScript and WebAssembly.' },
+            { q: 'Can I reorder the PDF files before merging?', a: 'Yes. Simply drag and drop the file cards in the preview workspace to place them in your desired order before clicking the Merge button.' },
+            { q: 'Does TECHTIS work on mobile phones?', a: 'Yes! TECHTIS works smoothly on iOS Safari, Android Chrome, and all modern mobile web browsers without installing any apps.' }
+        ],
+        relatedTools: ['split-pdf', 'organize-pages', 'rotate-pdf', 'compress-pdf', 'add-page-numbers', 'add-watermark']
+    },
+
+    'split-pdf': {
+        title: 'Split PDF Online Free – Extract Pages & Separate PDF Files | TECHTIS',
+        metaDescription: 'Split PDF files online for free. Extract specific pages or divide a document into standalone PDFs with live thumbnail preview. 100% client-side privacy.',
+        keywords: 'split pdf, extract pdf pages, separate pdf, split pdf online free, break pdf into pages, cut pdf pages, client side pdf splitter, ilovepdf alternative split',
+        h1: 'Split PDF Online Free',
+        subtitle: 'Extract specific page ranges or separate every page into independent PDF files with real-time thumbnail previews.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload PDF Document', desc: 'Select or drag your PDF file into the upload zone to generate instant page previews.' },
+            { step: 2, title: 'Choose Split Mode', desc: 'Select specific page intervals (e.g. 1-3, 5), extract every page, or set custom chunk sizes.' },
+            { step: 3, title: 'Download Split Files', desc: 'Click "Split PDF" to generate and download individual files or a consolidated ZIP archive.' }
+        ],
+        features: [
+            { title: 'Interactive Thumbnail Selector', desc: 'Visually select pages or type custom page ranges with instant thumbnail previews.' },
+            { title: 'Instant ZIP Packaging', desc: 'Export all pages as separate files packaged cleanly inside a client-side ZIP file.' },
+            { title: '100% In-Browser Memory', desc: 'Your private financial or personal documents are never transmitted across the network.' },
+            { title: 'Preserves Quality & Hyperlinks', desc: 'Retains all original vector fonts, high-DPI images, form structures, and bookmarks.' }
+        ],
+        content: `
+            <p>Splitting large PDF documents into focused individual sections is a daily necessity for legal discovery, tax preparation, academic research, and client reporting. TECHTIS Split PDF gives you total control over how pages are extracted, allowing you to isolate exact page ranges (like pages 3–7 and 12) or split a 100-page catalog into individual single-page documents.</p>
+            <p>Our built-in thumbnail rendering engine gives you an immediate visual preview of every page in your document. You can visually inspect pages before deciding which sections to extract. When splitting multiple pages, TECHTIS uses client-side JSZip to bundle the resulting documents into a convenient ZIP archive in seconds.</p>
+            <p>Because all operations run locally in your browser, you never have to wait for large multi-megabyte files to upload over slow connections. Experience desktop-class splitting performance directly in your browser.</p>
+        `,
+        faqs: [
+            { q: 'How do I specify custom page ranges when splitting?', a: 'You can type custom page ranges in standard notation (e.g., "1-4, 8, 11-15") or click directly on the interactive thumbnail grid to select pages.' },
+            { q: 'Can I split every page into a separate PDF file?', a: 'Yes. Choose the "Extract All Pages" mode, and TECHTIS will generate a standalone PDF for each page and package them into a single ZIP file.' },
+            { q: 'Will the visual quality or text clarity degrade after splitting?', a: 'Not at all. The internal vector graphics, embedded TrueType fonts, and resolution of images remain completely unchanged.' },
+            { q: 'Is there a file size limit for splitting PDFs?', a: 'There are no artificial server limits. Your document is processed by your computer\'s available RAM and CPU.' }
+        ],
+        relatedTools: ['merge-pdf', 'remove-pages', 'extract-pages', 'organize-pages', 'compress-pdf', 'rotate-pdf']
+    },
+
+    'compress-pdf': {
+        title: 'Compress PDF Online Free – Reduce PDF File Size in Browser | TECHTIS',
+        metaDescription: 'Compress PDF files online free. Reduce document file size by up to 85% while keeping crisp text and images. 100% private, zero uploads, instant download.',
+        keywords: 'compress pdf, reduce pdf size, shrink pdf online, pdf compressor free, compress pdf without losing quality, client side pdf compressor, ilovepdf compress alternative',
+        h1: 'Compress PDF Online Free',
+        subtitle: 'Shrink PDF file sizes dramatically for email attachments and web uploads without sacrificing text clarity.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Select PDF to Compress', desc: 'Drop your oversized PDF document into the compression drop zone.' },
+            { step: 2, title: 'Choose Compression Level', desc: 'Select from Recommended (balanced quality/size), Extreme (maximum reduction), or Low compression.' },
+            { step: 3, title: 'Save Optimized PDF', desc: 'See your exact kilobyte savings and download your lightweight PDF immediately.' }
+        ],
+        features: [
+            { title: 'Intelligent Stream Optimization', desc: 'Strips redundant metadata, compresses uncompressed streams, and flattens duplicate fonts.' },
+            { title: 'Up to 85% Size Reduction', desc: 'Shrinks large multi-megabyte scans into lightweight, email-ready documents.' },
+            { title: 'Strict Client-Side Privacy', desc: 'Compress sensitive financial reports, tax returns, and medical files without cloud uploads.' },
+            { title: 'Transparent Byte Metrics', desc: 'Displays original size, compressed size, and exact percentage saved in real time.' }
+        ],
+        content: `
+            <p>Email services, job application portals, and government websites often enforce strict file size limits (such as 2MB or 5MB) on uploaded PDF documents. TECHTIS Compress PDF provides a client-side solution that optimizes document structures, re-encodes embedded image streams, and cleans unused metadata tags.</p>
+            <p>Unlike cloud compressors that queue your document on remote servers, TECHTIS optimizes your PDF directly in your browser's WebAssembly sandbox. You achieve massive size reductions in milliseconds, with no network bottlenecks or upload wait times.</p>
+            <p>Our compression algorithms balance file size reduction with visual fidelity, ensuring that typography remains sharp and vector diagrams stay crisp for printing and on-screen reading.</p>
+        `,
+        faqs: [
+            { q: 'Will compressing my PDF make the text blurry or unreadable?', a: 'No. Our compression focuses on stream optimization, metadata stripping, and efficient image compression, ensuring text and vector lines stay crisp.' },
+            { q: 'How much can TECHTIS reduce my PDF file size?', a: 'Depending on the content (e.g. scanned images vs vector text), reductions range from 30% to 85% of the original file size.' },
+            { q: 'Is it safe to compress confidential bank statements or contracts?', a: 'Yes, 100%. All processing happens strictly in your browser RAM. No bytes are sent across the internet to any external server.' },
+            { q: 'Can I compress password-protected PDF files?', a: 'You will need to unlock the PDF first using our Unlock PDF tool before compressing, so the compression engine can parse document streams.' }
+        ],
+        relatedTools: ['grayscale-pdf', 'merge-pdf', 'split-pdf', 'pdf-to-jpg', 'flatten-pdf', 'repair-pdf']
+    },
+
+    'rotate-pdf': {
+        title: 'Rotate PDF Online Free – Rotate Pages & Save Permanently | TECHTIS',
+        metaDescription: 'Rotate PDF pages online for free. Turn individual pages or the entire document 90, 180, or 270 degrees clockwise or counter-clockwise. Instant save.',
+        keywords: 'rotate pdf, rotate pdf pages, turn pdf, permanent rotate pdf, clockwise rotate pdf, rotate upside down pdf, free pdf rotator, client side rotate pdf',
+        h1: 'Rotate PDF Online Free',
+        subtitle: 'Rotate individual pages or entire documents 90°, 180°, or 270° clockwise or counter-clockwise with permanent orientation saving.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Choose PDF File', desc: 'Select or drag your PDF document into the workspace.' },
+            { step: 2, title: 'Adjust Orientation', desc: 'Click the rotate buttons on individual page cards or rotate all pages uniformly.' },
+            { step: 3, title: 'Download Rotated PDF', desc: 'Save your permanently corrected document in one click.' }
+        ],
+        features: [
+            { title: 'Permanent Angle Saving', desc: 'Updates PDF internal /Rotate dictionary so pages open correctly in all viewers.' },
+            { title: 'Per-Page & Global Rotation', desc: 'Rotate single upside-down pages or rotate the entire document in 90-degree steps.' },
+            { title: 'Interactive Live Previews', desc: 'See real-time visual feedback for every page orientation before downloading.' },
+            { title: 'Zero Loss in Quality', desc: 'Page contents are not re-rasterized; rotation modifies only the internal view matrix.' }
+        ],
+        content: `
+            <p>Scanned documents frequently arrive sideways or upside-down due to feeder jams or improper scanner orientation. Viewing and printing misaligned files is frustrating, and simple viewer rotation only lasts until you close the window. TECHTIS Rotate PDF modifies the permanent /Rotate attribute in the document catalog, ensuring the document opens in the right orientation across all devices and PDF readers.</p>
+            <p>Our interface provides both global controls (to rotate every page at once) and individual page buttons to fix specific misoriented pages in a mixed-orientation file. Because TECHTIS does not re-encode page images, rotation is instantaneous and causes zero quality loss.</p>
+            <p>Enjoy private, instantaneous PDF rotation without waiting for file uploads or software installations.</p>
+        `,
+        faqs: [
+            { q: 'Does rotating a PDF permanently fix the orientation in Adobe Acrobat and preview apps?', a: 'Yes. TECHTIS updates the internal PDF specification /Rotate metadata attribute, so every standard PDF viewer displays it properly forever.' },
+            { q: 'Can I rotate just one page in a 20-page document?', a: 'Yes. Our visual page grid lets you rotate individual pages independently without altering the rest of the document.' },
+            { q: 'Does rotating degrade the resolution of scanned pages?', a: 'No. The visual contents are not compressed or converted; only the coordinate orientation tag is updated.' },
+            { q: 'Is there a limit on file size or page count for rotation?', a: 'No limits. All operations take place in your browser RAM.' }
+        ],
+        relatedTools: ['organize-pages', 'remove-pages', 'extract-pages', 'crop-pdf', 'merge-pdf', 'split-pdf']
+    },
+
+    'remove-pages': {
+        title: 'Remove Pages from PDF Online Free – Delete Unwanted PDF Pages | TECHTIS',
+        metaDescription: 'Remove pages from PDF online free. Delete blank pages, covers, or duplicate sheets with interactive visual thumbnail selection. 100% private.',
+        keywords: 'remove pdf pages, delete pages from pdf, delete unwanted pdf pages, cut pages from pdf, strip pdf pages, remove blank pages pdf, free pdf page remover',
+        h1: 'Remove Pages from PDF Online Free',
+        subtitle: 'Visually select and eliminate unwanted pages, blank sheets, or duplicate covers from your document in seconds.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Select Document', desc: 'Upload the PDF you want to trim to generate live thumbnail previews.' },
+            { step: 2, title: 'Click Pages to Remove', desc: 'Click any page thumbnail to flag it for deletion, or enter comma-separated page numbers.' },
+            { step: 3, title: 'Export Trimmed PDF', desc: 'Click "Remove Selected Pages" to save your clean document instantly.' }
+        ],
+        features: [
+            { title: 'Visual Click-to-Delete', desc: 'Click on any page thumbnail to toggle deletion with instant red badge feedback.' },
+            { title: 'Range Input Support', desc: 'Type ranges like "1, 4-6, 12" to quickly flag batches of pages for deletion.' },
+            { title: 'Preserves Internal Bookmarks', desc: 'Rebuilds document tree structure smoothly without breaking surviving references.' },
+            { title: 'Instant In-Browser Assembly', desc: 'Zero cloud latency; your trimmed document downloads instantly.' }
+        ],
+        content: `
+            <p>PDF documents often accumulate unnecessary pages—such as blank separator sheets, outdated terms of service, redundant cover sheets, or confidential appendices that should not be shared with outside parties. TECHTIS Remove Pages makes it effortless to trim documents down to only the essential content.</p>
+            <p>With our interactive visual grid, you simply click on any page to mark it for removal. If you already know which page numbers need to be removed, type them directly into the range field for batch selection. Once confirmed, TECHTIS constructs a clean document tree omitting those pages entirely.</p>
+            <p>Since your documents never leave your local device, you can safely sanitize confidential records, financial filings, and medical histories without compromising patient or client privacy.</p>
+        `,
+        faqs: [
+            { q: 'Can I undo a page removal before exporting?', a: 'Yes! Simply click the page thumbnail again to unmark it, or click "Deselect All" to reset your choices.' },
+            { q: 'Does deleting pages break the table of contents or bookmarks?', a: 'Surviving pages remain completely functional with their internal fonts, graphics, and annotations intact.' },
+            { q: 'Are deleted pages recoverable from the newly saved PDF?', a: 'No. The omitted pages are completely stripped from the output file, making it safe to share sanitized documents.' },
+            { q: 'Can I remove multiple pages simultaneously?', a: 'Yes, you can select as many pages as you like, or delete entire ranges at once.' }
+        ],
+        relatedTools: ['extract-pages', 'organize-pages', 'split-pdf', 'merge-pdf', 'rotate-pdf', 'crop-pdf']
+    },
+
+    'extract-pages': {
+        title: 'Extract PDF Pages Online Free – Save Selected Pages to New PDF | TECHTIS',
+        metaDescription: 'Extract PDF pages online free. Select specific pages or custom ranges and export them into a brand-new, lightweight PDF document in browser RAM.',
+        keywords: 'extract pdf pages, save specific pdf pages, pull pages from pdf, export pdf pages, isolate pdf pages, extract pages from pdf free, client side pdf extractor',
+        h1: 'Extract PDF Pages Online Free',
+        subtitle: 'Isolate specific pages or custom ranges from large documents and export them into a clean, new PDF file in sub-100ms.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Document', desc: 'Drop your PDF into the extractor workspace to inspect all page thumbnails.' },
+            { step: 2, title: 'Select Pages to Extract', desc: 'Click thumbnails or enter exact numbers (e.g., 2, 5-8) to choose your target pages.' },
+            { step: 3, title: 'Generate New PDF', desc: 'Click "Extract Pages" to download your newly compiled standalone document.' }
+        ],
+        features: [
+            { title: 'Precision Page Picking', desc: 'Visually click specific pages or type custom range intervals with ease.' },
+            { title: 'Sub-100ms Extraction', desc: 'Local WebAssembly copies selected page dictionaries without re-rendering.' },
+            { title: 'Maintains Native Resolution', desc: 'Preserves vector paths, high-resolution imagery, and embedded fonts.' },
+            { title: 'Zero Cloud Uploads', desc: 'Ensures full compliance with GDPR, HIPAA, and corporate data security policies.' }
+        ],
+        content: `
+            <p>When you only need a 2-page invoice from a 300-page accounting report or a specific chapter from an academic eBook, sharing the full document is unwieldy and potentially exposes sensitive adjacent data. TECHTIS Extract Pages enables you to isolate the exact pages you need and save them as an independent document.</p>
+            <p>Our extraction engine preserves all the vector typography, original color profiles, and embedded form assets of the selected pages while drastically reducing overall file size. The process takes less than a second regardless of your internet connection speed because no data is sent to external servers.</p>
+            <p>Whether you need to send an excerpt to a client, attach a single certificate to a job portal, or archive an agreement section, TECHTIS provides the fastest, most private extraction utility available.</p>
+        `,
+        faqs: [
+            { q: 'How is Extract Pages different from Split PDF?', a: 'Extract Pages specifically compiles only your chosen pages into a single new PDF document, whereas Split PDF can break every page into separate individual files.' },
+            { q: 'Can I extract non-consecutive pages (e.g. pages 1, 4, and 9)?', a: 'Yes! You can select any combination of non-contiguous pages or custom ranges.' },
+            { q: 'Does extracting pages reduce the file size?', a: 'Yes, significantly. The new PDF contains only the data and assets necessary for the selected pages, shedding all unused content.' },
+            { q: 'Is there any watermark added to the extracted PDF?', a: 'None at all. TECHTIS is 100% free with zero watermarks or ads.' }
+        ],
+        relatedTools: ['remove-pages', 'split-pdf', 'organize-pages', 'merge-pdf', 'rotate-pdf', 'compress-pdf']
+    },
+
+    'organize-pages': {
+        title: 'Organize PDF Pages Online Free – Reorder, Sort & Rearrange | TECHTIS',
+        metaDescription: 'Organize PDF pages online free. Drag and drop thumbnail tiles to rearrange, sort, duplicate, or delete pages visually with instant preview. 100% private.',
+        keywords: 'organize pdf pages, reorder pdf, sort pdf pages, rearrange pdf pages visual, drag and drop pdf pages, arrange pdf pages online free, client side pdf organizer',
+        h1: 'Organize PDF Pages Online Free',
+        subtitle: 'Drag and drop thumbnail tiles to reorder, sort, and arrange your document pages with complete visual precision.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Open PDF in Organizer', desc: 'Drag your PDF into the organizer grid to load interactive thumbnail tiles.' },
+            { step: 2, title: 'Rearrange Pages', desc: 'Drag and drop page tiles into your preferred sequence; rotate or delete individual pages as needed.' },
+            { step: 3, title: 'Download Organized PDF', desc: 'Click "Save Changes" to compile and download your rearranged document.' }
+        ],
+        features: [
+            { title: 'Intuitive Drag-and-Drop', desc: 'Fluid drag-and-drop mechanics with visual drop indicators for smooth reordering.' },
+            { title: 'All-in-One Page Management', desc: 'Reorder, rotate, duplicate, and delete pages within a single unified workspace.' },
+            { title: 'Live High-DPI Previews', desc: 'Inspect crisp page previews to ensure exact placement of diagrams and text.' },
+            { title: '100% Private in Browser', desc: 'All reorganization runs in your device\'s local memory for total confidentiality.' }
+        ],
+        content: `
+            <p>Complex PDF documents often require structural reorganizing—whether you are sorting presentation slides, reordering scanned contract pages that were fed out of order, or placing an executive summary in front of detailed appendices. TECHTIS Organize Pages provides an intuitive visual canvas where you can arrange pages effortlessly.</p>
+            <p>Our drag-and-drop workspace gives you full command over your document layout. Move pages forward or backward, rotate individual sheets that are sideways, or eliminate unwanted pages in a single workflow. Once you are satisfied with the arrangement, TECHTIS compiles the new page tree instantly in memory.</p>
+            <p>Eliminate expensive desktop software suites. TECHTIS gives you pro-level document organization in your web browser with zero server latency and total data privacy.</p>
+        `,
+        faqs: [
+            { q: 'How do I rearrange pages using this tool?', a: 'Simply click and hold any page thumbnail, drag it to the desired position in the grid, and release. The page order updates in real time.' },
+            { q: 'Can I rotate or delete pages while organizing?', a: 'Yes! Each page thumbnail tile features quick action icons to rotate 90 degrees or delete the page directly.' },
+            { q: 'Is there a limit on how many pages can be organized?', a: 'You can organize documents with hundreds of pages smoothly, limited only by your computer\'s available RAM.' },
+            { q: 'Does reorganizing alter the text formatting or vector lines?', a: 'Not in the slightest. The content streams of the pages remain bit-for-bit identical; only their order in the document catalog is modified.' }
+        ],
+        relatedTools: ['merge-pdf', 'rotate-pdf', 'remove-pages', 'extract-pages', 'add-page-numbers', 'crop-pdf']
+    },
+
+    'add-page-numbers': {
+        title: 'Add Page Numbers to PDF Online Free – Header & Footer Stamping | TECHTIS',
+        metaDescription: 'Add page numbers to PDF online free. Customize position, typography, numbering format (Page X of Y), margins, and page ranges. 100% private in browser.',
+        keywords: 'add page numbers to pdf, number pdf pages, stamp bates numbers, pdf page numbering online, insert page numbers pdf free, header footer page numbers pdf',
+        h1: 'Add Page Numbers to PDF Online Free',
+        subtitle: 'Insert customizable page numbers, Bates stamping, and headers/footers with complete typographic and position control.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Document', desc: 'Select or drop your PDF to open the page numbering configuration panel.' },
+            { step: 2, title: 'Customize Layout', desc: 'Choose position (bottom right, top center, etc.), format (e.g. "Page {n} of {total}"), font size, and start index.' },
+            { step: 3, title: 'Stamp & Download', desc: 'Click "Add Page Numbers" to generate and download your numbered document instantly.' }
+        ],
+        features: [
+            { title: 'Flexible Numbering Formats', desc: 'Supports "1", "Page 1", "Page 1 of 50", and custom Bates legal prefixes.' },
+            { title: '6 Standard Alignment Zones', desc: 'Place numbers at top-left, top-center, top-right, bottom-left, bottom-center, or bottom-right.' },
+            { title: 'Custom Range & Offset', desc: 'Skip cover pages, set custom first page numbering, or specify specific page subsets.' },
+            { title: 'Vector Font Stamping', desc: 'Stamps clean, scalable vector typography directly onto the PDF canvas.' }
+        ],
+        content: `
+            <p>Adding page numbers to legal filings, academic dissertations, and corporate reports is essential for cross-referencing and professional presentation. Unnumbered documents make it difficult for readers, judges, and colleagues to navigate complex content. TECHTIS Add Page Numbers gives you complete flexibility to stamp numbers onto any document with precision.</p>
+            <p>Customize your numbering format using dynamic placeholders like "Page {n} of {total}" or standard numeral formats. You can choose from six strategic positions across headers and footers, adjust margin offsets to avoid overlapping existing text, and set custom start numbers to skip cover pages or executive summaries.</p>
+            <p>Because the stamping engine runs natively in your browser using pdf-lib, your numbered document is generated in milliseconds with zero server upload wait times.</p>
+        `,
+        faqs: [
+            { q: 'Can I exclude the cover page from being numbered?', a: 'Yes! You can specify a starting page (e.g., begin numbering on page 2) and configure the start number to be 1.' },
+            { q: 'Can I customize the text format, such as "Page X of Y"?', a: 'Yes. You can select standard numerals ("1, 2, 3"), "Page {n}", or "Page {n} of {total}".' },
+            { q: 'What positions are available for placing page numbers?', a: 'You can align numbers to top-left, top-center, top-right, bottom-left, bottom-center, or bottom-right.' },
+            { q: 'Are my files kept private during page numbering?', a: 'Absolutely. Stamping is executed locally in your browser memory; zero bytes are uploaded to any external server.' }
+        ],
+        relatedTools: ['add-watermark', 'edit-pdf', 'merge-pdf', 'organize-pages', 'flatten-pdf', 'metadata-editor']
+    },
+
+    'add-watermark': {
+        title: 'Add Watermark to PDF Online Free – Stamp Text or Logo on PDF | TECHTIS',
+        metaDescription: 'Add watermark to PDF online free. Stamp custom text, confidential notices, copyright tags, or dates across pages with opacity and angle control. 100% private.',
+        keywords: 'add watermark to pdf, stamp pdf, confidential watermark pdf, draft watermark online, copyright watermark pdf, watermark pdf free, client side pdf watermark',
+        h1: 'Add Watermark to PDF Online Free',
+        subtitle: 'Stamp custom confidential notices, copyright marks, or draft stamps across document pages with opacity and angle control.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload PDF', desc: 'Select or drag your PDF file into the watermarking workspace.' },
+            { step: 2, title: 'Customize Watermark', desc: 'Type your text (e.g., CONFIDENTIAL, DRAFT), set opacity, angle (e.g., 45°), font size, and color.' },
+            { step: 3, title: 'Stamp & Download', desc: 'Click "Apply Watermark" to overlay your custom mark across all pages instantly.' }
+        ],
+        features: [
+            { title: 'Custom Opacity & Angle', desc: 'Adjust transparency slider (10% to 100%) and rotation angle (0° to 90°) for ideal readability.' },
+            { title: 'Layer Placement Options', desc: 'Stamp watermark over page content or render subtly in the background beneath text.' },
+            { title: 'Preset Quick Templates', desc: 'One-click presets for "CONFIDENTIAL", "DRAFT", "COPYRIGHT", "INTERNAL USE", and "SAMPLE".' },
+            { title: 'Vector Precision Stamping', desc: 'Renders crisp vector typography that prints cleanly at any DPI setting.' }
+        ],
+        content: `
+            <p>Protecting intellectual property, preventing unauthorized redistribution, and clearly identifying document status (such as DRAFT, CONFIDENTIAL, or FOR REVIEW ONLY) requires visible watermarking. TECHTIS Add Watermark lets you stamp clear, semi-transparent text watermarks across every page of your PDF in seconds.</p>
+            <p>Our intuitive controls give you total control over styling: adjust font size, change color, set custom rotation angles (such as standard 45-degree diagonal watermarks), and dial in the exact transparency level so the watermark remains legible without obscuring underlying document text.</p>
+            <p>Because all watermarking is calculated and rendered directly in your browser's WebAssembly sandbox, your sensitive business plans, creative manuscripts, and confidential contracts never travel across the internet.</p>
+        `,
+        faqs: [
+            { q: 'Will the watermark obscure the underlying text of my document?', a: 'No, you can adjust the opacity slider (typically 15% to 30%) so the watermark is clearly visible while keeping the underlying text completely legible.' },
+            { q: 'Can I apply watermarks to specific pages only?', a: 'By default, the watermark is applied across all pages, but you can specify a page range subset if needed.' },
+            { q: 'Can the watermark be easily removed by recipients?', a: 'TECHTIS stamps the watermark directly into the PDF content stream, making it permanent when combined with our Flatten PDF tool.' },
+            { q: 'Is this tool free and private?', a: 'Yes, 100% free with no account required, processing exclusively inside your local browser memory.' }
+        ],
+        relatedTools: ['add-page-numbers', 'protect-pdf', 'flatten-pdf', 'sign-pdf', 'edit-pdf', 'metadata-editor']
+    },
+
+    'edit-pdf': {
+        title: 'Edit PDF Online Free – Add Text, Shapes & Annotations | TECHTIS',
+        metaDescription: 'Edit PDF online free with TECHTIS. Add text annotations, highlight content, insert rectangles, lines, and custom notes in your browser. 100% private, no signup.',
+        keywords: 'edit pdf online, free pdf editor, annotate pdf, add text to pdf, mark up pdf, write on pdf, pdf editor in browser, ilovepdf edit alternative',
+        h1: 'Edit PDF Online Free',
+        subtitle: 'Add custom text annotations, notes, callout rectangles, freehand marks, and geometric highlights to any PDF in your browser.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload PDF', desc: 'Select or drag your PDF document onto the interactive editor canvas.' },
+            { step: 2, title: 'Add Annotations', desc: 'Use the toolbar to type text, draw highlights, place callout boxes, or insert shapes.' },
+            { step: 3, title: 'Save & Export', desc: 'Click "Save PDF" to bake your annotations into a downloadable, clean document.' }
+        ],
+        features: [
+            { title: 'Interactive Canvas Tools', desc: 'Add text boxes, highlight key paragraphs, draw borders, and insert arrows.' },
+            { title: 'Custom Typography & Colors', desc: 'Select font sizes, font weights, text colors, background fills, and line stroke widths.' },
+            { title: 'Direct Visual Editing', desc: 'Move, resize, edit, and delete annotations with smooth mouse or touch gestures.' },
+            { title: '100% In-Browser Privacy', desc: 'Edits are calculated in local RAM; zero files are stored on remote servers.' }
+        ],
+        content: `
+            <p>Making quick edits, highlighting crucial clauses, adding review notes, or typing corrections on existing PDF files usually requires clunky desktop software or paid monthly subscriptions. TECHTIS Edit PDF delivers a lightweight, browser-based annotation editor that lets you markup any PDF with ease.</p>
+            <p>Our editor provides an intuitive toolbar equipped with text insertion, rectangular highlights, arrows, and custom shapes. You can easily comment on student papers, mark up architectural drafts, annotate contract terms, or add supplementary notes to financial spreadsheets.</p>
+            <p>All edits are composited onto the original PDF vector canvas in browser memory, maintaining original font crispness and image clarity while guaranteeing complete privacy for your sensitive documents.</p>
+        `,
+        faqs: [
+            { q: 'Can I edit the existing text in a scanned PDF?', a: 'Scanned PDFs consist of static raster images. You can use our OCR PDF tool to extract the text first, or use Edit PDF to overlay new text boxes and whiteout boxes over unwanted areas.' },
+            { q: 'Will my annotations show up in all standard PDF readers?', a: 'Yes! TECHTIS bakes annotations into standard PDF appearance streams compatible with Adobe Acrobat, Apple Preview, Google Chrome, and mobile viewers.' },
+            { q: 'Can I edit multiple pages in the same session?', a: 'Yes, you can navigate between pages using the thumbnail sidebar and annotate each page individually.' },
+            { q: 'Is there a cost or page limit for editing PDFs?', a: 'TECHTIS is completely free with no limits on pages or file sizes.' }
+        ],
+        relatedTools: ['form-filler', 'sign-pdf', 'add-watermark', 'add-page-numbers', 'flatten-pdf', 'ocr-pdf']
+    },
+
+    'sign-pdf': {
+        title: 'Sign PDF Online Free – Draw, Type & Add Digital Signature | TECHTIS',
+        metaDescription: 'Sign PDF documents online free. Draw your handwritten signature, type with calligraphy fonts, or upload signature image. 100% private in browser RAM.',
+        keywords: 'sign pdf online, e-sign pdf free, electronic signature pdf, add signature to document, draw signature pdf, sign contract free, client side pdf signer',
+        h1: 'Sign PDF Online Free',
+        subtitle: 'Draw your handwritten signature, type with signature typography, or upload a stamp to sign contracts and forms in seconds.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Agreement', desc: 'Select or drag your contract, tax form, or agreement into the signature workspace.' },
+            { step: 2, title: 'Create Your Signature', desc: 'Draw smoothly on the signature pad, type your name using elegant script fonts, or upload a PNG image.' },
+            { step: 3, title: 'Place & Download', desc: 'Position and resize your signature on any page, then click "Sign & Download".' }
+        ],
+        features: [
+            { title: '3 Flexible Signing Modes', desc: 'Draw with mouse/stylus/touch, type with calligraphy styles, or upload a transparent PNG signature.' },
+            { title: 'Interactive Placement & Scale', desc: 'Drag your signature to the exact signature line and resize with corner bounding boxes.' },
+            { title: 'Multi-Page Support', desc: 'Sign multiple pages, add initials, and stamp dates onto agreements in one session.' },
+            { title: 'Strict Confidentiality', desc: 'Your personal signature and legal agreements are never uploaded or stored on any server.' }
+        ],
+        content: `
+            <p>In modern business, printing out contracts, signing them with a pen, scanning them back to a computer, and emailing them is an outdated, time-consuming chore. TECHTIS Sign PDF lets you electronically sign agreements, lease forms, NDAs, and onboarding documents in seconds right from your browser.</p>
+            <p>Our responsive HTML5 canvas pad captures natural, high-resolution handwritten strokes whether you use a mouse, touchpad, or smartphone touchscreen. Alternatively, you can type your name to generate an elegant calligraphic script signature or upload a transparent image of your existing stamp.</p>
+            <p>Once placed, your signature is embedded permanently into the PDF's vector stream. Because all processing executes in local browser RAM, your sensitive legal agreements, personal signatures, and identification documents remain 100% private and protected.</p>
+        `,
+        faqs: [
+            { q: 'Is an electronic signature generated by TECHTIS legally binding?', a: 'In most jurisdictions worldwide (including the US ESIGN Act, EU eIDAS regulation, and India IT Act), electronic signatures are legally valid for most general business agreements, contracts, and forms.' },
+            { q: 'Can I sign using my finger on a smartphone or tablet?', a: 'Yes! Our signature pad is fully optimized for touchscreens on iOS and Android devices.' },
+            { q: 'Is my handwritten signature stored on your servers?', a: 'Never. Your signature is processed exclusively in your device\'s local memory and is never saved, transmitted, or logged.' },
+            { q: 'Can I add initials and today\'s date alongside my signature?', a: 'Yes, you can create multiple signature stamps, initials, and date tags and position each onto the document.' }
+        ],
+        relatedTools: ['form-filler', 'flatten-pdf', 'edit-pdf', 'protect-pdf', 'merge-pdf', 'compress-pdf']
+    },
+
+    'form-filler': {
+        title: 'PDF Form Filler Online Free – Fill Flat Forms & AcroForms | TECHTIS',
+        metaDescription: 'Fill PDF forms online for free. Click-to-type anywhere on flat scanned government forms (Aadhaar, PAN, applications) or fill standard digital AcroForms.',
+        keywords: 'fill pdf form, flat form filler, fill scanned pdf online, aadhaar form filler, pan card form filler, fill pdf without adobe, free pdf form filler, fillable form pdf',
+        h1: 'PDF Form Filler Online Free',
+        subtitle: 'Click and type anywhere on flat scanned forms, job applications, and official PDFs with auto-alignment and checkbox marking.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Any Form', desc: 'Upload scanned flat PDFs, government application forms, or interactive AcroForms.' },
+            { step: 2, title: 'Click & Type Anywhere', desc: 'Click directly on any blank line to type text, check boxes with (X), or stamp dates.' },
+            { step: 3, title: 'Save Completed Form', desc: 'Export your filled document with text permanently burned into the PDF structure.' }
+        ],
+        features: [
+            { title: 'Universal Click-to-Type', desc: 'Works on flat scanned forms that have no digital form fields (Aadhaar, passport, banking forms).' },
+            { title: 'Interactive AcroForm Support', desc: 'Automatically detects and parses interactive digital text fields, checkboxes, and radio groups.' },
+            { title: 'Checkbox & Checkmark Tools', desc: 'One-click checkmark (✓) and cross (X) stamping for surveys and questionnaires.' },
+            { title: 'Zero Data Retention', desc: 'Personal details (SSN, Aadhaar number, addresses, banking info) never touch external servers.' }
+        ],
+        content: `
+            <p>Most government forms, school registration sheets, and bank loan applications are distributed as static, flat scanned PDFs with no interactive fillable fields. Users are often forced to print them out, handwrite in tiny boxes, and scan them back in. TECHTIS Form Filler solves this problem with an intelligent click-to-type visual engine that lets you fill any PDF form directly on screen.</p>
+            <p>Simply click anywhere on a blank line, box, or margin to start typing. Adjust font size to fit neatly within constrained boxes, toggle checkmarks (✓ or X) for checkboxes, and insert today's date with a single click. For official PDFs that contain native AcroForm digital fields, TECHTIS reads and highlights them automatically.</p>
+            <p>Because government applications and financial declarations contain your most sensitive personally identifiable information (PII), TECHTIS processes everything 100% client-side in browser RAM with zero server communication.</p>
+        `,
+        faqs: [
+            { q: 'How do I fill a scanned PDF that has no interactive form fields?', a: 'With TECHTIS, simply click directly on any blank line or box on the document canvas, and an interactive text box appears where you can type immediately.' },
+            { q: 'Can I mark checkboxes and radio buttons?', a: 'Yes! Select the Checkmark or Cross tool from the toolbar and click inside any square box or circular radio button to stamp it.' },
+            { q: 'Is it safe to enter sensitive data like passport or tax identification numbers?', a: 'Yes, 100%. TECHTIS operates entirely in your local browser sandbox; no form data or documents are ever uploaded to remote servers.' },
+            { q: 'Can I add my signature to the form after filling it?', a: 'Yes! You can switch seamlessly to our Sign tool to add your signature and date before exporting the finished form.' }
+        ],
+        relatedTools: ['sign-pdf', 'flatten-pdf', 'edit-pdf', 'crop-pdf', 'compress-pdf', 'protect-pdf']
+    },
+
+    'crop-pdf': {
+        title: 'Crop PDF Margins Online Free – Trim White Borders from PDF | TECHTIS',
+        metaDescription: 'Crop PDF margins online free. Trim excessive white borders, isolate content boxes, and adjust CropBox bounds with visual handles. 100% private in browser.',
+        keywords: 'crop pdf, trim pdf margins, remove white space pdf, crop pdf online free, cut pdf borders, adjust pdf cropbox, client side crop pdf',
+        h1: 'Crop PDF Margins Online Free',
+        subtitle: 'Trim excessive whitespace borders, crop margins, and isolate specific document sections with interactive visual crop handles.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Document', desc: 'Select or drop your PDF file to display interactive page crop boxes.' },
+            { step: 2, title: 'Adjust Crop Boundary', desc: 'Drag the visual crop boundary handles to frame the exact content area you want to keep.' },
+            { step: 3, title: 'Apply & Download', desc: 'Apply the crop to the current page or all pages, then download your neatly trimmed document.' }
+        ],
+        features: [
+            { title: 'Interactive Visual Crop Box', desc: 'Drag corner and edge handles with pixel-accurate margin measurement indicators.' },
+            { title: 'Batch or Single-Page Crop', desc: 'Apply uniform margins across the entire document or crop individual pages separately.' },
+            { title: 'Native PDF CropBox Adjustment', desc: 'Updates PDF MediaBox and CropBox metadata without re-encoding page images.' },
+            { title: 'Optimized for E-Readers', desc: 'Removes oversized margins so textbooks and research papers read comfortably on tablets.' }
+        ],
+        content: `
+            <p>PDFs formatted for standard print publishing often include wide outer margins that waste valuable screen real estate when viewed on laptops, tablets, or e-readers like Kindle. Additionally, scanned documents frequently feature black scanning borders or irregular edges. TECHTIS Crop PDF lets you trim unwanted white space and focus directly on core content.</p>
+            <p>Our interactive crop overlay allows you to drag margin boundaries visually, previewing the exact rectangular area that will be preserved. You can apply your custom crop to a single page or automatically propagate identical margins across every page in the document.</p>
+            <p>By adjusting the native PDF /CropBox and /MediaBox coordinates directly in browser memory, TECHTIS avoids lossy rasterization, ensuring that your text and charts remain razor sharp at every zoom level.</p>
+        `,
+        faqs: [
+            { q: 'Does cropping a PDF reduce text quality or image clarity?', a: 'No. Cropping modifies the document\'s viewport bounds (CropBox) without recompressing or rasterizing the underlying vectors and text.' },
+            { q: 'Can I crop all pages in my document simultaneously?', a: 'Yes! You can configure the crop boundary on page 1 and click "Apply to All Pages" to trim the entire document uniformly.' },
+            { q: 'Can I undo the crop if I accidentally trimmed too much?', a: 'Yes, you can adjust the boundary handles freely before clicking the final export button.' },
+            { q: 'Does cropping reduce file size?', a: 'Because the original content streams remain intact (hidden outside the crop box), file size is largely unchanged. Use our Compress PDF tool afterward to optimize file size further.' }
+        ],
+        relatedTools: ['organize-pages', 'rotate-pdf', 'compress-pdf', 'remove-pages', 'split-pdf', 'merge-pdf']
+    },
+
+    'protect-pdf': {
+        title: 'Protect PDF Online Free – Encrypt & Password Protect PDF | TECHTIS',
+        metaDescription: 'Protect PDF files online free. Encrypt your documents with client-side password protection and restrict unauthorized viewing or printing. 100% private.',
+        keywords: 'protect pdf, password protect pdf, encrypt pdf online free, secure pdf document, lock pdf file, pdf encryption client side, free pdf locker',
+        h1: 'Protect PDF Online Free',
+        subtitle: 'Encrypt your confidential documents with robust client-side password protection before emailing or sharing online.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Select Document', desc: 'Drop the sensitive PDF file you want to secure into the protection workspace.' },
+            { step: 2, title: 'Set Strong Password', desc: 'Enter and confirm your chosen document encryption password.' },
+            { step: 3, title: 'Download Locked PDF', desc: 'Download your encrypted PDF, which now requires the password to open on any device.' }
+        ],
+        features: [
+            { title: 'Standard RC4 & AES Encryption', desc: 'Applies standard PDF encryption recognized by Adobe Acrobat, Apple Preview, and browsers.' },
+            { title: 'Zero Cloud Password Exposure', desc: 'Your password and document are processed entirely in browser memory; nothing is logged.' },
+            { title: 'Universal Device Compatibility', desc: 'Encrypted files prompt for password securely on Windows, Mac, iOS, Android, and Linux.' },
+            { title: 'Instant Processing', desc: 'Encrypts large multi-page contracts in milliseconds with zero network transmission.' }
+        ],
+        content: `
+            <p>Sending sensitive financial audits, proprietary intellectual property, employee salary statements, or confidential legal briefs over email without encryption exposes your data to interception and unauthorized access. TECHTIS Protect PDF enables you to apply strong password protection to any PDF document in seconds.</p>
+            <p>Unlike cloud-based PDF lockers that require you to send both your file and your confidential password over the internet to remote servers, TECHTIS performs cryptographic encryption directly inside your web browser. Your password never leaves your device, eliminating data breach risks.</p>
+            <p>Once encrypted, the file cannot be viewed, printed, or extracted by unauthorized parties without entering the correct password in any standard PDF reader worldwide.</p>
+        `,
+        faqs: [
+            { q: 'Can someone open my protected PDF without the password?', a: 'No. Standard PDF readers will prompt for the password immediately and will not render pages or extract text without it.' },
+            { q: 'Do you keep a copy of my password or document?', a: 'Never. Encryption happens entirely within your browser\'s local JavaScript engine. We have zero access to your password or document contents.' },
+            { q: 'What happens if I forget my password?', a: 'Because we do not store passwords or maintain master keys, you must remember your password. Make sure to keep a secure backup.' },
+            { q: 'Will the encrypted file open on iPhones and Android devices?', a: 'Yes! Modern mobile operating systems (iOS Files, Android PDF Viewer, Chrome) natively support password-protected PDFs.' }
+        ],
+        relatedTools: ['unlock-pdf', 'flatten-pdf', 'metadata-editor', 'sign-pdf', 'add-watermark', 'compress-pdf']
+    },
+
+    'unlock-pdf': {
+        title: 'Unlock PDF Online Free – Remove Password & Permissions Lock | TECHTIS',
+        metaDescription: 'Unlock PDF files online free. Remove known user passwords, owner restrictions, and printing blocks locally in your browser RAM. 100% private, zero uploads.',
+        keywords: 'unlock pdf, remove pdf password, remove print restriction pdf, unlock protected pdf, decrypt pdf online free, remove owner password pdf, client side unlock pdf',
+        h1: 'Unlock PDF Online Free',
+        subtitle: 'Remove owner passwords, printing blocks, and editing restrictions from protected PDFs locally in your browser memory.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Locked PDF', desc: 'Select or drag your password-protected PDF document into the unlock workspace.' },
+            { step: 2, title: 'Enter Password', desc: 'Type the document authorization password when prompted.' },
+            { step: 3, title: 'Save Unlocked PDF', desc: 'Download a clean, permanent unlocked copy that opens freely without password prompts.' }
+        ],
+        features: [
+            { title: 'Strips Restrictions Instantly', desc: 'Eliminates printing blocks, copy/paste restrictions, and editing lockouts.' },
+            { title: 'Zero Server Exposure', desc: 'Decryption keys and document data are processed exclusively in local RAM.' },
+            { title: 'Permanent Password Removal', desc: 'Creates an unencumbered version of your document for hassle-free archiving.' },
+            { title: 'Unlimited & Free', desc: 'Unlock unlimited personal, tax, and utility documents without fees or subscriptions.' }
+        ],
+        content: `
+            <p>Many utility bills, bank statements, tax documents, and corporate records are delivered with password protection. While helpful during transmission, typing a complex password every time you need to view, print, or attach the document to an expense report becomes a frustrating burden. TECHTIS Unlock PDF lets you remove passwords and restrictions permanently.</p>
+            <p>By providing the document password once, our client-side decryption engine removes the cryptographic wrapper and generates an unrestricted PDF copy that opens instantly in any viewer without prompts. Furthermore, it strips frustrating owner restrictions that block printing, annotating, or copying text.</p>
+            <p>Because all decryption executes inside your browser sandbox, your sensitive banking passwords and confidential financial records are never transmitted to third-party servers.</p>
+        `,
+        faqs: [
+            { q: 'Do I need to know the password to unlock the document?', a: 'Yes. For encrypted PDFs with open passwords, you must enter the correct password once so the browser can decrypt and save an unlocked copy.' },
+            { q: 'Does this tool remove printing and copying restrictions?', a: 'Yes. It strips all owner-level permission restrictions, allowing you to freely copy text, annotate, and print your document.' },
+            { q: 'Are my financial or bank passwords sent to your server?', a: 'No! All decryption operations take place locally in your device\'s browser memory. Zero data is sent across the network.' },
+            { q: 'Can I edit the PDF after unlocking it?', a: 'Yes. The unlocked PDF is fully editable with our Edit PDF, Form Filler, and Split PDF tools.' }
+        ],
+        relatedTools: ['protect-pdf', 'flatten-pdf', 'compress-pdf', 'metadata-editor', 'split-pdf', 'merge-pdf']
+    },
+
+    'flatten-pdf': {
+        title: 'Flatten PDF Online Free – Lock Form Fields & Annotations | TECHTIS',
+        metaDescription: 'Flatten PDF forms online free. Lock interactive form fields, checkboxes, and signatures into static vector graphics to prevent unauthorized changes.',
+        keywords: 'flatten pdf, flatten pdf form fields, lock pdf annotations, secure form submissions, make pdf non editable, print ready pdf, client side pdf flattener',
+        h1: 'Flatten PDF Online Free',
+        subtitle: 'Bake interactive form fields, checkboxes, comments, and signatures into static vectors to prevent post-submission tampering.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Filled Form', desc: 'Select your completed form or annotated PDF in the flattening workspace.' },
+            { step: 2, title: 'Click Flatten PDF', desc: 'Our engine parses form widgets and burns them directly into base page vector layers.' },
+            { step: 3, title: 'Download Secure PDF', desc: 'Download your static, tamper-resistant document ready for official submission.' }
+        ],
+        features: [
+            { title: 'Tamper-Resistant Security', desc: 'Converts editable AcroForm fields and text boxes into permanent page vectors.' },
+            { title: 'Guaranteed Visual Consistency', desc: 'Ensures forms appear identically across all printers, web viewers, and legal portals.' },
+            { title: 'Prevents Font Substitution', desc: 'Locks text glyphs into permanent paths, eliminating missing font errors on other PCs.' },
+            { title: '100% In-Browser Execution', desc: 'Processes confidential contracts and loan submissions with total privacy.' }
+        ],
+        content: `
+            <p>Interactive PDF forms and annotations can behave unpredictably when opened in different PDF readers, mobile browsers, or print software. Crucially, interactive form fields can easily be edited or altered by recipients after you sign and submit them. TECHTIS Flatten PDF permanently merges interactive form fields, electronic signatures, and annotation layers into the base page vectors.</p>
+            <p>Once flattened, text entries, checkboxes, and signatures become permanent graphic elements of the document, rendering them completely non-editable and immune to unauthorized tampering. This is a mandatory step for legal filings, government grant submissions, and contract execution.</p>
+            <p>Flattening also eliminates font-rendering glitches and missing appearance streams, guaranteeing that your document prints exactly as intended on any printer hardware worldwide.</p>
+        `,
+        faqs: [
+            { q: 'What does "flattening" a PDF actually do?', a: 'Flattening bakes interactive form fields, comments, and digital signatures into the permanent page content, making them static and non-editable.' },
+            { q: 'Can someone edit a flattened PDF form later?', a: 'No. The interactive form fields cease to exist as editable inputs, preventing recipients from modifying entered values.' },
+            { q: 'Will flattening reduce the print or visual quality?', a: 'Not at all. Text and vector paths retain 100% of their original sharpness and resolution.' },
+            { q: 'Why do government portals require flattened PDFs?', a: 'Government agencies require flattened PDFs to ensure form entries cannot be altered and will archive reliably across decades without rendering errors.' }
+        ],
+        relatedTools: ['form-filler', 'sign-pdf', 'protect-pdf', 'edit-pdf', 'compress-pdf', 'add-watermark']
+    },
+
+    'metadata-editor': {
+        title: 'PDF Metadata Editor Online Free – Edit Title, Author & Tags | TECHTIS',
+        metaDescription: 'Edit PDF metadata online free. View and change Title, Author, Subject, Keywords, Creator, and Producer tags. Sanitize private tracking info in browser RAM.',
+        keywords: 'edit pdf metadata, change pdf author, sanitize pdf tags, pdf properties editor, remove metadata pdf, pdf creator editor, client side pdf metadata editor',
+        h1: 'PDF Metadata Editor Online Free',
+        subtitle: 'Inspect, edit, or sanitize Title, Author, Subject, Keywords, and Producer metadata tags to protect your identity and improve SEO.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload PDF Document', desc: 'Select or drop your PDF to instantly inspect all embedded document catalog metadata.' },
+            { step: 2, title: 'Edit or Clean Fields', desc: 'Modify Title, Author, Subject, and Keywords, or click "Sanitize" to strip all tracking tags.' },
+            { step: 3, title: 'Save Clean Document', desc: 'Download your updated PDF with sanitized or customized metadata in one click.' }
+        ],
+        features: [
+            { title: 'Inspect Hidden Tags', desc: 'Reveals Title, Author, Subject, Keywords, Creation Date, and Producing Application.' },
+            { title: '1-Click Privacy Sanitizer', desc: 'Strips personal author names, company tags, and file creation history for anonymous sharing.' },
+            { title: 'SEO Catalog Optimization', desc: 'Set professional titles and keyword tags for documents published on websites.' },
+            { title: 'Zero Network Uploads', desc: 'Metadata modifications execute in local memory, safeguarding corporate confidentiality.' }
+        ],
+        content: `
+            <p>Every PDF document contains hidden metadata tags—including the author's real name, company username, local file paths, software producer versions, and exact modification timestamps. Sharing un-sanitized PDFs can inadvertently leak confidential internal information to clients, competitors, or the public.</p>
+            <p>TECHTIS PDF Metadata Editor lets you view, modify, or strip these embedded properties. You can sanitize documents before public distribution to protect employee privacy, or enrich academic papers and marketing whitepapers with relevant keywords and descriptive titles for improved search engine indexing.</p>
+            <p>Because our metadata editor operates strictly in your browser RAM, your original files remain entirely private, ensuring compliance with strict data sanitation standards.</p>
+        `,
+        faqs: [
+            { q: 'Why should I remove or edit PDF metadata before sharing?', a: 'PDFs often contain personal author names, organizational directories, and software versions that leak private details to recipients.' },
+            { q: 'Does changing metadata modify page text or images?', a: 'No. Metadata editing only updates the document\'s information dictionary and XMP metadata stream; page content is completely untouched.' },
+            { q: 'Can I use this tool to optimize PDFs for search engine indexing?', a: 'Yes! Setting an accurate Title, Subject, and Keyword tags helps search engines like Google understand and index your document properly.' },
+            { q: 'Is this tool free and private?', a: 'Yes, 100% free with zero file uploads and no registration required.' }
+        ],
+        relatedTools: ['protect-pdf', 'flatten-pdf', 'compress-pdf', 'repair-pdf', 'unlock-pdf', 'add-page-numbers']
+    },
+
+    'repair-pdf': {
+        title: 'Repair PDF Online Free – Fix Damaged & Corrupted PDF Files | TECHTIS',
+        metaDescription: 'Repair damaged and corrupted PDF files online free. Reconstruct broken cross-reference (xref) tables, fix EOF markers, and recover unreadable pages.',
+        keywords: 'repair pdf, fix corrupted pdf, recover broken pdf, rebuild xref table pdf, corrupted pdf recovery, unreadable pdf fix, free pdf repair online',
+        h1: 'Repair PDF Online Free',
+        subtitle: 'Reconstruct corrupted cross-reference tables, restore broken byte offsets, and recover unreadable PDF files locally in your browser.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Damaged PDF', desc: 'Drop your damaged or unreadable PDF file into the recovery workspace.' },
+            { step: 2, title: 'Automatic Tree Reconstruction', desc: 'Our repair parser scans internal streams, reindexes broken xref tables, and recovers page trees.' },
+            { step: 3, title: 'Download Restored File', desc: 'Save your recovered, valid PDF document ready to open in any standard viewer.' }
+        ],
+        features: [
+            { title: 'XREF Table Reconstruction', desc: 'Rebuilds missing or damaged cross-reference index tables from raw object streams.' },
+            { title: 'Trailer & EOF Restoration', desc: 'Fixes truncated downloads and missing %%EOF end-of-file trailer markers.' },
+            { title: 'Recovers Unreadable Pages', desc: 'Extracts valid object dictionaries from corrupted containers to restore page visibility.' },
+            { title: 'Client-Side Data Recovery', desc: 'Recovers sensitive lost contracts and research data without exposing files to third parties.' }
+        ],
+        content: `
+            <p>Incomplete downloads, USB drive corruption, failed email attachments, or software crashes can corrupt PDF files, leaving them unreadable by standard software like Adobe Acrobat or browser viewers. When an essential document cannot be opened, having an automated repair utility is invaluable.</p>
+            <p>TECHTIS Repair PDF inspects the raw binary streams of the damaged document, bypassing broken cross-reference (XREF) tables and missing trailer tags. It identifies surviving object streams, reconstructs the document catalog, and generates a valid, standard-compliant PDF file that opens smoothly in all viewers.</p>
+            <p>Because the repair process takes place entirely in browser RAM, corrupted business contracts, medical scans, and personal records are recovered with absolute privacy and zero cloud exposure.</p>
+        `,
+        faqs: [
+            { q: 'Can TECHTIS fix all corrupted PDF files?', a: 'TECHTIS can successfully repair files with damaged cross-reference tables, missing EOF markers, corrupted headers, and stream offsets. Severely overwritten or zero-byte files cannot be recovered.' },
+            { q: 'Why do PDF files get corrupted?', a: 'Common causes include interrupted downloads, unexpected power cuts while saving, failing storage drives, or improper email attachment encoding.' },
+            { q: 'Are my recovered files sent to any remote server?', a: 'No. Binary stream parsing and reconstruction happen exclusively in your browser\'s local memory.' },
+            { q: 'Does repairing a PDF cost anything?', a: 'No, TECHTIS PDF Repair is 100% free with unlimited uses.' }
+        ],
+        relatedTools: ['compress-pdf', 'metadata-editor', 'flatten-pdf', 'split-pdf', 'merge-pdf', 'unlock-pdf']
+    },
+
+    'pdf-to-jpg': {
+        title: 'PDF to JPG Online Free – Convert PDF Pages to High-Res Images | TECHTIS',
+        metaDescription: 'Convert PDF to JPG online free. Render PDF document pages into high-resolution JPG or PNG images with custom DPI settings. 100% client-side, zero uploads.',
+        keywords: 'pdf to jpg, convert pdf to image, pdf to png, export pdf as pictures, high resolution pdf to jpg, client side pdf to jpg, free pdf to image converter',
+        h1: 'PDF to JPG Online Free',
+        subtitle: 'Render document pages into crisp, high-resolution JPG or PNG images with customizable DPI quality in your browser.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload PDF', desc: 'Select or drop your PDF document into the conversion workspace.' },
+            { step: 2, title: 'Choose Image Settings', desc: 'Select image format (JPG or PNG) and image quality (Standard 150 DPI or Ultra 300 DPI).' },
+            { step: 3, title: 'Download Images', desc: 'Save single images or download all pages bundled in a clean ZIP archive.' }
+        ],
+        features: [
+            { title: 'High-DPI Canvas Rendering', desc: 'Powered by PDF.js WebAssembly for razor-sharp typography and photographic color fidelity.' },
+            { title: 'JPG & PNG Support', desc: 'Export compact JPGs for web publishing or lossless PNGs with transparent backgrounds.' },
+            { title: 'Automated ZIP Bundling', desc: 'Converts multi-page documents and packages all pages into a single ZIP archive instantly.' },
+            { title: 'Zero Server Latency', desc: 'Renders at raw GPU/CPU hardware speeds directly in system RAM.' }
+        ],
+        content: `
+            <p>Converting PDF document pages into standard image formats (JPG and PNG) is necessary for embedding charts in presentations, publishing infographics on social media, integrating documents into web pages, or uploading identity certificates to portals that reject PDF files. TECHTIS PDF to JPG provides an ultra-fast client-side conversion engine.</p>
+            <p>Using high-resolution HTML5 canvas rendering powered by PDF.js, our engine rasterizes every vector element, font glyph, and embedded photo at high DPI quality. You can choose between lightweight JPG compression or lossless PNG format with transparent backgrounds.</p>
+            <p>For multi-page documents, TECHTIS converts every page concurrently and packages the resulting images into a downloadable ZIP archive in seconds, all while keeping your data 100% private in browser memory.</p>
+        `,
+        faqs: [
+            { q: 'What is the difference between JPG and PNG output?', a: 'JPG produces smaller file sizes ideal for photos and web publishing. PNG provides lossless quality with support for transparent backgrounds, ideal for diagrams and charts.' },
+            { q: 'Can I convert multi-page PDFs to images at once?', a: 'Yes! TECHTIS will convert every page into an image and bundle them neatly into a single ZIP download.' },
+            { q: 'Will the exported images have blurry text?', a: 'No. Our engine renders pages at high DPI (2x to 3x scale) to ensure text, fine lines, and formulas remain crisp.' },
+            { q: 'Are my converted photos or certificates stored on your server?', a: 'Never. All rendering and ZIP compilation take place locally in your device\'s browser memory.' }
+        ],
+        relatedTools: ['jpg-to-pdf', 'compress-pdf', 'ocr-pdf', 'crop-pdf', 'rotate-pdf', 'split-pdf']
+    },
+
+    'jpg-to-pdf': {
+        title: 'JPG to PDF Online Free – Convert Images (PNG, JPG, WebP) to PDF | TECHTIS',
+        metaDescription: 'Convert JPG, PNG, and WebP images to PDF online free. Combine photos into a multi-page document with margin, page size, and orientation control. 100% private.',
+        keywords: 'jpg to pdf, convert image to pdf, png to pdf, photo to pdf converter, combine pictures to pdf, images to pdf online free, webp to pdf, client side jpg to pdf',
+        h1: 'JPG to PDF Online Free',
+        subtitle: 'Transform photos, scanned receipts, and graphics (JPG, PNG, WebP) into a polished, multi-page PDF document in seconds.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Image Files', desc: 'Select or drag multiple JPG, PNG, or WebP images into the upload area.' },
+            { step: 2, title: 'Arrange & Configure', desc: 'Drag image tiles to set page order; choose page orientation (Portrait/Landscape) and margins.' },
+            { step: 3, title: 'Generate PDF', desc: 'Click "Create PDF" to compile your images into a single formatted PDF file instantly.' }
+        ],
+        features: [
+            { title: 'Multi-Image Batch Compilation', desc: 'Combine dozens of photos into a single unified multi-page PDF document.' },
+            { title: 'Universal Format Support', desc: 'Accepts JPG, JPEG, PNG, WebP, BMP, and GIF image formats seamlessly.' },
+            { title: 'Page Size & Margin Control', desc: 'Fit to standard A4 or Letter sizes, match original image aspect ratio, or add neat borders.' },
+            { title: '100% In-Browser Privacy', desc: 'Private personal photos, ID cards, and receipts are never transmitted across the web.' }
+        ],
+        content: `
+            <p>Submitting job expense receipts, compiling scanned identification cards (like passport or driver's license photos), and packaging photographic portfolios requires converting multiple image files into a single, professional PDF document. TECHTIS JPG to PDF delivers an instant, zero-latency conversion tool that operates entirely within your browser.</p>
+            <p>Our intuitive workspace lets you upload multiple photos at once, reorder pages by dragging thumbnail tiles, and customize page geometry. You can set output page sizes to standard A4, US Letter, or auto-fit directly to each image's native dimensions while configuring margins for clean printing.</p>
+            <p>Because processing runs locally using client-side JavaScript, your personal photos, confidential business receipts, and official ID cards are never uploaded to any third-party server, ensuring complete data security.</p>
+        `,
+        faqs: [
+            { q: 'Can I combine multiple pictures into a single multi-page PDF?', a: 'Yes! You can upload multiple images at once, rearrange them in any sequence, and export them as one unified PDF.' },
+            { q: 'What image file formats are supported?', a: 'TECHTIS supports JPG, JPEG, PNG, WebP, BMP, and GIF files.' },
+            { q: 'Can I adjust the margins and page orientation?', a: 'Yes. You can choose Portrait or Landscape orientation, set page margins (No margin, Small, or Standard), and select A4, Letter, or Fit-to-Image.' },
+            { q: 'Is there a limit on how many photos I can convert?', a: 'There are no artificial limits. Processing depends only on your local system memory.' }
+        ],
+        relatedTools: ['pdf-to-jpg', 'compress-pdf', 'merge-pdf', 'scan-to-pdf', 'organize-pages', 'rotate-pdf']
+    },
+
+    'grayscale-pdf': {
+        title: 'Grayscale PDF Online Free – Convert Color PDF to Black & White | TECHTIS',
+        metaDescription: 'Convert color PDF documents to grayscale (black and white) online free. Save expensive printer ink and reduce document size. 100% private in browser.',
+        keywords: 'grayscale pdf, black and white pdf, convert pdf to bw, save printer ink pdf, monochrome pdf, convert color pdf to grayscale online free, client side grayscale',
+        h1: 'Grayscale PDF Online Free',
+        subtitle: 'Convert full-color documents, images, and diagrams into clean monochrome grayscale to save printer ink and reduce file size.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Color Document', desc: 'Select or drag your full-color PDF into the grayscale conversion workspace.' },
+            { step: 2, title: 'Convert Color Streams', desc: 'Our engine parses color spaces (RGB/CMYK) and converts them to luminance grayscale values.' },
+            { step: 3, title: 'Download Monochrome PDF', desc: 'Save your print-optimized black and white PDF with zero server delay.' }
+        ],
+        features: [
+            { title: 'Saves Costly Printer Ink', desc: 'Replaces expensive multi-color toner with standard black/gray density values.' },
+            { title: 'Reduces File Size', desc: 'Streamlining three-channel RGB color data into single-channel luminance reduces byte weight.' },
+            { title: 'High-Contrast Text Preservation', desc: 'Maintains optimal readability and sharp contrast for academic papers and legal filings.' },
+            { title: '100% Private Processing', desc: 'All color channel recalculations run directly in local browser memory.' }
+        ],
+        content: `
+            <p>Printing multi-page full-color documents on home or office printers burns through expensive color toner cartridges rapidly. Furthermore, many corporate print setups charge higher per-page rates for color documents. TECHTIS Grayscale PDF converts full-color PDF documents to crisp black-and-white monochrome in a single click.</p>
+            <p>Our client-side engine recalculates RGB and CMYK color channels using perceptual luminance weighting ($0.299R + 0.587G + 0.114B$), ensuring that colored charts, graphs, and headings retain distinct, legible contrast levels in grayscale without washing out.</p>
+            <p>In addition to saving printer ink, converting color streams to single-channel monochrome often yields significant file size reductions. All conversions execute locally in browser RAM with zero file uploads.</p>
+        `,
+        faqs: [
+            { q: 'Will converting to grayscale make colored charts unreadable?', a: 'No. Our luminance mapping algorithm maps different hues to distinct shades of gray, preserving contrast and visual readability.' },
+            { q: 'Does converting to grayscale reduce file size?', a: 'Yes. Color image streams contain three to four channels of data per pixel; grayscale requires only one, reducing file size.' },
+            { q: 'Can I convert the grayscale PDF back to color later?', a: 'No. Once converted to grayscale, color data is stripped. Always keep a backup of your original color PDF if you need it later.' },
+            { q: 'Are my confidential documents uploaded to any server?', a: 'Never. All color space transformations occur locally in your browser memory.' }
+        ],
+        relatedTools: ['compress-pdf', 'pdf-to-jpg', 'crop-pdf', 'merge-pdf', 'flatten-pdf', 'repair-pdf']
+    },
+
+    'word-to-pdf': {
+        title: 'Word to PDF Online Free – Convert DOCX to PDF in Browser | TECHTIS',
+        metaDescription: 'Convert Word DOCX documents to PDF online free. Extracts structured text, headings, and formatting in browser RAM with zero server upload. 100% private.',
+        keywords: 'word to pdf, docx to pdf, convert docx online free, ms word to pdf converter, word document to pdf, client side word to pdf, zero upload word to pdf',
+        h1: 'Word to PDF Online Free',
+        subtitle: 'Convert Microsoft Word (DOCX) documents into clean, printable PDF files directly in your browser without software installation.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload DOCX File', desc: 'Drop your Microsoft Word (.docx) document into the conversion drop zone.' },
+            { step: 2, title: 'Parse XML Structure', desc: 'Our engine extracts document paragraphs, headings, bullet lists, and tables client-side.' },
+            { step: 3, title: 'Download Formatted PDF', desc: 'Save your newly compiled, print-ready PDF document in sub-second time.' }
+        ],
+        features: [
+            { title: 'Client-Side DOCX Extraction', desc: 'Unzips DOCX XML structures entirely in browser RAM using JSZip and native DOM parsers.' },
+            { title: 'Zero File Uploads', desc: 'Confidential resumes, proposals, and manuscripts are never transmitted over the internet.' },
+            { title: 'Standard Typography Rendering', desc: 'Formats headings, body copy, margins, and page breaks cleanly into PDF format.' },
+            { title: 'No Microsoft Office Required', desc: 'Works across all operating systems without needing Microsoft Word or Adobe Acrobat installed.' }
+        ],
+        content: `
+            <p>Sharing Microsoft Word documents (.docx) often leads to frustrating formatting shifts, missing fonts, and accidental edits when opened across different devices or software versions. Converting Word files to PDF guarantees that your document displays identically on any screen or printer. TECHTIS Word to PDF provides a client-side converter that executes entirely in your browser.</p>
+            <p>By unzipping the DOCX archive structure and parsing internal XML styling client-side, our engine extracts structured paragraphs, headings, bullet points, and tables, compiling them directly into a standard PDF file. You avoid the privacy risks of cloud converters that store your Word files on remote servers.</p>
+            <p>Enjoy fast, private Word-to-PDF conversion for resumes, academic essays, contracts, and business plans without paying for software licenses or subscriptions.</p>
+        `,
+        faqs: [
+            { q: 'Do I need Microsoft Word installed on my computer?', a: 'Not at all! TECHTIS processes DOCX files natively in your browser using client-side XML parsers.' },
+            { q: 'Are older .doc files supported?', a: 'TECHTIS is optimized for modern XML-based .docx formats. If you have an older .doc file, save it as .docx first.' },
+            { q: 'Is my resume or business proposal uploaded to your servers?', a: 'No. The entire conversion happens inside your browser\'s local memory. Zero bytes are uploaded.' },
+            { q: 'Will the generated PDF look identical across all devices?', a: 'Yes. PDFs are designed for universal display fidelity, ensuring your fonts and layout stay consistent everywhere.' }
+        ],
+        relatedTools: ['excel-to-pdf', 'ppt-to-pdf', 'text-to-pdf', 'markdown-to-pdf', 'pdf-to-jpg', 'compress-pdf']
+    },
+
+    'excel-to-pdf': {
+        title: 'Excel to PDF Online Free – Convert XLSX & Sheets to PDF | TECHTIS',
+        metaDescription: 'Convert Excel XLSX spreadsheets to PDF online free. Formats worksheets, data grids, and tables into printable PDF documents in browser memory. 100% private.',
+        keywords: 'excel to pdf, xlsx to pdf, spreadsheet to pdf, convert excel table to pdf, sheets to pdf online free, client side excel to pdf, free xlsx converter',
+        h1: 'Excel to PDF Online Free',
+        subtitle: 'Transform Microsoft Excel workbooks (XLSX, XLS, CSV) into cleanly formatted, printable PDF tables directly in your browser.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Spreadsheet', desc: 'Select or drag your Excel file (.xlsx, .xls, .csv) into the converter workspace.' },
+            { step: 2, title: 'Parse Data Tables', desc: 'Our engine parses workbook sheets, cell values, and table structures in local RAM.' },
+            { step: 3, title: 'Export PDF Table', desc: 'Download your formatted PDF with clean table borders and structured columns.' }
+        ],
+        features: [
+            { title: 'Client-Side Spreadsheet Parsing', desc: 'Reads workbook structures client-side via SheetJS without sending data to cloud servers.' },
+            { title: 'Multi-Sheet Support', desc: 'Converts active worksheets into structured, multi-page printable PDF reports.' },
+            { title: 'CSV & XLSX Compatibility', desc: 'Works seamlessly with standard Excel workbooks, legacy spreadsheets, and exported CSV data.' },
+            { title: 'Financial Grade Confidentiality', desc: 'Keep sensitive financial balances, tax audits, and payroll data secure on your local device.' }
+        ],
+        content: `
+            <p>Sharing raw Excel spreadsheets (.xlsx, .csv) can lead to accidental formula modifications, misaligned columns, or cell clipping when printed. Converting spreadsheets into polished PDF tables ensures that your financial statements, quarterly reports, and inventory lists are presented clearly and securely.</p>
+            <p>TECHTIS Excel to PDF parses workbook cell hierarchies client-side, structuring rows and columns into clean, paginated PDF tables. Table headers, borders, and numerical alignments are preserved for professional presentation.</p>
+            <p>Financial models, client invoicing logs, and company budgets contain some of your organization's most sensitive data. With TECHTIS, you never have to risk uploading confidential spreadsheets to third-party cloud servers—everything runs locally in your browser memory.</p>
+        `,
+        faqs: [
+            { q: 'Can I convert CSV files as well as XLSX workbooks?', a: 'Yes! TECHTIS supports .xlsx, .xls, and .csv files.' },
+            { q: 'Does this tool support formulas?', a: 'The parser reads calculated cell values and exports them accurately into printable tables.' },
+            { q: 'Is it safe to convert private accounting or payroll sheets?', a: 'Yes, 100%. Processing takes place exclusively inside your local browser memory sandbox; zero data leaves your computer.' },
+            { q: 'Can I print the resulting PDF table cleanly on standard A4 paper?', a: 'Yes. The tables are paginated and styled for standard print output on A4 and US Letter sizes.' }
+        ],
+        relatedTools: ['word-to-pdf', 'ppt-to-pdf', 'text-to-pdf', 'compress-pdf', 'document-compare', 'merge-pdf']
+    },
+
+    'ppt-to-pdf': {
+        title: 'PowerPoint to PDF Online Free – Convert PPTX Slides to PDF Handouts | TECHTIS',
+        metaDescription: 'Convert PowerPoint PPTX presentation slides into printable PDF handouts online free. Extracts slide content in browser RAM with zero uploads. 100% private.',
+        keywords: 'ppt to pdf, pptx to pdf, powerpoint to pdf converter, slides to pdf online, presentation to pdf free, client side ppt to pdf, convert slides to pdf',
+        h1: 'PowerPoint to PDF Online Free',
+        subtitle: 'Convert Microsoft PowerPoint (PPTX) presentations into clean, portable PDF slides and handouts directly in your browser.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Presentation', desc: 'Select or drop your PowerPoint (.pptx) file into the presentation converter.' },
+            { step: 2, title: 'Parse Slide Decks', desc: 'Our engine extracts slide XML text, titles, speaker notes, and structures client-side.' },
+            { step: 3, title: 'Download PDF Handout', desc: 'Save your presentation slides compiled neatly into an easily sharable PDF document.' }
+        ],
+        features: [
+            { title: 'Clean Slide Handout Layout', desc: 'Formats slide content, bullet points, and headers into printable presentation pages.' },
+            { title: 'Zero Cloud Uploads', desc: 'Proprietary pitch decks, corporate training slides, and seminar notes remain completely private.' },
+            { title: 'Universal Device Viewing', desc: 'PDF slides open identically on projectors, phones, and PCs without requiring PowerPoint.' },
+            { title: 'Instant In-Browser Processing', desc: 'Converts multi-slide presentations in seconds without queuing on cloud servers.' }
+        ],
+        content: `
+            <p>Distributing slide decks in native PowerPoint (.pptx) format often results in font substitution glitches, broken layout alignments, or oversized email attachments. Furthermore, attendees on mobile devices or computers without Microsoft Office may struggle to open presentation files. Converting your deck to PDF creates a universal, lightweight handout.</p>
+            <p>TECHTIS PowerPoint to PDF unzips the presentation container and parses slide XML elements directly in browser memory. It compiles each slide's headings, bulleted lists, and notes into structured PDF pages ready for printing or emailing to clients and conference attendees.</p>
+            <p>Keep your upcoming product launch decks, investor pitches, and confidential strategy slides safe by converting them locally in your browser with zero network exposure.</p>
+        `,
+        faqs: [
+            { q: 'Do I need Microsoft PowerPoint installed on my device?', a: 'No. TECHTIS processes PPTX slide packages natively in your browser.' },
+            { q: 'Can I print the resulting PDF as a presentation handout?', a: 'Yes! The generated PDF is formatted for standard print output and makes an excellent meeting handout.' },
+            { q: 'Are my confidential pitch decks uploaded to any cloud server?', a: 'No. All processing happens entirely within your browser\'s local WebAssembly and JavaScript memory.' },
+            { q: 'What versions of PowerPoint are supported?', a: 'Modern .pptx files created in PowerPoint 2007 through Office 365, Google Slides, and Keynote are supported.' }
+        ],
+        relatedTools: ['word-to-pdf', 'excel-to-pdf', 'pdf-to-jpg', 'compress-pdf', 'merge-pdf', 'split-pdf']
+    },
+
+    'markdown-to-pdf': {
+        title: 'Markdown to PDF Online Free – Convert MD Notes to Styled PDF | TECHTIS',
+        metaDescription: 'Convert Markdown (MD) notes and GitHub documentation to styled, print-ready PDF files online free. Supports code blocks, tables, and KaTeX math. 100% private.',
+        keywords: 'markdown to pdf, md to pdf converter, github markdown to pdf, styled markdown document, code to pdf, convert markdown online free, client side md to pdf',
+        h1: 'Markdown to PDF Online Free',
+        subtitle: 'Transform GitHub Flavored Markdown notes, READMEs, and technical documentation into beautifully styled, print-ready PDF files.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Paste or Upload Markdown', desc: 'Drop an .md file or paste your raw Markdown text directly into the live editor.' },
+            { step: 2, title: 'Preview Styled Layout', desc: 'Inspect the live preview with syntax-highlighted code blocks, formatted tables, and typography.' },
+            { step: 3, title: 'Download Styled PDF', desc: 'Click "Export to PDF" to generate your polished technical document immediately.' }
+        ],
+        features: [
+            { title: 'GitHub Flavored Markdown (GFM)', desc: 'Full support for tables, task lists, strikethroughs, blockquotes, and headings.' },
+            { title: 'Monospaced Code Block Styling', desc: 'Renders code snippets and terminal logs in clean monospaced font with distinct borders.' },
+            { title: 'Live Split-Screen Editor', desc: 'Type on the left and see the real-time formatted print layout on the right.' },
+            { title: '100% In-Browser Privacy', desc: 'Compile internal technical specs, developer notes, and proprietary API docs locally.' }
+        ],
+        content: `
+            <p>Developers, technical writers, and researchers frequently write documentation, meeting summaries, and release notes in lightweight Markdown (.md). However, when presenting these notes to executives, clients, or non-technical stakeholders, an unrendered Markdown file is difficult to read. TECHTIS Markdown to PDF transforms raw Markdown into beautifully formatted, publication-ready PDFs.</p>
+            <p>Our renderer supports the complete GitHub Flavored Markdown (GFM) specification, including structured tables, task list checkboxes, callout blockquotes, and syntax-styled code blocks. You can paste text directly into our live split-screen editor or upload an existing .md file from your computer.</p>
+            <p>All parsing, styling, and PDF generation execute locally in browser memory. Keep your internal software specifications, proprietary API documentation, and confidential meeting minutes safe with zero cloud uploads.</p>
+        `,
+        faqs: [
+            { q: 'Does this tool support tables and task lists?', a: 'Yes! It provides full support for GFM tables, strikethroughs, task checklists, and nested lists.' },
+            { q: 'How are code blocks formatted in the PDF?', a: 'Code blocks are styled in clean monospaced typography with distinct background shading and clean borders for maximum readability.' },
+            { q: 'Can I edit the Markdown text before generating the PDF?', a: 'Yes! Our live interactive editor lets you type or tweak Markdown syntax with real-time visual preview.' },
+            { q: 'Are my private code notes uploaded anywhere?', a: 'Never. The entire parsing and rendering process happens strictly inside your browser\'s local memory.' }
+        ],
+        relatedTools: ['text-to-pdf', 'word-to-pdf', 'document-compare', 'merge-pdf', 'compress-pdf', 'edit-pdf']
+    },
+
+    'text-to-pdf': {
+        title: 'Text to PDF Online Free – Convert TXT, Logs & Code to PDF | TECHTIS',
+        metaDescription: 'Convert plain text (TXT), logs, CSV, and code files to clean, formatted PDF documents online free. Supports custom fonts, margins, and paper sizes. 100% private.',
+        keywords: 'text to pdf, txt to pdf, log to pdf, convert plain text to pdf document, code to pdf converter, free txt to pdf online, client side text to pdf',
+        h1: 'Text to PDF Online Free',
+        subtitle: 'Format plain text logs, source code, data dumps, and notes into clean, paginated PDF documents directly in your browser.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload or Paste Text', desc: 'Drop a .txt, .log, .json, or .csv file or paste raw text into the input workspace.' },
+            { step: 2, title: 'Configure Typography', desc: 'Choose proportional or monospaced font, set font size, line spacing, and page margins.' },
+            { step: 3, title: 'Download Clean PDF', desc: 'Generate and save your paginated, printable PDF document instantly.' }
+        ],
+        features: [
+            { title: 'Monospaced & Proportional Fonts', desc: 'Switch between clean Sans-Serif body copy or Courier monospaced font for code/logs.' },
+            { title: 'Automatic Smart Pagination', desc: 'Calculates page height, wraps long lines gracefully, and inserts standard page numbers.' },
+            { title: 'Batch File Support', desc: 'Converts server logs, JSON configuration files, and plain text notes seamlessly.' },
+            { title: '100% Private in Browser', desc: 'Confidential system logs, password dumps, and private notes are never sent to remote servers.' }
+        ],
+        content: `
+            <p>Plain text files (.txt, .log, .json, .csv) are ideal for storing data, server diagnostics, and developer logs, but printing or archiving raw text files can result in awkward line wrapping, missing margins, and unformatted outputs. TECHTIS Text to PDF wraps raw text into paginated, cleanly styled PDF documents with proper margins and headers.</p>
+            <p>Our engine automatically handles word wrapping, paragraph breaks, and pagination. You can toggle between proportional fonts for general letters and monospaced typography for developer logs, source code, and tabular text. Margin offsets and line heights are completely customizable.</p>
+            <p>Because system logs and developer notes often contain sensitive environment variables, internal server paths, or client data, TECHTIS processes everything locally in browser memory with zero network exposure.</p>
+        `,
+        faqs: [
+            { q: 'Can I convert server logs and source code files?', a: 'Yes! Select the monospaced font option to ensure code indentations and columnar log structures align cleanly.' },
+            { q: 'How does the tool handle long lines of text?', a: 'Our engine applies smart word-wrapping to prevent long lines from clipping off the edge of the page.' },
+            { q: 'Can I adjust the font size and margins?', a: 'Yes. You can customize font size, line spacing, margin widths, and paper orientation (Portrait or Landscape).' },
+            { q: 'Is there any limit on the length of text I can convert?', a: 'You can convert documents with thousands of lines, constrained only by your computer\'s available RAM.' }
+        ],
+        relatedTools: ['markdown-to-pdf', 'word-to-pdf', 'excel-to-pdf', 'document-compare', 'compress-pdf', 'merge-pdf']
+    },
+
+    'document-compare': {
+        title: 'Compare PDF Documents Online Free – Visual Text Diff Checker | TECHTIS',
+        metaDescription: 'Compare two PDF documents online free. Side-by-side text diff checker highlights additions, deletions, and revisions in contracts and agreements. 100% private.',
+        keywords: 'compare pdf, pdf diff tool, compare two pdf files, highlight pdf differences, contract revision checker, compare pdf online free, client side pdf diff',
+        h1: 'Compare PDF Documents Online Free',
+        subtitle: 'Diff check two PDF versions side-by-side to highlight additions, deletions, and subtle text modifications instantly.',
+        badge: '100% Client-Side Privacy',
+        howTo: [
+            { step: 1, title: 'Upload Original & Revised PDFs', desc: 'Drop your original document (Version A) and modified document (Version B).' },
+            { step: 2, title: 'Run Text Comparison', desc: 'Our engine extracts text streams and computes an exact character-and-word diff.' },
+            { step: 3, title: 'Review Highlighted Changes', desc: 'Inspect green additions and red deletions in a side-by-side interactive comparison view.' }
+        ],
+        features: [
+            { title: 'Side-by-Side Visual Diff', desc: 'Displays original and revised documents with coordinated scrolling and highlighted text changes.' },
+            { title: 'Red/Green Revision Markers', desc: 'Clearly highlights deleted clauses in red strikethrough and inserted text in bright green.' },
+            { title: 'Granular Word & Line Diff', desc: 'Identifies subtle changes in numbers, dates, punctuation, and wording across contract drafts.' },
+            { title: '100% Confidential Comparison', desc: 'Compare confidential merger terms, NDA revisions, and legal briefs with zero cloud exposure.' }
+        ],
+        content: `
+            <p>Reviewing legal contracts, vendor agreements, and policy documents after multiple rounds of revisions is stressful. Counterparties often make subtle modifications—altering liability clauses, shifting payment deadlines, or deleting key conditions—without tracking changes. TECHTIS Document Compare extracts text streams from two PDF versions and performs a side-by-side visual diff.</p>
+            <p>Our diffing algorithm compares words and lines sequentially, highlighting inserted text in green and removed passages in red strikethrough. You can quickly pinpoint every single change between drafts without having to read dozens of pages line-by-line.</p>
+            <p>Because legal agreements and merger proposals contain highly sensitive trade secrets, TECHTIS executes the entire text comparison locally in your browser RAM. Your confidential drafts are never uploaded to any cloud server.</p>
+        `,
+        faqs: [
+            { q: 'How does Document Compare highlight changes?', a: 'It displays both documents side-by-side, using standard revision colors: green highlights for added text and red strikethrough for deleted text.' },
+            { q: 'Can it detect changed numbers and dates?', a: 'Yes! The diff algorithm operates at the word and character level, catching tiny shifts in dollar figures, dates, or liability percentages.' },
+            { q: 'Does this work on scanned documents?', a: 'Document Compare requires selectable text streams. For image-only scans, run our OCR PDF tool first to extract searchable text.' },
+            { q: 'Are my confidential legal contracts uploaded to your servers?', a: 'Never. Both documents are processed strictly in your local browser memory sandbox.' }
+        ],
+        relatedTools: ['edit-pdf', 'merge-pdf', 'form-blank-detector', 'ai-summarizer', 'ocr-pdf', 'flatten-pdf']
+    },
+
+    'ocr-pdf': {
+        title: 'OCR PDF Online Free – Convert Scanned PDF & Images to Searchable Text | TECHTIS',
+        metaDescription: 'OCR PDF online free. Extract selectable, searchable text from scanned PDFs, photos, and book pages with high-accuracy character recognition. 100% private in browser.',
+        keywords: 'ocr pdf, scan to text, searchable pdf converter, optical character recognition online free, extract text from scanned pdf, free ocr in browser, tesseract ocr pdf',
+        h1: 'OCR PDF (Scan to Text) Online Free',
+        subtitle: 'Convert scanned image PDFs, book pages, and photos into selectable, searchable text using client-side optical character recognition.',
+        badge: 'Client-Side WebAssembly OCR',
+        howTo: [
+            { step: 1, title: 'Upload Scanned File', desc: 'Select or drag your scanned PDF, image, or photo into the OCR workspace.' },
+            { step: 2, title: 'Run Text Recognition', desc: 'Our in-browser WebAssembly Tesseract OCR engine scans pages and identifies characters.' },
+            { step: 3, title: 'Copy or Download Text', desc: 'Copy recognized text directly to your clipboard or download a searchable text file.' }
+        ],
+        features: [
+            { title: 'Client-Side WASM OCR Engine', desc: 'Powered by Tesseract.js WebAssembly for 100% in-browser OCR without external API calls.' },
+            { title: 'High-Accuracy Recognition', desc: 'Accurately recognizes scanned invoices, receipts, legal documents, and book excerpts.' },
+            { title: 'Multi-Language Support', desc: 'Recognizes English, Spanish, French, German, and major global languages with ease.' },
+            { title: 'Copy-to-Clipboard & File Export', desc: 'Copy recognized paragraphs with one click or export structured plain text files.' }
+        ],
+        content: `
+            <p>Scanned documents and photos of printed papers are essentially static pictures of text—you cannot search for keywords, highlight sentences, or copy text into word processors. Retyping pages manually wastes hours of productive time. TECHTIS OCR PDF runs an Optical Character Recognition engine directly inside your web browser using WebAssembly.</p>
+            <p>Our engine inspects pixel patterns, isolates lines of print, and reconstructs character streams with high precision. It handles multi-column layouts, tabular numbers, and diverse typography styles. Once recognized, you can copy text with one click or export it for editing.</p>
+            <p>Unlike cloud OCR services that store your scans on remote databases, TECHTIS processes your scans locally on your computer's CPU, keeping medical records, personal identity scans, and financial receipts completely private.</p>
+        `,
+        faqs: [
+            { q: 'How does in-browser OCR work without uploading files?', a: 'TECHTIS uses Tesseract.js compiled into WebAssembly (WASM). The OCR neural model executes directly on your device\'s CPU inside the browser.' },
+            { q: 'Can it recognize text from smartphone photos of documents?', a: 'Yes! It handles smartphone photos, camera captures, and flatbed scanner PDFs.' },
+            { q: 'What languages does the OCR tool support?', a: 'It supports English by default and can process major European and global languages with high accuracy.' },
+            { q: 'Is there a limit on how many pages I can scan?', a: 'No daily limits or page quotas. You can OCR as many documents as you need.' }
+        ],
+        relatedTools: ['pdf-to-jpg', 'text-to-pdf', 'ai-summarizer', 'ai-translator', 'scan-to-pdf', 'form-filler']
+    },
+
+    'ai-summarizer': {
+        title: 'AI PDF Summarizer Online Free – Instant Document Summary & Insights | TECHTIS',
+        metaDescription: 'Summarize PDF documents online free with AI. Generate executive summaries, key takeaways, and action items in seconds using Edge AI. 100% private, zero cost.',
+        keywords: 'ai pdf summarizer, summarize pdf online, document summarizer ai, key takeaways pdf, free ai document summary, llama 3 pdf summary, gemini pdf summarizer',
+        h1: 'AI PDF Document Summarizer Online Free',
+        subtitle: 'Extract key takeaways, executive summaries, and action points from research papers, contracts, and reports in seconds with Edge AI.',
+        badge: 'Edge AI & Local TextRank',
+        howTo: [
+            { step: 1, title: 'Upload Document', desc: 'Select or drop your multi-page PDF into the AI summarizer workspace.' },
+            { step: 2, title: 'Extract & Analyze', desc: 'Text is parsed client-side and analyzed using Cloudflare Edge AI (Llama 3.1) or local TextRank.' },
+            { step: 3, title: 'Read Executive Summary', desc: 'Review key bullet points, executive overviews, and vital findings with one click.' }
+        ],
+        features: [
+            { title: 'Sub-Second Edge AI Inference', desc: 'Powered by Cloudflare Workers AI (Llama 3.1 8B) with zero server latency.' },
+            { title: 'Local TextRank Fallback', desc: 'Automatic in-browser graph algorithmic summarizer when offline or without tokens.' },
+            { title: 'Structured Key Findings', desc: 'Generates concise bullet points, core conclusions, and actionable executive summaries.' },
+            { title: 'Strict Privacy Guardrails', desc: 'Zero data retention; extracted text is processed ephemerally without training AI models.' }
+        ],
+        content: `
+            <p>Reading through 50-page technical whitepapers, dense academic studies, and complex legal briefs can consume hours of valuable time. TECHTIS AI Document Summarizer synthesizes long documents into concise, structured executive summaries and bulleted takeaways in seconds.</p>
+            <p>Our architecture extracts document text locally in your browser memory before querying Cloudflare Edge AI running Meta Llama 3.1 8B. For offline environments or bandwidth-constrained users, TECHTIS automatically provides an in-browser TextRank graph algorithm that summarizes text locally with 0 tokens and zero external network calls.</p>
+            <p>Get straight to the core insights of any document without sacrificing productivity, with zero file uploads and complete privacy protection.</p>
+        `,
+        faqs: [
+            { q: 'How does the AI Summarizer work?', a: 'TECHTIS extracts text in browser RAM, then generates structured summaries using high-speed Edge AI models (Llama 3.1) or our in-browser TextRank engine.' },
+            { q: 'Are my documents used to train AI models?', a: 'No. Cloudflare Edge AI and our local TextRank algorithms operate under strict zero-data-retention agreements; text is never stored or used for model training.' },
+            { q: 'Can it summarize technical papers and legal agreements?', a: 'Yes! It excels at identifying core hypotheses, contract obligations, and financial conclusions.' },
+            { q: 'Is this tool completely free to use?', a: 'Yes, 100% free with unlimited access.' }
+        ],
+        relatedTools: ['ai-translator', 'form-blank-detector', 'ocr-pdf', 'document-compare', 'edit-pdf', 'compress-pdf']
+    },
+
+    'ai-translator': {
+        title: 'AI PDF Translator Online Free – Translate PDF into 50+ Languages | TECHTIS',
+        metaDescription: 'Translate PDF documents online free into 50+ languages with Edge AI. Preserves section boundaries and document flow without file uploads. 100% private.',
+        keywords: 'translate pdf, ai pdf translator, translate pdf document online free, multilingual pdf translation, translate pdf english to spanish, free document translator ai',
+        h1: 'AI PDF Translator Online Free',
+        subtitle: 'Translate document contents into 50+ languages with high contextual accuracy using Edge AI while preserving paragraph structures.',
+        badge: 'Edge AI Multi-Language Engine',
+        howTo: [
+            { step: 1, title: 'Upload Document', desc: 'Select or drop your foreign-language PDF into the translation workspace.' },
+            { step: 2, title: 'Choose Target Language', desc: 'Select your target language from over 50 global languages (Spanish, French, German, Hindi, etc.).' },
+            { step: 3, title: 'Read & Export Translation', desc: 'Inspect translated text alongside original paragraphs and download a translated document.' }
+        ],
+        features: [
+            { title: '50+ Global Languages', desc: 'Translates between English, Spanish, French, German, Hindi, Japanese, Arabic, and more.' },
+            { title: 'Edge Neural Translation', desc: 'Powered by specialized machine translation models (M2M100 / Gemini Edge) for natural syntax.' },
+            { title: 'Paragraph Structure Preservation', desc: 'Maintains section headings, bullet sequences, and document readability.' },
+            { title: 'Zero File Retention', desc: 'Your private corporate communications and international contracts are never stored.' }
+        ],
+        content: `
+            <p>International commerce, academic research, and cross-border travel require reading contracts, manuals, and receipts written in foreign languages. Copying sentences one by one into generic translation tools is tedious and destroys document formatting. TECHTIS AI PDF Translator delivers fast, context-aware translation across 50+ languages.</p>
+            <p>Our translator parses document sections in your browser and utilizes specialized multi-lingual neural edge models to produce fluent, natural translations that accurately reflect domain-specific terminology. Paragraphs and bullet points are mapped cleanly to retain original layout logic.</p>
+            <p>Enjoy private, instantaneous multi-language document translation with zero server storage and zero subscription costs.</p>
+        `,
+        faqs: [
+            { q: 'What languages can TECHTIS translate between?', a: 'It supports over 50 languages including English, Spanish, French, German, Chinese, Japanese, Arabic, Hindi, Portuguese, and Russian.' },
+            { q: 'Does it translate the text directly on the PDF layout?', a: 'It extracts and maps translated sections side-by-side with original paragraphs and exports formatted translated PDF documents.' },
+            { q: 'Are my confidential business emails or contracts safe?', a: 'Yes. Translations are processed ephemerally with zero data retention.' },
+            { q: 'Is there a limit on how many pages I can translate?', a: 'TECHTIS is free for daily use across all countries without subscriptions.' }
+        ],
+        relatedTools: ['ai-summarizer', 'ocr-pdf', 'form-blank-detector', 'text-to-pdf', 'edit-pdf', 'word-to-pdf']
+    },
+
+    'form-blank-detector': {
+        title: 'PDF Form Blank Detector Online Free – Spot Missing Signatures & Fields | TECHTIS',
+        metaDescription: 'Scan contracts and forms to locate unfilled blanks and missing signatures online free. Automated contract review tool spots empty lines. 100% private in browser.',
+        keywords: 'form blank detector, find missing signatures pdf, contract review tool, spot blank fields pdf, uncompleted form checker, audit pdf contract free',
+        h1: 'PDF Form Blank Detector Online Free',
+        subtitle: 'Scan agreements, loan applications, and legal forms to detect unfilled blanks, missing signatures, and omitted dates automatically.',
+        badge: 'Automated Edge AI Auditing',
+        howTo: [
+            { step: 1, title: 'Upload Agreement', desc: 'Drop your contract, lease agreement, or tax form into the audit workspace.' },
+            { step: 2, title: 'Scan for Incomplete Fields', desc: 'Our heuristic and Edge AI parser inspects pages for blank underscores, empty boxes, and signature tags.' },
+            { step: 3, title: 'Review Flagged Items', desc: 'Jump directly to flagged pages with missing dates, signatures, or blank entries to complete them.' }
+        ],
+        features: [
+            { title: 'Spots Missing Signature Lines', desc: 'Identifies unsigned signature blocks ("Sign Here", "Signature: ______", "X: _____").' },
+            { title: 'Detects Blank Date Fields', desc: 'Flags empty date lines ("Date: ________") to prevent submitting undated agreements.' },
+            { title: 'Visual Page Navigator', desc: 'One-click navigation jumps directly to pages containing flagged omissions.' },
+            { title: '100% In-Browser Inspection', desc: 'Review sensitive legal contracts and mortgage applications with complete privacy.' }
+        ],
+        content: `
+            <p>Submitting an incomplete legal contract, loan application, or tax declaration with a missing signature line or blank date field leads to embarrassing rejections, delayed closings, and legal vulnerability. Manually proofreading multi-page agreements to ensure every blank is filled is tedious and error-prone. TECHTIS Form Blank Detector audits your documents automatically.</p>
+            <p>Our parsing engine scans document structures for common completion markers—such as underline blanks, empty AcroForm inputs, unselected checkboxes, and unsigned signature lines. It provides an interactive audit checklist that highlights exactly where information is missing.</p>
+            <p>Because contract review involves your most confidential legal and financial documents, the entire audit executes securely in browser memory without sending files to third parties.</p>
+        `,
+        faqs: [
+            { q: 'What types of omissions can the detector spot?', a: 'It detects unsigned signature blocks, blank underline fields ("Name: ________"), unselected checkboxes, and missing date stamps.' },
+            { q: 'Can I fill the missing fields right away?', a: 'Yes! You can jump directly into our Form Filler or Sign PDF tools to complete the missing fields in the same session.' },
+            { q: 'Is this tool useful for real estate and loan documents?', a: 'Extremely! It helps mortgage brokers, realtors, and applicants catch missing signatures before submitting closing packages.' },
+            { q: 'Are my confidential contracts uploaded to any server?', a: 'No. Document auditing executes in local browser memory with complete confidentiality.' }
+        ],
+        relatedTools: ['form-filler', 'sign-pdf', 'flatten-pdf', 'document-compare', 'edit-pdf', 'protect-pdf']
+    },
+
+    'scan-to-pdf': {
+        title: 'Scan to PDF Online Free – Capture Paper Docs with Webcam or Mobile | TECHTIS',
+        metaDescription: 'Scan paper documents to PDF online free using your webcam or smartphone camera. Auto-perspective correction and contrast enhancement in browser WebGL.',
+        keywords: 'scan to pdf, webcam document scanner, mobile scanner online, camera to pdf free, capture paper to pdf, photo scanner in browser, client side scanner',
+        h1: 'Scan to PDF Online Free',
+        subtitle: 'Capture physical paper documents, receipts, and whiteboard notes using your webcam or phone camera with auto-contrast enhancement.',
+        badge: 'WebGL Hardware Accelerated',
+        howTo: [
+            { step: 1, title: 'Open Camera Workspace', desc: 'Grant browser camera access to activate your laptop webcam or smartphone lens.' },
+            { step: 2, title: 'Capture Document Page', desc: 'Align your paper document in the viewfinder and snap a high-resolution photo.' },
+            { step: 3, title: 'Enhance & Download PDF', desc: 'Apply automatic contrast enhancement to whiten backgrounds, then export a crisp PDF.' }
+        ],
+        features: [
+            { title: 'Direct Webcam & Phone Capture', desc: 'Works seamlessly in browser on laptops, MacBooks, iPhones, iPads, and Android phones.' },
+            { title: 'WebGL Contrast Enhancement', desc: 'Removes shadows and boosts text contrast to make camera photos look like flatbed scans.' },
+            { title: 'Multi-Page Camera Stacking', desc: 'Snap multiple pages in sequence and compile them into a single multi-page PDF.' },
+            { title: '100% Client-Side Processing', desc: 'Camera video streams stay strictly on your device; no video or photos are transmitted to servers.' }
+        ],
+        content: `
+            <p>When you need to digitize a paper receipt, signed letter, student homework assignment, or white-board brainstorm but don't have access to a flatbed scanner, TECHTIS Scan to PDF turns your laptop webcam or smartphone camera into a document scanner.</p>
+            <p>Our in-browser WebGL image processing engine enhances captured camera frames by equalizing contrast, whitening grayish paper backgrounds, and sharpening dark text glyphs. You can capture multiple pages in a single session and arrange them into a clean, unified document.</p>
+            <p>Camera streams and captured photos never leave your device. Experience safe, instantaneous document scanning without installing third-party apps or paying for scanner subscriptions.</p>
+        `,
+        faqs: [
+            { q: 'Does this tool require installing any mobile scanner apps?', a: 'No! It runs directly inside your web browser using HTML5 camera APIs (getUserMedia).' },
+            { q: 'Can I capture multiple pages into a single PDF?', a: 'Yes! Snap as many pages as you need, review thumbnails, and export them as one unified PDF.' },
+            { q: 'How does it improve photo quality?', a: 'Our WebGL shader filters remove ambient room shadows, whiten gray paper backgrounds, and maximize text contrast.' },
+            { q: 'Are my camera photos or video streams transmitted over the internet?', a: 'Never. Camera feeds are processed exclusively in your device\'s local hardware memory.' }
+        ],
+        relatedTools: ['jpg-to-pdf', 'crop-pdf', 'ocr-pdf', 'compress-pdf', 'rotate-pdf', 'pdf-to-jpg']
+    }
+};

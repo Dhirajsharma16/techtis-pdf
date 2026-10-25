@@ -29,7 +29,8 @@ class App {
         this.hubDocFile = null;
         this.hubDocBuffer = null;
         this.hubDocNumPages = 1;
-        this.hubActiveCat = 'organize'; // Default hub action category
+        this.hubActiveCat = 'organize';
+        this.isDedicatedPage = typeof document !== 'undefined' && !!document.body?.dataset?.toolId; // Default hub action category
 
         this.init();
     }
@@ -41,10 +42,15 @@ class App {
         this.updateHistoryCounter();
         this.refreshLucideIcons();
 
-        // Deep-linking routing based on URL hash (e.g. #form-filler, #merge-pdf)
-        const initialHash = window.location.hash.replace(/^#/, '');
-        if (initialHash && TOOLS.some(t => t.id === initialHash)) {
-            this.openToolWorkspace(initialHash);
+        // Support both dedicated tool pages (/merge-pdf/) and hash deep links (#merge-pdf)
+        const dedicatedToolId = document.body?.dataset?.toolId;
+        if (this.isDedicatedPage && dedicatedToolId && TOOLS.some(t => t.id === dedicatedToolId)) {
+            this.openToolWorkspace(dedicatedToolId, { isDedicatedPage: true });
+        } else {
+            const initialHash = window.location.hash.replace(/^#/, '');
+            if (initialHash && TOOLS.some(t => t.id === initialHash)) {
+                this.openToolWorkspace(initialHash);
+            }
         }
 
         window.addEventListener('hashchange', () => {
@@ -68,12 +74,16 @@ class App {
     // ================= GLOBAL EVENT LISTENERS =================
     bindGlobalEvents() {
         // Logo click -> go to catalog
-        document.getElementById('brand-logo-btn')?.addEventListener('click', () => {
+        document.getElementById('brand-logo-btn')?.addEventListener('click', (e) => {
+            if (this.isDedicatedPage) return; // Allow native <a href="../"> link navigation
+            e.preventDefault();
             this.showCatalogView();
         });
 
         // Back to catalog
-        document.getElementById('btn-back-to-catalog')?.addEventListener('click', () => {
+        document.getElementById('btn-back-to-catalog')?.addEventListener('click', (e) => {
+            if (this.isDedicatedPage) return; // Allow native <a href="../"> link navigation
+            e.preventDefault();
             this.showCatalogView();
         });
 
@@ -430,7 +440,7 @@ class App {
 
         grid.innerHTML = filtered.map(tool => {
             return `
-                <div class="tool-card p-3 sm:p-3.5 rounded-xl border border-slate-200/90 bg-white hover:border-red-400 hover:shadow-md transition-all cursor-pointer flex items-center gap-3 group" data-tool-id="${tool.id}">
+                <a href="${tool.id}/" class="tool-card p-3 sm:p-3.5 rounded-xl border border-slate-200/90 bg-white hover:border-red-400 hover:shadow-md transition-all cursor-pointer flex items-center gap-3 group" data-tool-id="${tool.id}">
                     <div class="w-9 h-9 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-red-600 group-hover:text-white transition-all shadow-2xs">
                         <i data-lucide="${tool.icon}" class="w-4 h-4"></i>
                     </div>
@@ -445,9 +455,11 @@ class App {
             `;
         }).join('');
 
-        // Attach click listeners to cards
+        // Attach click listeners to cards (smooth SPA transition with fall-through for cmd/ctrl click)
         grid.querySelectorAll('.tool-card').forEach(card => {
-            card.addEventListener('click', () => {
+            card.addEventListener('click', (e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+                e.preventDefault();
                 const toolId = card.getAttribute('data-tool-id');
                 this.openToolWorkspace(toolId);
             });
@@ -477,7 +489,7 @@ class App {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    openToolWorkspace(toolId) {
+    openToolWorkspace(toolId, options = {}) {
         const tool = TOOLS.find(t => t.id === toolId);
         if (!tool) return;
 
@@ -496,25 +508,31 @@ class App {
         const iconEl = document.getElementById('workspace-icon');
         const badgeEl = document.getElementById('workspace-badge-text');
 
-        if (titleEl) titleEl.textContent = tool.name;
-        if (descEl) descEl.textContent = tool.description;
+        if (titleEl && !options.isDedicatedPage) titleEl.textContent = tool.name;
+        if (descEl && !options.isDedicatedPage) descEl.textContent = tool.description;
         if (iconEl) iconEl.setAttribute('data-lucide', tool.icon);
         if (badgeEl) badgeEl.textContent = tool.group === 'group-a' ? '100% Client-Side RAM Processing' : tool.badge;
 
-        // Dynamic SEO Update for this tool
-        document.title = `${tool.name} Free Online — 100% Private PDF Tool | TECHTIS`;
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) {
-            metaDesc.setAttribute('content', `${tool.name} online free: ${tool.tagline}. ${tool.description} 100% in-browser private execution, zero file uploads, unlimited free access.`);
-        }
-        if (window.location.hash !== `#${tool.id}`) {
-            history.pushState(null, '', `#${tool.id}`);
+        // Dynamic SEO Update for this tool in SPA mode
+        if (!options.isDedicatedPage) {
+            document.title = `${tool.name} Free Online — 100% Private PDF Tool | TECHTIS`;
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) {
+                metaDesc.setAttribute('content', `${tool.name} online free: ${tool.tagline}. ${tool.description} 100% in-browser private execution, zero file uploads, unlimited free access.`);
+            }
+            if (window.location.hash !== `#${tool.id}`) {
+                history.pushState(null, '', `#${tool.id}`);
+            }
         }
 
         this.renderToolWorkspaceBody(tool);
-        this.appendToolSeoGuide(tool);
+        if (!options.isDedicatedPage) {
+            this.appendToolSeoGuide(tool);
+        }
         this.refreshLucideIcons();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (!options.isDedicatedPage) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
 
     appendToolSeoGuide(tool) {
