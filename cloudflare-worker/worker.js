@@ -329,6 +329,13 @@ export default {
             }
 
             // ==========================================
+            // ==========================================
+            // 8. STATIC ASSETS FALLBACK (TECHTIS 60 TOOLS)
+            // ==========================================
+            if (env.ASSETS) {
+                return env.ASSETS.fetch(request);
+            }
+
             // DEFAULT 404 HANDLER
             // ==========================================
             return jsonResponse({

@@ -24,7 +24,7 @@ binding = "AI"
 [[d1_databases]]
 binding = "DB"
 database_name = "techtis-pdf-db"
-database_id = "YOUR_D1_DATABASE_ID_HERE"
+# database_id = "PASTE_D1_ID_WHEN_CREATED"
 
 # ==============================================================
 # 3. Environment Secrets (Optional)
