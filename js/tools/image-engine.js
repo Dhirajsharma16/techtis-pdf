@@ -6,25 +6,52 @@
 
 export const ImageEngine = {
     /**
-     * Load an image file into an HTMLImageElement
+     * Load an image file into an HTMLImageElement using FileReader
+     * (Preserves persistent data URL that never gets revoked)
      */
     async loadImage(file) {
         return new Promise((resolve, reject) => {
-            if (!file || !file.type.startsWith('image/')) {
-                return reject(new Error('Selected file is not a valid image format.'));
+            if (!file) {
+                return reject(new Error('No file provided.'));
             }
-            const img = new Image();
-            const url = URL.createObjectURL(file);
-            img.onload = () => {
-                URL.revokeObjectURL(url);
-                resolve(img);
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                    img._dataUrl = reader.result;
+                    resolve(img);
+                };
+                img.onerror = () => reject(new Error('Failed to load and decode image data.'));
+                img.src = reader.result;
             };
-            img.onerror = () => {
-                URL.revokeObjectURL(url);
-                reject(new Error('Failed to load and decode image data.'));
-            };
-            img.src = url;
+            reader.onerror = () => reject(new Error('Failed to read image file.'));
+            reader.readAsDataURL(file);
         });
+    },
+
+    /**
+     * Render a PDF page onto an HTML5 Canvas using PDF.js
+     */
+    async renderPdfToCanvas(file, pageNum = 1, scale = 1.75) {
+        if (!window.pdfjsLib) {
+            throw new Error('PDF.js engine is not loaded in browser.');
+        }
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(Math.min(pageNum, pdf.numPages));
+        const viewport = page.getViewport({ scale });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        return {
+            canvas,
+            numPages: pdf.numPages,
+            dataUrl: canvas.toDataURL('image/png')
+        };
     },
 
     /**
@@ -72,7 +99,6 @@ export const ImageEngine = {
         canvas.height = Math.max(1, Math.round(targetHeight));
 
         const ctx = canvas.getContext('2d');
-        // High quality bicubic scaling
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
@@ -109,7 +135,6 @@ export const ImageEngine = {
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
-        // Apply background color for formats that do not support transparency
         if (targetMime === 'image/jpeg' || backgroundColor !== 'transparent') {
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -136,7 +161,6 @@ export const ImageEngine = {
     async cropImage(file, cropRect, rotationAngle = 0, outputMime = 'image/png', quality = 0.9) {
         const img = await this.loadImage(file);
         
-        // Setup offscreen canvas for rotation first
         const rotCanvas = document.createElement('canvas');
         const rotCtx = rotCanvas.getContext('2d');
         rotCtx.imageSmoothingEnabled = true;
@@ -152,7 +176,6 @@ export const ImageEngine = {
         rotCtx.rotate(rads);
         rotCtx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
 
-        // Now crop from rotated canvas
         const cropCanvas = document.createElement('canvas');
         cropCanvas.width = Math.max(1, Math.round(cropRect.width));
         cropCanvas.height = Math.max(1, Math.round(cropRect.height));
@@ -236,25 +259,22 @@ export const ImageEngine = {
      * Generate Single ID Photo & Multi-Up A4 Print Sheet PDF
      */
     async generatePassportPrintSheet(croppedDataUrl, preset, quantity = 8, dpi = 300) {
-        // 1 mm in PDF points = 72 points / 25.4 mm ≈ 2.834645 points
         const MM_TO_POINTS = 72 / 25.4;
-        const A4_WIDTH_POINTS = 210 * MM_TO_POINTS;  // 595.28 points
-        const A4_HEIGHT_POINTS = 297 * MM_TO_POINTS; // 841.89 points
+        const A4_WIDTH_POINTS = 210 * MM_TO_POINTS;
+        const A4_HEIGHT_POINTS = 297 * MM_TO_POINTS;
 
         const photoWidthPoints = preset.widthMm * MM_TO_POINTS;
         const photoHeightPoints = preset.heightMm * MM_TO_POINTS;
 
-        // Calculate grid layout on A4
-        const marginX = 15 * MM_TO_POINTS; // 15mm page margin
+        const marginX = 15 * MM_TO_POINTS;
         const marginY = 15 * MM_TO_POINTS;
-        const gapX = 4 * MM_TO_POINTS;     // 4mm cutting gap between photos
+        const gapX = 4 * MM_TO_POINTS;
         const gapY = 4 * MM_TO_POINTS;
 
         const printableWidth = A4_WIDTH_POINTS - (2 * marginX);
         const cols = Math.floor((printableWidth + gapX) / (photoWidthPoints + gapX));
         const rows = Math.ceil(quantity / cols);
 
-        // Build PDF using pdf-lib
         if (!window.PDFLib) {
             throw new Error('PDF-Lib engine not available in browser memory.');
         }
@@ -262,12 +282,10 @@ export const ImageEngine = {
         const pdfDoc = await window.PDFLib.PDFDocument.create();
         const page = pdfDoc.addPage([A4_WIDTH_POINTS, A4_HEIGHT_POINTS]);
 
-        // Embed the cropped image
         const imgBytes = await fetch(croppedDataUrl).then(r => r.arrayBuffer());
         const isPng = croppedDataUrl.startsWith('data:image/png');
         const embeddedImg = isPng ? await pdfDoc.embedPng(imgBytes) : await pdfDoc.embedJpg(imgBytes);
 
-        // Header disclaimer on the print sheet
         const font = await pdfDoc.embedFont(window.PDFLib.StandardFonts.Helvetica);
         const fontBold = await pdfDoc.embedFont(window.PDFLib.StandardFonts.HelveticaBold);
 
@@ -287,14 +305,12 @@ export const ImageEngine = {
             color: window.PDFLib.rgb(0.85, 0.15, 0.15)
         });
 
-        // Tile photos
         let placed = 0;
         for (let r = 0; r < rows && placed < quantity; r++) {
             for (let c = 0; c < cols && placed < quantity; c++) {
                 const x = marginX + (c * (photoWidthPoints + gapX));
                 const y = A4_HEIGHT_POINTS - marginY - 28 - ((r + 1) * photoHeightPoints) - (r * gapY);
 
-                // Draw photo
                 page.drawImage(embeddedImg, {
                     x,
                     y,
@@ -302,7 +318,6 @@ export const ImageEngine = {
                     height: photoHeightPoints
                 });
 
-                // Draw subtle cutting border
                 page.drawRectangle({
                     x,
                     y,
@@ -325,14 +340,12 @@ export const ImageEngine = {
             photoWidthMm: preset.widthMm,
             photoHeightMm: preset.heightMm
         };
-    }
-,
+    },
 
     /**
      * Perform 100% Client-Side OCR using in-browser WebAssembly Tesseract.js
-     * Zero server uploads, zero network leaks.
      */
-    async performClientOcr(imageFile, onProgress = () => {}) {
+    async performClientOcr(imageSource, onProgress = () => {}) {
         if (!window.Tesseract) {
             throw new Error('Tesseract OCR library is not available in browser memory.');
         }
@@ -340,7 +353,6 @@ export const ImageEngine = {
         onProgress({ status: 'init', progress: 0.15, message: 'Initializing client-side WASM OCR worker...' });
         
         try {
-            // Check if createWorker is supported
             if (typeof window.Tesseract.createWorker === 'function') {
                 const worker = await window.Tesseract.createWorker('eng', 1, {
                     logger: m => {
@@ -350,11 +362,11 @@ export const ImageEngine = {
                         }
                     }
                 });
-                const res = await worker.recognize(imageFile);
+                const res = await worker.recognize(imageSource);
                 await worker.terminate();
                 return res.data?.text || '';
             } else if (typeof window.Tesseract.recognize === 'function') {
-                const res = await window.Tesseract.recognize(imageFile, 'eng', {
+                const res = await window.Tesseract.recognize(imageSource, 'eng', {
                     logger: m => {
                         if (m && m.status) {
                             const pct = Math.round((m.progress || 0) * 100);
@@ -373,111 +385,249 @@ export const ImageEngine = {
     },
 
     /**
-     * Parse Aadhaar & PAN Card Fields from Raw Extracted Text
+     * Comprehensive Intelligent OCR Parser for any ID card, PDF or Form
+     * Extracts: Name, Email, Phone, Father's Name, DOB, Gender, ID Numbers, Address, Pin Code
      */
-    parseIdCard(rawText) {
-        if (!rawText) {
+    extractAllDocumentFields(rawText) {
+        if (!rawText || !rawText.trim()) {
             return {
-                docType: 'Government ID',
+                docType: 'Document',
                 name: '',
-                docNumber: '',
-                maskedNumber: '',
+                email: '',
+                phone: '',
                 dob: '',
                 gender: '',
+                idNumber: '',
+                maskedIdNumber: '',
+                fatherName: '',
+                address: '',
+                pincode: '',
+                organization: '',
+                allFields: [],
                 rawText: ''
             };
         }
 
-        const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
-        const upper = rawText.toUpperCase();
-        
-        let docType = 'Government ID';
-        let isAadhaar = false;
-        let isPan = false;
+        const cleanText = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        const lines = cleanText.split('\n').map(l => l.trim()).filter(Boolean);
+        const upper = cleanText.toUpperCase();
 
-        if (upper.includes('AADHAAR') || upper.includes('GOVERNMENT OF INDIA') || upper.includes('UIDAI') || upper.includes('MERA AADHAAR') || /\b\d{4}\s\d{4}\s\d{4}\b/.test(rawText)) {
-            isAadhaar = true;
+        // 1. Detect Document / Card Type
+        let docType = 'General Document';
+        if (upper.includes('AADHAAR') || upper.includes('UIDAI') || upper.includes('MERA AADHAAR') || /\b\d{4}\s\d{4}\s\d{4}\b/.test(cleanText)) {
             docType = 'Aadhaar Card';
-        } else if (upper.includes('INCOME TAX') || upper.includes('PERMANENT ACCOUNT NUMBER') || upper.includes('PAN') || /\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b/.test(rawText)) {
-            isPan = true;
+        } else if (upper.includes('INCOME TAX') || upper.includes('PERMANENT ACCOUNT NUMBER') || upper.includes('PAN CARD') || /\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b/.test(cleanText)) {
             docType = 'PAN Card';
+        } else if (upper.includes('PASSPORT') || upper.includes('REPUBLIC OF') || /\bP<[A-Z]{3}/.test(cleanText)) {
+            docType = 'Passport';
+        } else if (upper.includes('DRIVING LICENCE') || upper.includes('DRIVING LICENSE') || upper.includes('UNION OF INDIA') && upper.includes('TRANSPORT')) {
+            docType = 'Driving License';
+        } else if (upper.includes('ELECTION COMMISSION') || upper.includes('VOTER') || /\b[A-Z]{3}[0-9]{7}\b/.test(cleanText)) {
+            docType = 'Voter ID Card';
+        } else if (upper.includes('INVOICE') || upper.includes('TAX INVOICE') || upper.includes('BILL TO')) {
+            docType = 'Invoice / Bill';
+        } else if (upper.includes('RESUME') || upper.includes('CURRICULUM VITAE') || upper.includes('EXPERIENCE') && upper.includes('EDUCATION')) {
+            docType = 'Resume / CV';
+        } else if (upper.includes('CERTIFICATE') || upper.includes('MARKSHEET') || upper.includes('DEGREE')) {
+            docType = 'Academic Certificate';
         }
 
-        // 1. Extract Document Number
-        let docNumber = '';
-        let maskedNumber = '';
-
-        if (isAadhaar) {
-            const matchAadhaar = rawText.match(/\b(\d{4})\s*(\d{4})\s*(\d{4})\b/);
-            if (matchAadhaar) {
-                docNumber = `${matchAadhaar[1]} ${matchAadhaar[2]} ${matchAadhaar[3]}`;
-                maskedNumber = `XXXX XXXX ${matchAadhaar[3]}`;
-            }
-        } else if (isPan) {
-            const matchPan = rawText.match(/\b([A-Z]{5}[0-9]{4}[A-Z]{1})\b/i);
-            if (matchPan) {
-                docNumber = matchPan[1].toUpperCase();
-                maskedNumber = docNumber;
-            }
+        // 2. Extract Email Address
+        let email = '';
+        const emailMatch = cleanText.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/);
+        if (emailMatch) {
+            email = emailMatch[0].toLowerCase();
         }
 
-        // Regex fallback
-        if (!docNumber) {
-            const aadhaarFallback = rawText.match(/\b\d{4}\s\d{4}\s\d{4}\b/);
-            const panFallback = rawText.match(/\b[A-Z]{5}[0-9]{4}[A-Z]\b/i);
-            if (aadhaarFallback) {
-                docNumber = aadhaarFallback[0];
-                const parts = docNumber.split(' ');
-                maskedNumber = `XXXX XXXX ${parts[2]}`;
-                docType = 'Aadhaar Card';
-            } else if (panFallback) {
-                docNumber = panFallback[0].toUpperCase();
-                maskedNumber = docNumber;
-                docType = 'PAN Card';
+        // 3. Extract Phone / Mobile Number
+        let phone = '';
+        // Look for labeled phone first: "Phone: 9876543210", "Mob: +91 9876543210"
+        const labeledPhone = cleanText.match(/(?:Mobile|Phone|Tel|Mob|Cell|Contact)\s*[:\-]?\s*([+]?[0-9\s\-\(\)]{10,16})/i);
+        if (labeledPhone) {
+            const digits = labeledPhone[1].replace(/[^0-9+]/g, '');
+            if (digits.length >= 10 && digits.length <= 13) {
+                phone = digits;
             }
         }
-
-        // 2. Extract DOB
-        let dob = '';
-        const dobMatch = rawText.match(/(?:DOB|Date of Birth|Year of Birth|Birth|YOB)\s*[:\-\/]?\s*(\d{2}[\/\-\.]\d{2}[\/\-\.]\d{4}|\d{4})/i)
-            || rawText.match(/\b(\d{2}\/\d{2}\/\d{4})\b/);
-        if (dobMatch) {
-            dob = dobMatch[1];
-        }
-
-        // 3. Extract Gender
-        let gender = '';
-        if (/\b(FEMALE|WOMAN)\b/i.test(rawText)) {
-            gender = 'FEMALE';
-        } else if (/\b(MALE|MAN)\b/i.test(rawText)) {
-            gender = 'MALE';
-        } else if (/\b(TRANSGENDER)\b/i.test(rawText)) {
-            gender = 'TRANSGENDER';
-        }
-
-        // 4. Extract Name
-        let name = '';
-        const ignoredWords = ['GOVERNMENT', 'INDIA', 'INCOME', 'TAX', 'DEPARTMENT', 'PERMANENT', 'ACCOUNT', 'NUMBER', 'CARD', 'MALE', 'FEMALE', 'FATHER', 'SIGNATURE', 'UIDAI', 'ENROLMENT', 'HELP', 'BHARAT', 'SARKAR'];
-        for (const line of lines) {
-            const cleanLine = line.replace(/[^a-zA-Z\s]/g, '').trim();
-            const words = cleanLine.split(/\s+/).filter(w => w.length > 1);
-            if (words.length >= 2 && words.length <= 4) {
-                const hasIgnored = words.some(w => ignoredWords.includes(w.toUpperCase()));
-                if (!hasIgnored && !cleanLine.toLowerCase().includes('date') && !cleanLine.toLowerCase().includes('year')) {
-                    name = cleanLine;
-                    break;
+        if (!phone) {
+            // Check for Indian mobile numbers starting with 6, 7, 8, 9 (10 digits)
+            const indMobile = cleanText.match(/(?:\+91[\-\s]?)?([6-9]\d{9})\b/);
+            if (indMobile) {
+                phone = indMobile[1];
+            } else {
+                // International phone regex
+                const anyPhone = cleanText.match(/\b(?:\+?\d{1,3}[- ]?)?\(?\d{3}\)?[- ]?\d{3}[- ]?\d{4}\b/);
+                if (anyPhone) {
+                    phone = anyPhone[0];
                 }
             }
         }
 
+        // 4. Extract Date of Birth
+        let dob = '';
+        const labeledDob = cleanText.match(/(?:DOB|Date of Birth|Birth Date|Birth|YOB|Year of Birth)\s*[:\-\/]?\s*(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}|\d{4})/i);
+        if (labeledDob) {
+            dob = labeledDob[1];
+        } else {
+            const anyDate = cleanText.match(/\b(\d{2}[\/\-\.]\d{2}[\/\-\.]\d{4})\b/);
+            if (anyDate) {
+                dob = anyDate[1];
+            }
+        }
+
+        // 5. Extract Gender
+        let gender = '';
+        if (/\b(FEMALE|WOMAN)\b/i.test(cleanText)) {
+            gender = 'FEMALE';
+        } else if (/\b(MALE|MAN)\b/i.test(cleanText)) {
+            gender = 'MALE';
+        } else if (/\b(TRANSGENDER)\b/i.test(cleanText)) {
+            gender = 'TRANSGENDER';
+        }
+
+        // 6. Extract Document / ID Numbers
+        let idNumber = '';
+        let maskedIdNumber = '';
+
+        if (docType === 'Aadhaar Card') {
+            const aadhaarMatch = cleanText.match(/\b(\d{4})\s*(\d{4})\s*(\d{4})\b/);
+            if (aadhaarMatch) {
+                idNumber = `${aadhaarMatch[1]} ${aadhaarMatch[2]} ${aadhaarMatch[3]}`;
+                maskedIdNumber = `XXXX XXXX ${aadhaarMatch[3]}`;
+            }
+        } else if (docType === 'PAN Card') {
+            const panMatch = cleanText.match(/\b([A-Z]{5}[0-9]{4}[A-Z]{1})\b/i);
+            if (panMatch) {
+                idNumber = panMatch[1].toUpperCase();
+                maskedIdNumber = idNumber;
+            }
+        } else if (docType === 'Voter ID Card') {
+            const voterMatch = cleanText.match(/\b([A-Z]{3}[0-9]{7})\b/);
+            if (voterMatch) {
+                idNumber = voterMatch[1];
+                maskedIdNumber = idNumber;
+            }
+        } else if (docType === 'Passport') {
+            const passMatch = cleanText.match(/\b([A-Z][0-9]{7})\b/);
+            if (passMatch) {
+                idNumber = passMatch[1];
+                maskedIdNumber = idNumber;
+            }
+        }
+
+        if (!idNumber) {
+            const aadhaarGeneral = cleanText.match(/\b\d{4}\s\d{4}\s\d{4}\b/);
+            const panGeneral = cleanText.match(/\b[A-Z]{5}[0-9]{4}[A-Z]\b/i);
+            const labeledId = cleanText.match(/(?:ID|No|Number|Registration|Reg|Card No)\s*[:\-]?\s*([A-Za-z0-9\-\/]{6,18})/i);
+
+            if (aadhaarGeneral) {
+                idNumber = aadhaarGeneral[0];
+                const parts = idNumber.split(' ');
+                maskedIdNumber = `XXXX XXXX ${parts[2]}`;
+            } else if (panGeneral) {
+                idNumber = panGeneral[0].toUpperCase();
+                maskedIdNumber = idNumber;
+            } else if (labeledId) {
+                idNumber = labeledId[1].trim();
+                maskedIdNumber = idNumber;
+            }
+        }
+
+        // 7. Extract Father / Guardian Name
+        let fatherName = '';
+        const fatherMatch = cleanText.match(/(?:Father's Name|Father Name|Father|S\/O|D\/O|W\/O|Husband)\s*[:\-\/]?\s*([A-Za-z\s\.]+)/i);
+        if (fatherMatch) {
+            const candidate = fatherMatch[1].split('\n')[0].replace(/[^a-zA-Z\s\.]/g, '').trim();
+            if (candidate.length >= 3 && candidate.length <= 40) {
+                fatherName = candidate;
+            }
+        }
+
+        // 8. Extract Pin Code / Postal Code
+        let pincode = '';
+        const pinMatch = cleanText.match(/(?:Pin|PIN|Postal|Zip)\s*(?:Code)?\s*[:\-]?\s*([1-9][0-9]{5})/i) ||
+                         cleanText.match(/\b([1-9][0-9]{5})\b/);
+        if (pinMatch) {
+            pincode = pinMatch[1];
+        }
+
+        // 9. Extract Address
+        let address = '';
+        const addressMatch = cleanText.match(/(?:Address|Add|Residential Address)\s*[:\-]?\s*([^\n]+(?:\n[^\n]+){1,3})/i);
+        if (addressMatch) {
+            address = addressMatch[1].replace(/\n/g, ', ').replace(/\s+/g, ' ').trim();
+        }
+
+        // 10. Extract Full Name
+        let name = '';
+        // Explicit "Name: ..."
+        const labeledName = cleanText.match(/(?:Name|Full Name|Candidate Name|Applicant Name|Cardholder)\s*[:\-]?\s*([A-Za-z\s\.]+)/i);
+        if (labeledName) {
+            const cand = labeledName[1].split('\n')[0].replace(/[^a-zA-Z\s]/g, '').trim();
+            if (cand.length >= 3 && cand.length <= 40) {
+                name = cand;
+            }
+        }
+
+        if (!name) {
+            const ignoredWords = ['GOVERNMENT', 'INDIA', 'INCOME', 'TAX', 'DEPARTMENT', 'PERMANENT', 'ACCOUNT', 'NUMBER', 'CARD', 'MALE', 'FEMALE', 'FATHER', 'SIGNATURE', 'UIDAI', 'ENROLMENT', 'HELP', 'BHARAT', 'SARKAR', 'REPUBLIC', 'STATE', 'TRANSPORT', 'MINISTRY', 'AUTHORITY', 'COMMISSION', 'ELECTION'];
+            for (const line of lines) {
+                const cleanLine = line.replace(/[^a-zA-Z\s]/g, '').trim();
+                const words = cleanLine.split(/\s+/).filter(w => w.length > 1);
+                if (words.length >= 2 && words.length <= 4) {
+                    const hasIgnored = words.some(w => ignoredWords.includes(w.toUpperCase()));
+                    if (!hasIgnored && !cleanLine.toLowerCase().includes('date') && !cleanLine.toLowerCase().includes('year') && !cleanLine.toLowerCase().includes('address')) {
+                        name = cleanLine;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Collect all non-empty key-value fields for dynamic UI
+        const allFields = [];
+        if (name) allFields.push({ label: 'Full Name', key: 'name', value: name, icon: 'user' });
+        if (email) allFields.push({ label: 'Email Address', key: 'email', value: email, icon: 'mail' });
+        if (phone) allFields.push({ label: 'Phone Number', key: 'phone', value: phone, icon: 'phone' });
+        if (idNumber) allFields.push({ label: `${docType} Number`, key: 'idNumber', value: idNumber, masked: maskedIdNumber || idNumber, icon: 'credit-card' });
+        if (dob) allFields.push({ label: 'Date of Birth', key: 'dob', value: dob, icon: 'calendar' });
+        if (gender) allFields.push({ label: 'Gender', key: 'gender', value: gender, icon: 'users' });
+        if (fatherName) allFields.push({ label: "Father / Guardian", key: 'fatherName', value: fatherName, icon: 'user-check' });
+        if (pincode) allFields.push({ label: 'PIN / Postal Code', key: 'pincode', value: pincode, icon: 'map-pin' });
+        if (address) allFields.push({ label: 'Full Address', key: 'address', value: address, icon: 'map' });
+
         return {
             docType,
             name,
-            docNumber,
-            maskedNumber: maskedNumber || docNumber,
+            email,
+            phone,
             dob,
             gender,
-            rawText
+            idNumber,
+            maskedIdNumber: maskedIdNumber || idNumber,
+            fatherName,
+            address,
+            pincode,
+            allFields,
+            rawText: cleanText
+        };
+    },
+
+    /**
+     * Backward-compatible parseIdCard calling extractAllDocumentFields
+     */
+    parseIdCard(rawText) {
+        const fields = this.extractAllDocumentFields(rawText);
+        return {
+            docType: fields.docType,
+            name: fields.name,
+            docNumber: fields.idNumber,
+            maskedNumber: fields.maskedIdNumber,
+            dob: fields.dob,
+            gender: fields.gender,
+            email: fields.email,
+            phone: fields.phone,
+            rawText: fields.rawText
         };
     }
 };

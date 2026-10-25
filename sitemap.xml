@@ -35,7 +35,7 @@
         <priority>0.70</priority>
     </url>
 
-    <!-- 40 Dedicated Tool Landing Pages -->
+    <!-- 41 Dedicated Tool Landing Pages -->
     <!-- 1. Merge PDF -->
     <url>
         <loc>https://techtis.in/merge-pdf/</loc>
@@ -351,6 +351,14 @@
     <!-- 40. Private Document OCR -->
     <url>
         <loc>https://techtis.in/id-card-ocr/</loc>
+        <lastmod>2026-10-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- 41. Fill Form (OCR Assistant) -->
+    <url>
+        <loc>https://techtis.in/fill-form/</loc>
         <lastmod>2026-10-25</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>

@@ -709,6 +709,9 @@ class App {
             case 'id-card-ocr':
                 this.renderIdCardOcrWorkspace(container);
                 break;
+            case 'fill-form':
+                this.renderFillFormWorkspace(container);
+                break;
             default:
                 this.renderGenericWorkspace(container, tool);
                 break;

@@ -402,6 +402,31 @@ async function runTests() {
         return `Aadhaar & PAN successfully parsed! Masked: ${parsedAadhaar.maskedNumber}, PAN: ${parsedPan.docNumber}`;
     });
 
+    // 41. Universal Form Assistant & Multi-field OCR (Fill Form)
+    await assertTool('Fill Form Universal OCR & Field Parser', async () => {
+        const fullSample = `GOVERNMENT OF INDIA
+Unique Identification Authority of India
+Rahul Sharma
+Father: Suresh Sharma
+DOB: 15/08/1990
+Gender: MALE
+Email: rahul.sharma@example.com
+Mobile: 9876543210
+Address: Flat 402 Lotus Residency MG Road Bengaluru Karnataka
+PIN: 560001
+4321 8765 2109`;
+        const res = ImageEngine.extractAllDocumentFields(fullSample);
+        if (!res.name || !res.name.includes('Rahul Sharma')) throw new Error('Failed to extract name: ' + res.name);
+        if (res.email !== 'rahul.sharma@example.com') throw new Error('Failed to extract email: ' + res.email);
+        if (!res.phone || !res.phone.includes('9876543210')) throw new Error('Failed to extract phone: ' + res.phone);
+        if (!res.dob || !res.dob.includes('15/08/1990')) throw new Error('Failed to extract dob: ' + res.dob);
+        if (!res.gender || res.gender.toUpperCase() !== 'MALE') throw new Error('Failed to extract gender: ' + res.gender);
+        if (res.pincode !== '560001') throw new Error('Failed to extract pin code: ' + res.pincode);
+        if (!res.idNumber || !res.idNumber.includes('4321')) throw new Error('Failed to extract ID number: ' + res.idNumber);
+        return `Extracted Name: "${res.name}", Email: "${res.email}", Phone: "${res.phone}", PIN: "${res.pincode}"`;
+    });
+
+
 log('\n====================================================');
     log(`FINAL TEST RESULTS: ${passed} PASSED | ${failed} FAILED (Out of ${passed + failed} tools)`);
     log('====================================================');

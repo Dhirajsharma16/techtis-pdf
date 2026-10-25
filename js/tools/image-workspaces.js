@@ -1,11 +1,12 @@
 /**
- * TECHTIS (techtis.in) - Client-Side Image Tools & ID Suite Workspaces
- * 100% in-browser Canvas & WASM execution. Zero server uploads, zero network latency.
+ * TECHTIS (techtis.in) - Client-Side Image Tools, ID Suite & Universal Form Assistant Workspaces
+ * 100% in-browser Canvas, WebAssembly & PDF.js execution. Zero server uploads.
  */
 
 import { ImageEngine } from './image-engine.js';
 import { PdfHelpers } from '../utils/pdf-helpers.js';
 import { StorageManager } from '../utils/storage.js';
+import { EdgeAIBridge } from '../edge/ai-bridge.js';
 
 export function registerImageWorkspaces(AppClass) {
 
@@ -54,7 +55,7 @@ export function registerImageWorkspaces(AppClass) {
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         <!-- Preview Column -->
-                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[280px] max-h-[460px] overflow-hidden bg-slate-900/5 relative">
+                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[300px] max-h-[460px] overflow-hidden bg-slate-900/5 relative">
                             <img id="comp-preview-img" src="" alt="Compressed Preview" class="max-h-[380px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
                             <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded font-mono">
                                 Live In-Browser Preview
@@ -132,7 +133,6 @@ export function registerImageWorkspaces(AppClass) {
             }
         });
 
-        // Drag & Drop
         dropzone?.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-red-500'); });
         dropzone?.addEventListener('dragleave', () => dropzone.classList.remove('border-red-500'));
         dropzone?.addEventListener('drop', (e) => {
@@ -174,6 +174,13 @@ export function registerImageWorkspaces(AppClass) {
             dropzone.classList.add('hidden');
             editor.classList.remove('hidden');
             document.getElementById('comp-stat-orig-size').textContent = PdfHelpers.formatBytes(currentFile.size);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+            };
+            reader.readAsDataURL(currentFile);
+
             await runCompression();
         }
 
@@ -350,7 +357,7 @@ export function registerImageWorkspaces(AppClass) {
             wInput.value = naturalW;
             hInput.value = naturalH;
             dimsBadge.textContent = `${naturalW} × ${naturalH} px (Original)`;
-            previewImg.src = img.src;
+            previewImg.src = img._dataUrl || img.src;
 
             dropzone.classList.add('hidden');
             editor.classList.remove('hidden');
@@ -546,7 +553,7 @@ export function registerImageWorkspaces(AppClass) {
         async function loadFile() {
             if (!currentFile) return;
             const img = await ImageEngine.loadImage(currentFile);
-            previewImg.src = img.src;
+            previewImg.src = img._dataUrl || img.src;
             dropzone.classList.add('hidden');
             editor.classList.remove('hidden');
         }
@@ -615,8 +622,7 @@ export function registerImageWorkspaces(AppClass) {
                         <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[320px] max-h-[460px] overflow-hidden bg-slate-900/5 relative select-none">
                             <div id="crop-viewport" class="relative max-h-[380px] max-w-full flex items-center justify-center">
                                 <img id="crop-preview-img" src="" alt="Crop Preview" class="max-h-[380px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
-                                <!-- Crop Overlay Rect -->
-                                <div id="crop-overlay-box" class="absolute border-2 border-red-500 bg-red-500/15 pointer-events-none shadow-sm rounded-xs"></div>
+                                <div id="crop-overlay-box" class="absolute border-2 border-red-500 bg-red-500/20 pointer-events-none shadow-sm rounded-xs"></div>
                             </div>
                         </div>
 
@@ -694,7 +700,7 @@ export function registerImageWorkspaces(AppClass) {
 
         let currentFile = null;
         let rotationAngle = 0;
-        let selectedRatio = 'free'; // 'free' | '1:1' | '4:3' | '16:9' | '3:2' | '35:45'
+        let selectedRatio = 'free';
         let cropScale = 0.8;
 
         dropzone?.addEventListener('click', () => input?.click());
@@ -708,12 +714,12 @@ export function registerImageWorkspaces(AppClass) {
         async function loadFile() {
             if (!currentFile) return;
             const img = await ImageEngine.loadImage(currentFile);
-            previewImg.src = img.src;
+            previewImg.src = img._dataUrl || img.src;
             rotationAngle = 0;
             updateRotation();
             dropzone.classList.add('hidden');
             editor.classList.remove('hidden');
-            setTimeout(updateCropBox, 50);
+            setTimeout(updateCropBox, 60);
         }
 
         rotCw?.addEventListener('click', () => {
@@ -832,7 +838,7 @@ export function registerImageWorkspaces(AppClass) {
         this.refreshLucideIcons();
     };
 
-    // ================= 5. PASSPORT & ID PHOTO MAKER =================
+    // ================= 5. PASSPORT & ID PHOTO MAKER (DRAG-TO-PAN + ROTATE UPGRADES) =================
     AppClass.prototype.renderPassportPhotoWorkspace = function(container) {
         container.innerHTML = `
             <div class="space-y-6">
@@ -844,7 +850,7 @@ export function registerImageWorkspaces(AppClass) {
                             <i data-lucide="user-check" class="w-8 h-8"></i>
                         </div>
                         <h4 class="text-base sm:text-lg font-bold text-slate-800">Select Portrait for Passport / ID Photo</h4>
-                        <p class="text-xs text-slate-500">Official country presets (India 35x45mm, US 2x2 in, UK/Schengen), face framing guide &amp; A4 print sheet.</p>
+                        <p class="text-xs text-slate-500">Official country presets (India 35x45mm, US 2x2 in, UK/Schengen), interactive drag-to-fit, face framing guide &amp; A4 print sheet.</p>
                         <div class="pt-2">
                             <button type="button" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
                                 Select Photo
@@ -857,20 +863,20 @@ export function registerImageWorkspaces(AppClass) {
                 <div id="pass-editor" class="hidden space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         <!-- Framing Canvas Column -->
-                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[360px] max-h-[500px] overflow-hidden bg-slate-900/5 relative">
-                            <!-- Visual Framing Canvas with Biometric Overlay -->
+                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[380px] max-h-[520px] overflow-hidden bg-slate-900/5 relative select-none">
                             <div class="relative flex items-center justify-center p-2">
-                                <canvas id="pass-canvas" class="rounded-lg shadow-md border border-slate-300 max-h-[420px] max-w-full bg-white"></canvas>
+                                <canvas id="pass-canvas" class="rounded-lg shadow-md border border-slate-300 max-h-[440px] max-w-full bg-white cursor-grab active:cursor-grabbing"></canvas>
                             </div>
-                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded font-mono">
-                                300 DPI Biometric Guide
+                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded font-mono flex items-center gap-1.5">
+                                <i data-lucide="move" class="w-3 h-3 text-red-400"></i>
+                                <span>Click &amp; Drag on Photo to Re-Center &bull; Scroll to Zoom</span>
                             </div>
                         </div>
 
                         <!-- Controls Column -->
                         <div class="lg:col-span-5 space-y-4">
                             <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
-                                <!-- Country Preset Selector -->
+                                <!-- Preset Selector -->
                                 <div>
                                     <label class="text-xs font-bold text-slate-800 block mb-1.5">Country &amp; Document Preset</label>
                                     <select id="pass-preset-select" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 bg-white font-medium">
@@ -882,35 +888,39 @@ export function registerImageWorkspaces(AppClass) {
                                     <p id="pass-preset-desc" class="text-[11px] text-slate-500 mt-1">Standard 35 x 45 mm color photo with light background.</p>
                                 </div>
 
-                                <!-- Zoom & Pan Sliders -->
+                                <!-- Rotation & Orientation Fix -->
+                                <div>
+                                    <label class="text-xs font-bold text-slate-800 block mb-1.5">Photo Orientation Fix</label>
+                                    <div class="grid grid-cols-3 gap-1.5 text-xs">
+                                        <button type="button" id="pass-rot-ccw" class="px-2.5 py-2 border border-slate-200 hover:bg-slate-100 rounded-xl text-slate-700 font-semibold flex items-center justify-center gap-1">
+                                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                            <span>90° Left</span>
+                                        </button>
+                                        <button type="button" id="pass-rot-cw" class="px-2.5 py-2 border border-slate-200 hover:bg-slate-100 rounded-xl text-slate-700 font-semibold flex items-center justify-center gap-1">
+                                            <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                                            <span>90° Right</span>
+                                        </button>
+                                        <button type="button" id="pass-flip-h" class="px-2.5 py-2 border border-slate-200 hover:bg-slate-100 rounded-xl text-slate-700 font-semibold flex items-center justify-center gap-1">
+                                            <i data-lucide="flip-horizontal" class="w-3.5 h-3.5"></i>
+                                            <span>Mirror</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Zoom & Pan Controls -->
                                 <div class="space-y-3 pt-2 border-t border-slate-100">
                                     <div>
                                         <div class="flex items-center justify-between text-xs font-semibold text-slate-700 mb-1">
                                             <span>Zoom &amp; Fit Face</span>
-                                            <span id="pass-zoom-val">100%</span>
+                                            <span id="pass-zoom-val" class="font-bold text-red-600">100%</span>
                                         </div>
-                                        <input type="range" id="pass-zoom-slider" min="50" max="250" value="100" class="w-full accent-red-600 cursor-pointer h-2 bg-slate-200 rounded-lg">
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <div class="flex items-center justify-between text-[11px] text-slate-600 mb-0.5">
-                                                <span>Pan X (Left/Right)</span>
-                                            </div>
-                                            <input type="range" id="pass-pan-x" min="-150" max="150" value="0" class="w-full accent-slate-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg">
-                                        </div>
-                                        <div>
-                                            <div class="flex items-center justify-between text-[11px] text-slate-600 mb-0.5">
-                                                <span>Pan Y (Up/Down)</span>
-                                            </div>
-                                            <input type="range" id="pass-pan-y" min="-150" max="150" value="0" class="w-full accent-slate-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg">
-                                        </div>
+                                        <input type="range" id="pass-zoom-slider" min="30" max="350" value="100" class="w-full accent-red-600 cursor-pointer h-2 bg-slate-200 rounded-lg">
                                     </div>
 
                                     <div class="flex items-center justify-between pt-1">
                                         <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-700 select-none">
                                             <input type="checkbox" id="pass-toggle-guide" checked class="rounded text-red-600 focus:ring-red-500 w-4 h-4">
-                                            <span>Show Biometric Face Oval</span>
+                                            <span>Show Biometric Face Oval Guide</span>
                                         </label>
                                         <button type="button" id="pass-reset-btn" class="text-[11px] text-red-600 hover:underline font-semibold">
                                             Reset Position
@@ -931,7 +941,7 @@ export function registerImageWorkspaces(AppClass) {
                                     </button>
                                 </div>
 
-                                <!-- Mandatory Print Notice -->
+                                <!-- Printing Notice -->
                                 <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 leading-snug">
                                     <strong>Important Printing Notice:</strong> When printing the A4 sheet, select <em>"Actual Size"</em> or <em>100% Scale</em>. Never choose "Fit to page", or physical passport dimensions will be distorted.
                                 </div>
@@ -956,10 +966,11 @@ export function registerImageWorkspaces(AppClass) {
         const presetDesc = document.getElementById('pass-preset-desc');
         const zoomSlider = document.getElementById('pass-zoom-slider');
         const zoomVal = document.getElementById('pass-zoom-val');
-        const panXSlider = document.getElementById('pass-pan-x');
-        const panYSlider = document.getElementById('pass-pan-y');
         const guideToggle = document.getElementById('pass-toggle-guide');
         const resetBtn = document.getElementById('pass-reset-btn');
+        const rotCwBtn = document.getElementById('pass-rot-cw');
+        const rotCcwBtn = document.getElementById('pass-rot-ccw');
+        const flipHBtn = document.getElementById('pass-flip-h');
         const singleBtn = document.getElementById('btn-download-single-pass');
         const a4Btn = document.getElementById('btn-download-a4-pass');
         const newBtn = document.getElementById('btn-pass-new');
@@ -969,7 +980,14 @@ export function registerImageWorkspaces(AppClass) {
         let zoom = 1.0;
         let panX = 0;
         let panY = 0;
+        let rotationAngle = 0;
+        let isFlippedH = false;
         let activePreset = ImageEngine.PASSPORT_PRESETS[0];
+
+        // Drag-to-pan states
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
 
         dropzone?.addEventListener('click', () => input?.click());
         input?.addEventListener('change', (e) => {
@@ -992,14 +1010,29 @@ export function registerImageWorkspaces(AppClass) {
             zoom = 1.0;
             panX = 0;
             panY = 0;
+            rotationAngle = 0;
+            isFlippedH = false;
             zoomSlider.value = '100';
             zoomVal.textContent = '100%';
-            panXSlider.value = '0';
-            panYSlider.value = '0';
         }
 
         resetBtn?.addEventListener('click', () => {
             resetControls();
+            renderPassportCanvas();
+        });
+
+        rotCwBtn?.addEventListener('click', () => {
+            rotationAngle = (rotationAngle + 90) % 360;
+            renderPassportCanvas();
+        });
+
+        rotCcwBtn?.addEventListener('click', () => {
+            rotationAngle = (rotationAngle - 90 + 360) % 360;
+            renderPassportCanvas();
+        });
+
+        flipHBtn?.addEventListener('click', () => {
+            isFlippedH = !isFlippedH;
             renderPassportCanvas();
         });
 
@@ -1018,14 +1051,56 @@ export function registerImageWorkspaces(AppClass) {
             renderPassportCanvas();
         });
 
-        panXSlider?.addEventListener('input', (e) => {
-            panX = parseInt(e.target.value, 10);
+        // Mouse Wheel Zoom on Canvas
+        canvas?.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.08 : 0.08;
+            zoom = Math.max(0.3, Math.min(3.5, zoom + delta));
+            zoomSlider.value = Math.round(zoom * 100);
+            zoomVal.textContent = `${Math.round(zoom * 100)}%`;
+            renderPassportCanvas();
+        }, { passive: false });
+
+        // Direct Mouse Drag-to-Pan on Canvas
+        canvas?.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            dragStartX = e.clientX - panX;
+            dragStartY = e.clientY - panY;
+            canvas.classList.add('cursor-grabbing');
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            panX = e.clientX - dragStartX;
+            panY = e.clientY - dragStartY;
             renderPassportCanvas();
         });
 
-        panYSlider?.addEventListener('input', (e) => {
-            panY = parseInt(e.target.value, 10);
+        window.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                canvas?.classList.remove('cursor-grabbing');
+            }
+        });
+
+        // Touch Drag for Mobile / Tablets
+        canvas?.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                dragStartX = e.touches[0].clientX - panX;
+                dragStartY = e.touches[0].clientY - panY;
+            }
+        }, { passive: true });
+
+        canvas?.addEventListener('touchmove', (e) => {
+            if (!isDragging || e.touches.length !== 1) return;
+            panX = e.touches[0].clientX - dragStartX;
+            panY = e.touches[0].clientY - dragStartY;
             renderPassportCanvas();
+        }, { passive: true });
+
+        canvas?.addEventListener('touchend', () => {
+            isDragging = false;
         });
 
         guideToggle?.addEventListener('change', () => {
@@ -1036,7 +1111,6 @@ export function registerImageWorkspaces(AppClass) {
             if (!loadedImg || !canvas) return;
             const ctx = canvas.getContext('2d');
 
-            // Dimensions at 300 DPI: 1 mm ≈ 11.811 pixels (300 / 25.4)
             const DPI = 300;
             const mmToPx = DPI / 25.4;
             const targetW = Math.round(activePreset.widthMm * mmToPx);
@@ -1045,28 +1119,35 @@ export function registerImageWorkspaces(AppClass) {
             canvas.width = targetW;
             canvas.height = targetH;
 
-            // Fill clean light background
+            // Background
             ctx.fillStyle = '#f8fafc';
             ctx.fillRect(0, 0, targetW, targetH);
 
-            // Compute scaling to cover target canvas
-            const scale = Math.max(targetW / loadedImg.naturalWidth, targetH / loadedImg.naturalHeight) * zoom;
+            ctx.save();
+            // Center of canvas
+            ctx.translate((targetW / 2) + panX, (targetH / 2) + panY);
+            ctx.rotate((rotationAngle * Math.PI) / 180);
+            if (isFlippedH) ctx.scale(-1, 1);
+
+            // Compute scaling
+            const isRot90 = (rotationAngle % 180 !== 0);
+            const naturalW = isRot90 ? loadedImg.naturalHeight : loadedImg.naturalWidth;
+            const naturalH = isRot90 ? loadedImg.naturalWidth : loadedImg.naturalHeight;
+
+            const scale = Math.max(targetW / naturalW, targetH / naturalH) * zoom;
             const drawW = loadedImg.naturalWidth * scale;
             const drawH = loadedImg.naturalHeight * scale;
 
-            const drawX = ((targetW - drawW) / 2) + (panX * (targetW / 300));
-            const drawY = ((targetH - drawH) / 2) + (panY * (targetH / 300));
-
-            ctx.drawImage(loadedImg, drawX, drawY, drawW, drawH);
+            ctx.drawImage(loadedImg, -drawW / 2, -drawH / 2, drawW, drawH);
+            ctx.restore();
 
             // Biometric Guide Overlay
             if (guideToggle.checked) {
                 ctx.save();
-                ctx.strokeStyle = 'rgba(220, 38, 38, 0.65)';
-                ctx.lineWidth = Math.max(1.5, targetW * 0.005);
-                ctx.setLineDash([6, 4]);
+                ctx.strokeStyle = 'rgba(220, 38, 38, 0.75)';
+                ctx.lineWidth = Math.max(2, targetW * 0.006);
+                ctx.setLineDash([8, 5]);
 
-                // Head oval: center x = targetW / 2, center y = targetH * 0.42
                 const ovalCenterX = targetW / 2;
                 const ovalCenterY = targetH * 0.45;
                 const radiusX = targetW * 0.28;
@@ -1092,7 +1173,6 @@ export function registerImageWorkspaces(AppClass) {
             }
         }
 
-        // Export clean image without guides for printing
         function getCleanPhotoDataUrl() {
             if (!loadedImg) return '';
             const offscreen = document.createElement('canvas');
@@ -1108,13 +1188,22 @@ export function registerImageWorkspaces(AppClass) {
             ctx.fillStyle = '#f8fafc';
             ctx.fillRect(0, 0, targetW, targetH);
 
-            const scale = Math.max(targetW / loadedImg.naturalWidth, targetH / loadedImg.naturalHeight) * zoom;
+            ctx.save();
+            ctx.translate((targetW / 2) + panX, (targetH / 2) + panY);
+            ctx.rotate((rotationAngle * Math.PI) / 180);
+            if (isFlippedH) ctx.scale(-1, 1);
+
+            const isRot90 = (rotationAngle % 180 !== 0);
+            const naturalW = isRot90 ? loadedImg.naturalHeight : loadedImg.naturalWidth;
+            const naturalH = isRot90 ? loadedImg.naturalWidth : loadedImg.naturalHeight;
+
+            const scale = Math.max(targetW / naturalW, targetH / naturalH) * zoom;
             const drawW = loadedImg.naturalWidth * scale;
             const drawH = loadedImg.naturalHeight * scale;
-            const drawX = ((targetW - drawW) / 2) + (panX * (targetW / 300));
-            const drawY = ((targetH - drawH) / 2) + (panY * (targetH / 300));
 
-            ctx.drawImage(loadedImg, drawX, drawY, drawW, drawH);
+            ctx.drawImage(loadedImg, -drawW / 2, -drawH / 2, drawW, drawH);
+            ctx.restore();
+
             return offscreen.toDataURL('image/jpeg', 0.95);
         }
 
@@ -1160,7 +1249,7 @@ export function registerImageWorkspaces(AppClass) {
         this.refreshLucideIcons();
     };
 
-    // ================= 6. PRIVATE DOCUMENT OCR (AADHAAR / PAN) =================
+    // ================= 6. PRIVATE DOCUMENT OCR (AADHAAR, PAN, PASSPORT & MORE) =================
     AppClass.prototype.renderIdCardOcrWorkspace = function(container) {
         container.innerHTML = `
             <div class="space-y-6">
@@ -1171,11 +1260,11 @@ export function registerImageWorkspaces(AppClass) {
                         <div class="w-16 h-16 mx-auto rounded-2xl bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-110 transition shadow-sm">
                             <i data-lucide="scan-line" class="w-8 h-8"></i>
                         </div>
-                        <h4 class="text-base sm:text-lg font-bold text-slate-800">Select Aadhaar, PAN or ID Document</h4>
-                        <p class="text-xs text-slate-500">100% In-Browser WebAssembly OCR. No server uploads. Sensitive numbers masked by default.</p>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800">Select Document or ID Photo (Image or PDF)</h4>
+                        <p class="text-xs text-slate-500">100% In-Browser WebAssembly OCR. Extracts Name, Email, Phone, DOB, ID numbers &amp; Address with 1-click copy.</p>
                         <div class="pt-2">
                             <button type="button" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
-                                Select Document
+                                Select Document / ID
                             </button>
                         </div>
                     </div>
@@ -1185,14 +1274,14 @@ export function registerImageWorkspaces(AppClass) {
                 <div id="ocr-progress-card" class="hidden p-6 bg-white border border-slate-200 rounded-2xl text-center space-y-3 shadow-xs">
                     <div class="w-10 h-10 border-3 border-red-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
                     <div id="ocr-progress-text" class="text-xs font-bold text-slate-800">Running client-side OCR in WebAssembly memory...</div>
-                    <p class="text-[11px] text-slate-500">Strict zero-server privacy: Your identification card never leaves your device.</p>
+                    <p class="text-[11px] text-slate-500">Strict zero-server privacy: Your document never leaves your browser RAM.</p>
                 </div>
 
                 <!-- Active Editor Workspace -->
                 <div id="ocr-editor" class="hidden space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         <!-- Left: Document Preview -->
-                        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[300px] max-h-[460px] overflow-hidden bg-slate-900/5 relative">
+                        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[300px] max-h-[480px] overflow-hidden bg-slate-900/5 relative">
                             <img id="ocr-doc-preview" src="" alt="Document Scan" class="max-h-[380px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
                             <div class="absolute bottom-2 left-2 bg-emerald-600/90 text-white text-[10px] px-2.5 py-0.5 rounded font-medium flex items-center gap-1 shadow-2xs">
                                 <i data-lucide="shield-check" class="w-3 h-3"></i>
@@ -1206,7 +1295,7 @@ export function registerImageWorkspaces(AppClass) {
                                 <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                                     <div class="flex items-center gap-2">
                                         <span id="ocr-badge-doctype" class="px-2.5 py-1 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-bold">
-                                            Aadhaar Card
+                                            ID Document
                                         </span>
                                         <span class="text-[11px] text-slate-400">Extracted locally</span>
                                     </div>
@@ -1217,57 +1306,9 @@ export function registerImageWorkspaces(AppClass) {
                                     </button>
                                 </div>
 
-                                <!-- Editable Fields -->
-                                <div class="space-y-3">
-                                    <!-- Full Name -->
-                                    <div>
-                                        <label class="text-[11px] font-bold text-slate-700 block mb-1">Name</label>
-                                        <div class="relative">
-                                            <input type="text" id="ocr-field-name" class="w-full pl-3 pr-9 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-semibold text-slate-900">
-                                            <button type="button" class="ocr-copy-btn absolute right-2 top-2 text-slate-400 hover:text-slate-700" data-field="ocr-field-name">
-                                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Document Number (Masked by default) -->
-                                    <div>
-                                        <div class="flex items-center justify-between mb-1">
-                                            <label class="text-[11px] font-bold text-slate-700">Document Number</label>
-                                            <button type="button" id="btn-toggle-mask" class="text-[10px] text-red-600 font-bold hover:underline flex items-center gap-1">
-                                                <i data-lucide="eye" class="w-3 h-3"></i>
-                                                <span id="mask-toggle-label">Reveal Number</span>
-                                            </button>
-                                        </div>
-                                        <div class="relative">
-                                            <input type="text" id="ocr-field-number" class="w-full pl-3 pr-9 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-mono font-bold text-slate-900 tracking-wider">
-                                            <button type="button" class="ocr-copy-btn absolute right-2 top-2 text-slate-400 hover:text-slate-700" data-field="ocr-field-number">
-                                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- DOB & Gender -->
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label class="text-[11px] font-bold text-slate-700 block mb-1">Date of Birth</label>
-                                            <div class="relative">
-                                                <input type="text" id="ocr-field-dob" placeholder="DD/MM/YYYY" class="w-full pl-3 pr-9 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-mono text-slate-900">
-                                                <button type="button" class="ocr-copy-btn absolute right-2 top-2 text-slate-400 hover:text-slate-700" data-field="ocr-field-dob">
-                                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label class="text-[11px] font-bold text-slate-700 block mb-1">Gender</label>
-                                            <div class="relative">
-                                                <input type="text" id="ocr-field-gender" placeholder="MALE / FEMALE" class="w-full pl-3 pr-9 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-900">
-                                                <button type="button" class="ocr-copy-btn absolute right-2 top-2 text-slate-400 hover:text-slate-700" data-field="ocr-field-gender">
-                                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <!-- Dynamic Field List -->
+                                <div id="ocr-fields-container" class="space-y-3">
+                                    <!-- Rendered dynamically with Copy Buttons -->
                                 </div>
 
                                 <!-- Actions -->
@@ -1278,15 +1319,13 @@ export function registerImageWorkspaces(AppClass) {
                                     </button>
                                 </div>
 
-                                <!-- Disclaimer Box -->
                                 <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-500 leading-snug">
-                                    <strong>OCR Disclaimer:</strong> Optical Character Recognition can make mistakes depending on scan quality. Please verify every field carefully before using in official forms.
+                                    <strong>OCR Disclaimer:</strong> Optical Character Recognition accuracy depends on scan resolution and lighting. Please verify all extracted details before use.
                                 </div>
 
-                                <!-- Raw Text Accordion -->
                                 <details class="text-[11px] text-slate-500 pt-1">
-                                    <summary class="cursor-pointer font-bold hover:text-slate-800 select-none">View Raw OCR Extracted Text</summary>
-                                    <pre id="ocr-raw-text" class="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-mono whitespace-pre-wrap overflow-x-auto max-h-32 text-slate-700"></pre>
+                                    <summary class="cursor-pointer font-bold hover:text-slate-800 select-none">View Raw Extracted Text</summary>
+                                    <pre id="ocr-raw-text" class="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-mono whitespace-pre-wrap overflow-x-auto max-h-36 text-slate-700"></pre>
                                 </details>
                             </div>
                         </div>
@@ -1302,19 +1341,12 @@ export function registerImageWorkspaces(AppClass) {
         const editor = document.getElementById('ocr-editor');
         const docPreview = document.getElementById('ocr-doc-preview');
         const badgeDocType = document.getElementById('ocr-badge-doctype');
-        const nameInput = document.getElementById('ocr-field-name');
-        const numInput = document.getElementById('ocr-field-number');
-        const dobInput = document.getElementById('ocr-field-dob');
-        const genderInput = document.getElementById('ocr-field-gender');
+        const fieldsContainer = document.getElementById('ocr-fields-container');
         const rawTextEl = document.getElementById('ocr-raw-text');
-        const maskToggleBtn = document.getElementById('btn-toggle-mask');
-        const maskToggleLabel = document.getElementById('mask-toggle-label');
         const clearBtn = document.getElementById('btn-ocr-clear');
         const copyAllBtn = document.getElementById('btn-ocr-copy-all');
 
-        let rawNumber = '';
-        let maskedNumber = '';
-        let isMasked = true;
+        let currentExtracted = null;
 
         dropzone?.addEventListener('click', () => input?.click());
         input?.addEventListener('change', (e) => {
@@ -1327,41 +1359,52 @@ export function registerImageWorkspaces(AppClass) {
             dropzone.classList.add('hidden');
             progressCard.classList.remove('hidden');
 
-            // Render thumbnail preview
-            if (file.type.startsWith('image/')) {
-                const url = URL.createObjectURL(file);
-                docPreview.src = url;
-            }
+            let recognizedText = '';
 
             try {
-                let recognizedText = '';
-                try {
+                if (file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
+                    // PDF Document
+                    if (progressText) progressText.textContent = 'Rendering PDF and extracting document text layer...';
+                    const pdfResult = await EdgeAIBridge.extractTextFromPdf(file);
+                    recognizedText = pdfResult.text || '';
+
+                    // Also render first page thumbnail
+                    try {
+                        const pdfCanvas = await ImageEngine.renderPdfToCanvas(file, 1);
+                        docPreview.src = pdfCanvas.dataUrl;
+
+                        // If PDF had very little embedded text, run WASM OCR on rendered canvas!
+                        if (recognizedText.trim().length < 20) {
+                            if (progressText) progressText.textContent = 'Running WASM OCR on scanned PDF page...';
+                            const ocrText = await ImageEngine.performClientOcr(pdfCanvas.canvas);
+                            if (ocrText && ocrText.trim()) recognizedText = ocrText;
+                        }
+                    } catch (e) {
+                        console.warn('PDF canvas render note:', e);
+                    }
+                } else {
+                    // Image File
+                    const img = await ImageEngine.loadImage(file);
+                    docPreview.src = img._dataUrl || img.src;
+
+                    if (progressText) progressText.textContent = 'Analyzing image with client-side WebAssembly OCR...';
                     recognizedText = await ImageEngine.performClientOcr(file, (p) => {
                         if (progressText && p.message) progressText.textContent = p.message;
                     });
-                } catch (wasmErr) {
-                    console.warn('Direct WASM OCR notice, checking fallback text layer...', wasmErr);
                 }
 
-                // Parse parsed fields
-                const parsed = ImageEngine.parseIdCard(recognizedText);
+                currentExtracted = ImageEngine.extractAllDocumentFields(recognizedText);
+                badgeDocType.textContent = currentExtracted.docType;
+                rawTextEl.textContent = currentExtracted.rawText || '(No text detected)';
 
-                badgeDocType.textContent = parsed.docType;
-                nameInput.value = parsed.name || '';
-                rawNumber = parsed.docNumber || '';
-                maskedNumber = parsed.maskedNumber || rawNumber;
-                isMasked = true;
-                numInput.value = maskedNumber;
-                dobInput.value = parsed.dob || '';
-                genderInput.value = parsed.gender || '';
-                rawTextEl.textContent = parsed.rawText || '(No text detected)';
+                renderFieldInputs(currentExtracted);
 
                 progressCard.classList.add('hidden');
                 editor.classList.remove('hidden');
 
-                StorageManager.logActivity('id-card-ocr', 'Private Document OCR', `Extracted details from ${parsed.docType}`);
+                StorageManager.logActivity('id-card-ocr', 'Private Document OCR', `Extracted details from ${currentExtracted.docType}`);
                 this.updateHistoryCounter();
-                this.showToast('ID Document processed in 100% private RAM!', 'success');
+                this.showToast('Document processed locally in 100% private RAM!', 'success');
             } catch (err) {
                 progressCard.classList.add('hidden');
                 dropzone.classList.remove('hidden');
@@ -1369,51 +1412,434 @@ export function registerImageWorkspaces(AppClass) {
             }
         }
 
-        maskToggleBtn?.addEventListener('click', () => {
-            isMasked = !isMasked;
-            numInput.value = isMasked ? maskedNumber : rawNumber;
-            maskToggleLabel.textContent = isMasked ? 'Reveal Number' : 'Mask Number';
-        });
+        function renderFieldInputs(extracted) {
+            fieldsContainer.innerHTML = '';
 
-        document.querySelectorAll('.ocr-copy-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.dataset.field;
-                const el = document.getElementById(targetId);
-                if (el && el.value) {
-                    navigator.clipboard.writeText(el.value);
-                    this.showToast('Copied to clipboard!', 'success');
+            const fields = [
+                { key: 'name', label: 'Full Name', value: extracted.name, placeholder: 'Candidate / Full Name' },
+                { key: 'email', label: 'Email Address', value: extracted.email, placeholder: 'name@example.com' },
+                { key: 'phone', label: 'Phone / Mobile', value: extracted.phone, placeholder: '9876543210' },
+                { key: 'idNumber', label: `${extracted.docType} Number`, value: extracted.idNumber, placeholder: 'Identification Number', isMaskable: true },
+                { key: 'dob', label: 'Date of Birth', value: extracted.dob, placeholder: 'DD/MM/YYYY' },
+                { key: 'gender', label: 'Gender', value: extracted.gender, placeholder: 'MALE / FEMALE' },
+                { key: 'fatherName', label: "Father / Guardian's Name", value: extracted.fatherName, placeholder: 'Father or Guardian name' },
+                { key: 'pincode', label: 'PIN / Postal Code', value: extracted.pincode, placeholder: '6-digit PIN' },
+                { key: 'address', label: 'Full Address', value: extracted.address, placeholder: 'Street, City, State' }
+            ].filter(f => f.value || f.key === 'name' || f.key === 'idNumber');
+
+            fields.forEach(f => {
+                const row = document.createElement('div');
+                row.className = 'space-y-1';
+                row.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <label class="text-[11px] font-bold text-slate-700">${f.label}</label>
+                        ${f.isMaskable && f.value ? `
+                            <button type="button" class="btn-toggle-mask text-[10px] text-red-600 font-bold hover:underline flex items-center gap-1" data-val="${f.value}" data-masked="${extracted.maskedIdNumber}">
+                                <i data-lucide="eye" class="w-3 h-3"></i>
+                                <span>Reveal</span>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="field-${f.key}" value="${f.isMaskable ? (extracted.maskedIdNumber || f.value) : f.value}" placeholder="${f.placeholder}"
+                               class="w-full pl-3 pr-9 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-medium text-slate-900 bg-white">
+                        <button type="button" class="btn-copy-field absolute right-2 top-2 text-slate-400 hover:text-red-600 transition" title="Copy ${f.label}">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+
+                const copyBtn = row.querySelector('.btn-copy-field');
+                const inputEl = row.querySelector('input');
+                copyBtn?.addEventListener('click', () => {
+                    if (inputEl && inputEl.value) {
+                        navigator.clipboard.writeText(inputEl.value);
+                        copyBtn.classList.add('text-emerald-600');
+                        setTimeout(() => copyBtn.classList.remove('text-emerald-600'), 1500);
+                        this.showToast(`Copied ${f.label}!`, 'success');
+                    }
+                });
+
+                const maskBtn = row.querySelector('.btn-toggle-mask');
+                if (maskBtn) {
+                    let masked = true;
+                    maskBtn.addEventListener('click', () => {
+                        masked = !masked;
+                        inputEl.value = masked ? maskBtn.dataset.masked : maskBtn.dataset.val;
+                        maskBtn.querySelector('span').textContent = masked ? 'Reveal' : 'Mask';
+                    });
                 }
+
+                fieldsContainer.appendChild(row);
             });
-        });
+
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+        }
 
         copyAllBtn?.addEventListener('click', () => {
-            const summary = [
-                `Document: ${badgeDocType.textContent}`,
-                `Name: ${nameInput.value}`,
-                `Number: ${numInput.value}`,
-                `DOB: ${dobInput.value}`,
-                `Gender: ${genderInput.value}`
-            ].filter(Boolean).join('\n');
-
-            navigator.clipboard.writeText(summary);
+            const inputs = fieldsContainer.querySelectorAll('input');
+            const lines = [];
+            inputs.forEach(inp => {
+                if (inp.value && inp.value.trim()) {
+                    const label = inp.closest('.space-y-1')?.querySelector('label')?.textContent || 'Field';
+                    lines.push(`${label}: ${inp.value.trim()}`);
+                }
+            });
+            navigator.clipboard.writeText(lines.join('\n'));
             this.showToast('All fields copied to clipboard!', 'success');
         });
 
         clearBtn?.addEventListener('click', () => {
-            // Immediately purge all canvas, inputs, and preview from RAM
             docPreview.src = '';
-            nameInput.value = '';
-            numInput.value = '';
-            dobInput.value = '';
-            genderInput.value = '';
+            fieldsContainer.innerHTML = '';
             rawTextEl.textContent = '';
-            rawNumber = '';
-            maskedNumber = '';
+            currentExtracted = null;
             input.value = '';
-
             editor.classList.add('hidden');
             dropzone.classList.remove('hidden');
-            this.showToast('All personal data wiped from memory!', 'success');
+            this.showToast('All extracted data purged from browser memory!', 'success');
+        });
+
+        this.refreshLucideIcons();
+    };
+
+    // ================= 7. NEW TOOL: "FILL FORM" (UNIVERSAL OCR ASSISTANT WITH DOCK-TO-SIDE) =================
+    AppClass.prototype.renderFillFormWorkspace = function(container) {
+        container.innerHTML = `
+            <div id="fill-form-main-container" class="space-y-6">
+                <!-- Dropzone -->
+                <div id="ff-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer relative group">
+                    <input type="file" id="ff-input" accept="image/*,.pdf" class="hidden">
+                    <div class="max-w-md mx-auto space-y-3 pointer-events-none">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-110 transition shadow-sm">
+                            <i data-lucide="clipboard-paste" class="w-8 h-8"></i>
+                        </div>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800">Upload Image or PDF to Fill Any Form</h4>
+                        <p class="text-xs text-slate-500">Upload Aadhaar, PAN, Passport, Resume, Marks, or Docs. Extracts all fields with 1-click copy &amp; floating side assistant.</p>
+                        <div class="pt-2">
+                            <button type="button" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
+                                Select Image or PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processing Card -->
+                <div id="ff-progress-card" class="hidden p-6 bg-white border border-slate-200 rounded-2xl text-center space-y-3 shadow-xs">
+                    <div class="w-10 h-10 border-3 border-red-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <div id="ff-progress-text" class="text-xs font-bold text-slate-800">Reading document and parsing all form fields...</div>
+                    <p class="text-[11px] text-slate-500">100% In-Browser RAM execution. Zero data leaves your device.</p>
+                </div>
+
+                <!-- Active Editor Workspace -->
+                <div id="ff-editor" class="hidden space-y-6">
+                    <!-- Top Action Bar -->
+                    <div class="p-4 bg-white border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+                        <div class="flex items-center gap-3">
+                            <span id="ff-doc-badge" class="px-3 py-1 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                                <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
+                                <span id="ff-doc-type-text">Document</span>
+                            </span>
+                            <span class="text-xs text-slate-500" id="ff-fields-count">0 fields extracted</span>
+                        </div>
+
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <!-- Game-changing Dock-to-Side Button -->
+                            <button id="btn-ff-dock" class="flex-1 sm:flex-none px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
+                                <i data-lucide="panel-right" class="w-4 h-4"></i>
+                                <span>Dock to Side (Fill Any Form)</span>
+                            </button>
+
+                            <button id="btn-ff-copy-all" class="px-3 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-semibold shadow-xs transition flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy All</span>
+                            </button>
+
+                            <button id="btn-ff-reset" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">
+                                New File
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Left Column: Document Preview -->
+                        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[320px] max-h-[500px] overflow-hidden bg-slate-900/5 relative">
+                            <img id="ff-preview-img" src="" alt="Document Preview" class="max-h-[420px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
+                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded font-mono flex items-center gap-1">
+                                <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i>
+                                <span>100% Client-Side Private</span>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Extracted Cards & 1-Click Copy -->
+                        <div class="lg:col-span-7 space-y-4">
+                            <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+                                <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                        <i data-lucide="list" class="w-4 h-4 text-red-600"></i>
+                                        <span>Extracted Form Fields</span>
+                                    </h3>
+                                    <span class="text-[11px] text-slate-400">Click icon or value to copy</span>
+                                </div>
+
+                                <div id="ff-cards-list" class="space-y-2.5">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DOCKED SIDEBAR ASSISTANT OVERLAY (ACTIVATES ON "DOCK TO SIDE") -->
+                <div id="ff-docked-sidebar" class="hidden fixed top-0 right-0 h-screen w-96 bg-white border-l border-slate-300 shadow-2xl z-50 flex flex-col animate-slide-left">
+                    <!-- Dock Header -->
+                    <div class="p-3.5 bg-slate-900 text-white flex items-center justify-between shadow-xs">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-red-600 flex items-center justify-center text-white font-bold text-xs">
+                                <i data-lucide="clipboard-paste" class="w-3.5 h-3.5"></i>
+                            </div>
+                            <span class="text-xs font-bold tracking-tight">TECHTIS Form Assistant</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button id="btn-ff-undock" class="p-1 hover:bg-slate-800 text-slate-300 rounded" title="Expand Fullscreen">
+                                <i data-lucide="maximize-2" class="w-4 h-4"></i>
+                            </button>
+                            <button id="btn-ff-close-dock" class="p-1 hover:bg-slate-800 text-slate-300 rounded" title="Close">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search Input inside Dock -->
+                    <div class="p-2.5 border-b border-slate-200 bg-slate-50">
+                        <div class="relative">
+                            <input type="text" id="ff-dock-search" placeholder="Filter fields (e.g. pan, dob, phone)..."
+                                   class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
+                            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- Scrollable Field List with 1-Click Copy -->
+                    <div id="ff-dock-fields" class="flex-1 overflow-y-auto p-3 space-y-2 text-xs">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Dock Footer with Portal Quick Links -->
+                    <div class="p-3 bg-slate-50 border-t border-slate-200 space-y-2">
+                        <div class="text-[10px] uppercase font-bold text-slate-500">Open Target Form:</div>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <a href="https://passportindia.gov.in" target="_blank" rel="noopener" class="px-2 py-0.5 bg-white border border-slate-200 rounded hover:border-red-500 hover:text-red-600 transition">Passport Seva</a>
+                            <a href="https://www.incometax.gov.in" target="_blank" rel="noopener" class="px-2 py-0.5 bg-white border border-slate-200 rounded hover:border-red-500 hover:text-red-600 transition">Income Tax</a>
+                            <a href="https://unifiedportal-mem.epfindia.gov.in" target="_blank" rel="noopener" class="px-2 py-0.5 bg-white border border-slate-200 rounded hover:border-red-500 hover:text-red-600 transition">EPFO</a>
+                            <a href="https://docs.google.com/forms" target="_blank" rel="noopener" class="px-2 py-0.5 bg-white border border-slate-200 rounded hover:border-red-500 hover:text-red-600 transition">Google Forms</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const dropzone = document.getElementById('ff-dropzone');
+        const input = document.getElementById('ff-input');
+        const progressCard = document.getElementById('ff-progress-card');
+        const progressText = document.getElementById('ff-progress-text');
+        const editor = document.getElementById('ff-editor');
+        const previewImg = document.getElementById('ff-preview-img');
+        const docTypeText = document.getElementById('ff-doc-type-text');
+        const fieldsCount = document.getElementById('ff-fields-count');
+        const cardsList = document.getElementById('ff-cards-list');
+        const dockBtn = document.getElementById('btn-ff-dock');
+        const copyAllBtn = document.getElementById('btn-ff-copy-all');
+        const resetBtn = document.getElementById('btn-ff-reset');
+        const dockedSidebar = document.getElementById('ff-docked-sidebar');
+        const undockBtn = document.getElementById('btn-ff-undock');
+        const closeDockBtn = document.getElementById('btn-ff-close-dock');
+        const dockSearch = document.getElementById('ff-dock-search');
+        const dockFieldsList = document.getElementById('ff-dock-fields');
+
+        let currentExtracted = null;
+
+        dropzone?.addEventListener('click', () => input?.click());
+        input?.addEventListener('change', (e) => {
+            if (e.target?.files?.length) {
+                runUniversalExtraction(e.target.files[0]);
+            }
+        });
+
+        async function runUniversalExtraction(file) {
+            dropzone.classList.add('hidden');
+            progressCard.classList.remove('hidden');
+
+            let extractedText = '';
+
+            try {
+                if (file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
+                    if (progressText) progressText.textContent = 'Extracting PDF text layer & rendering page preview...';
+                    const pdfRes = await EdgeAIBridge.extractTextFromPdf(file);
+                    extractedText = pdfRes.text || '';
+
+                    try {
+                        const pdfCanvas = await ImageEngine.renderPdfToCanvas(file, 1);
+                        previewImg.src = pdfCanvas.dataUrl;
+
+                        if (extractedText.trim().length < 25) {
+                            if (progressText) progressText.textContent = 'Running WASM OCR on scanned PDF pages...';
+                            const ocrText = await ImageEngine.performClientOcr(pdfCanvas.canvas);
+                            if (ocrText && ocrText.trim()) extractedText = ocrText;
+                        }
+                    } catch (_) {}
+                } else {
+                    const img = await ImageEngine.loadImage(file);
+                    previewImg.src = img._dataUrl || img.src;
+
+                    if (progressText) progressText.textContent = 'Running client-side WebAssembly OCR...';
+                    extractedText = await ImageEngine.performClientOcr(file, (p) => {
+                        if (progressText && p.message) progressText.textContent = p.message;
+                    });
+                }
+
+                currentExtracted = ImageEngine.extractAllDocumentFields(extractedText);
+                docTypeText.textContent = currentExtracted.docType;
+                fieldsCount.textContent = `${currentExtracted.allFields.length} fields detected`;
+
+                renderCards(currentExtracted);
+                renderDockFields(currentExtracted.allFields);
+
+                progressCard.classList.add('hidden');
+                editor.classList.remove('hidden');
+
+                StorageManager.logActivity('fill-form', 'Fill Form Assistant', `Extracted ${currentExtracted.allFields.length} fields from ${currentExtracted.docType}`);
+                this.updateHistoryCounter();
+                this.showToast('All fields extracted! Ready to fill forms.', 'success');
+            } catch (err) {
+                progressCard.classList.add('hidden');
+                dropzone.classList.remove('hidden');
+                this.showToast(`Error: ${err.message}`, 'error');
+            }
+        }
+
+        function renderCards(extracted) {
+            cardsList.innerHTML = '';
+            const fields = extracted.allFields;
+
+            if (fields.length === 0) {
+                cardsList.innerHTML = '<div class="p-6 text-center text-xs text-slate-400">No structured fields detected. Try uploading a clearer document.</div>';
+                return;
+            }
+
+            fields.forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-3 hover:border-slate-300 transition';
+                card.innerHTML = `
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                            <i data-lucide="${f.icon || 'file-text'}" class="w-4 h-4"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-[10px] uppercase font-bold text-slate-400">${f.label}</div>
+                            <input type="text" value="${f.value}" class="text-xs font-semibold text-slate-800 bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-red-400 rounded px-1 py-0.5 truncate w-full">
+                        </div>
+                    </div>
+                    <button type="button" class="btn-copy-card px-3 py-1.5 bg-white border border-slate-200 hover:border-red-500 hover:text-red-600 rounded-lg text-xs font-semibold text-slate-700 transition flex items-center gap-1 shrink-0">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span>Copy</span>
+                    </button>
+                `;
+
+                const copyBtn = card.querySelector('.btn-copy-card');
+                const inp = card.querySelector('input');
+                copyBtn?.addEventListener('click', () => {
+                    navigator.clipboard.writeText(inp.value);
+                    copyBtn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i><span class="text-emerald-600 font-bold">Copied!</span>';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i><span>Copy</span>';
+                        if (window.lucide) window.lucide.createIcons();
+                    }, 1500);
+                });
+
+                cardsList.appendChild(card);
+            });
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        function renderDockFields(fields, filterQuery = '') {
+            dockFieldsList.innerHTML = '';
+            const filtered = filterQuery 
+                ? fields.filter(f => f.label.toLowerCase().includes(filterQuery) || f.value.toLowerCase().includes(filterQuery))
+                : fields;
+
+            if (filtered.length === 0) {
+                dockFieldsList.innerHTML = '<div class="p-4 text-center text-slate-400">No matching fields</div>';
+                return;
+            }
+
+            filtered.forEach(f => {
+                const item = document.createElement('div');
+                item.className = 'p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-red-400 transition cursor-pointer group';
+                item.innerHTML = `
+                    <div class="flex items-center justify-between mb-0.5">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">${f.label}</span>
+                        <span class="text-[10px] text-red-600 group-hover:underline font-semibold flex items-center gap-0.5">
+                            <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                        </span>
+                    </div>
+                    <div class="text-xs font-semibold text-slate-800 break-all select-all">${f.value}</div>
+                `;
+
+                item.addEventListener('click', () => {
+                    navigator.clipboard.writeText(f.value);
+                    const label = item.querySelector('.text-red-600');
+                    if (label) {
+                        label.innerHTML = '<i data-lucide="check" class="w-3 h-3 text-emerald-600"></i> Copied!';
+                        setTimeout(() => {
+                            label.innerHTML = '<i data-lucide="copy" class="w-3 h-3"></i> Copy';
+                            if (window.lucide) window.lucide.createIcons();
+                        }, 1200);
+                    }
+                });
+
+                dockFieldsList.appendChild(item);
+            });
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        dockSearch?.addEventListener('input', (e) => {
+            if (currentExtracted) {
+                renderDockFields(currentExtracted.allFields, e.target.value.toLowerCase().trim());
+            }
+        });
+
+        // Activate Docked Sidebar Mode
+        dockBtn?.addEventListener('click', () => {
+            dockedSidebar?.classList.remove('hidden');
+            this.showToast('Form Assistant docked to right! You can now browse any site and 1-click copy fields.', 'info');
+        });
+
+        undockBtn?.addEventListener('click', () => {
+            dockedSidebar?.classList.add('hidden');
+        });
+
+        closeDockBtn?.addEventListener('click', () => {
+            dockedSidebar?.classList.add('hidden');
+        });
+
+        copyAllBtn?.addEventListener('click', () => {
+            if (!currentExtracted || !currentExtracted.allFields) return;
+            const text = currentExtracted.allFields.map(f => `${f.label}: ${f.value}`).join('\n');
+            navigator.clipboard.writeText(text);
+            this.showToast('All fields copied to clipboard!', 'success');
+        });
+
+        resetBtn?.addEventListener('click', () => {
+            currentExtracted = null;
+            previewImg.src = '';
+            editor.classList.add('hidden');
+            dockedSidebar?.classList.add('hidden');
+            dropzone.classList.remove('hidden');
+            input.value = '';
         });
 
         this.refreshLucideIcons();

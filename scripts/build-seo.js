@@ -478,7 +478,7 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
         <priority>0.70</priority>
     </url>
 
-    <!-- 40 Dedicated Tool Landing Pages -->
+    <!-- ${TOOLS.length} Dedicated Tool Landing Pages -->
 ${TOOLS.map((t, idx) => `    <!-- ${idx + 1}. ${escapeHtml(t.name)} -->
     <url>
         <loc>${BASE_URL}/${t.id}/</loc>
@@ -489,7 +489,7 @@ ${TOOLS.map((t, idx) => `    <!-- ${idx + 1}. ${escapeHtml(t.name)} -->
 </urlset>`;
 
 fs.writeFileSync(path.join(ROOT_DIR, 'sitemap.xml'), sitemapXml, 'utf8');
-console.log(`[SEO Generator] Successfully updated sitemap.xml with all 40 tool pages & compliance pages!`);
+console.log(`[SEO Generator] Successfully updated sitemap.xml with all ${TOOLS.length} tool pages & compliance pages!`);
 
 // 3. Update robots.txt
 const robotsTxt = `# TECHTIS (techtis.in) Robots Configuration

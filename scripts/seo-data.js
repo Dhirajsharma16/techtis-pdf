@@ -1283,6 +1283,39 @@ export const SEO_DATA = {
             { q: 'Can I copy all extracted fields at once?', a: 'Yes! Click "Copy All Extracted Fields" to copy a cleanly structured summary to your clipboard.' }
         ],
         relatedTools: ['passport-photo-maker', 'ocr-pdf', 'form-filler', 'image-compressor', 'protect-pdf']
-    }
+    },
 
+    'fill-form': {
+        title: 'Fill Form Online – Universal OCR Form Assistant for PDF & Image | TECHTIS',
+        metaDescription: 'Extract all data from PDFs, scanned documents, and ID photos with zero-upload local OCR. 1-click copy for Name, Email, Phone, DOB, IDs & Address with docked side-by-side form assistant.',
+        keywords: 'fill form online, ocr form assistant, extract text to fill forms, pdf form data extractor, scan to fill form, image to form copy, side by side form filler, zero upload ocr, client side document parser',
+        h1: 'Fill Form – Universal OCR Form Assistant',
+        subtitle: 'Upload any PDF or ID image, automatically extract Name, Email, Phone, DOB, IDs, and Address, and dock into a side assistant to seamlessly fill any online application form.',
+        badge: '100% In-Browser Dual OCR & Dock Mode',
+        howTo: [
+            { step: 1, title: 'Upload Document or Photo', desc: 'Drop any PDF file, scanned certificate, Aadhaar, PAN, driving licence, or photo into the private workspace.' },
+            { step: 2, title: 'Instant In-Browser Field Extraction', desc: 'Embedded PDF text layers or image pixels are scanned locally in RAM via WebAssembly with zero server transmission.' },
+            { step: 3, title: 'Dock to Right & Fill Forms', desc: 'Click "Fill Form Mode (Dock to Right)" to lock your data panel on the right side while browsing and pasting into any official portal.' }
+        ],
+        features: [
+            { title: 'Dual PDF & Image Engine', desc: 'Accepts PDF documents and image formats (JPG, PNG, WebP) with hybrid text-layer reading and fallback client-side Tesseract OCR.' },
+            { title: 'Comprehensive Field Extraction', desc: 'Intelligently identifies and isolates Full Name, Email, Mobile Phone, Date of Birth, Gender, ID Numbers, Father\'s Name, PIN Code, and Address.' },
+            { title: '1-Click Quick Copy', desc: 'Every extracted value features an individual copy button with visual feedback, eliminating manual retyping and typo errors.' },
+            { title: 'Dock to Right Screen Mode', desc: 'Shrinks into a convenient 380px fixed side assistant on the right of your screen so you can view external application portals side-by-side.' },
+            { title: 'Strict Zero-Server Privacy', desc: 'All extraction and canvas operations execute entirely in your local browser memory. No data is logged, transmitted, or stored on servers.' }
+        ],
+        content: `
+            <p>Filling out government applications, university admissions, tax portals, job applications, and visa forms is often tedious and repetitive. Applicants constantly switch between document viewers, image previews, and web forms to manually copy-paste names, addresses, identification numbers, and contact details.</p>
+            <p><strong>TECHTIS Fill Form Assistant</strong> provides a unified, private workflow designed specifically for rapid form filling. Simply upload any PDF document, scanned identity card, salary slip, or certificate. Our dual-engine client-side parser automatically extracts key fields including Full Name, Email, Mobile Phone, Date of Birth, Gender, Document Numbers, Father's Name, PIN Code, and Full Address.</p>
+            <p>With our innovative <strong>"Dock to Right"</strong> mode, TECHTIS shrinks into an accessible side assistant fixed to the right side of your screen. This gives you clear space to open and interact with any target application portal (such as Passport Seva, Income Tax e-Filing, EPFO, or Google Forms) while keeping your document's details readily available for instantaneous one-click copying.</p>
+            <p>Most importantly, TECHTIS runs optical character recognition and document analysis <strong>100% locally in your web browser</strong> using WebAssembly. Your confidential identity credentials, financial documents, and personal details never leave your computer or touch any cloud server.</p>
+        `,
+        faqs: [
+            { q: 'What types of documents can I upload to the Fill Form tool?', a: 'You can upload both PDF documents (single or multi-page) and images (JPG, PNG, WebP) including Aadhaar cards, PAN cards, passports, driving licences, utility bills, marksheets, and resumes.' },
+            { q: 'How does "Fill Form Mode (Dock to Right)" work?', a: 'Clicking the "Fill Form Mode (Dock to Right)" button transforms the tool into a compact 380px floating panel docked on the right side of your screen. This leaves the left side of your browser viewport open for navigating online forms and application portals.' },
+            { q: 'Are my private documents sent to an external AI or OCR server?', a: 'No! All processing runs 100% locally on your device using client-side WebAssembly and PDF.js. Zero bytes of your documents or extracted information are uploaded to our servers or third-party cloud APIs.' },
+            { q: 'Can I edit or add information before copying?', a: 'Yes. Every extracted field is fully editable, and you can also copy the entire document text or all extracted fields simultaneously with a single click.' }
+        ],
+        relatedTools: ['id-card-ocr', 'passport-photo-maker', 'ocr-pdf', 'form-filler', 'image-compressor']
+    }
 };

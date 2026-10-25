@@ -22,13 +22,13 @@ export const TOOL_CATEGORIES = {
 };
 
 export const FUNCTIONAL_CATEGORIES = [
-    { id: 'all', name: 'All Tools', icon: 'grid', count: 40 },
+    { id: 'all', name: 'All Tools', icon: 'grid', count: 41 },
     { id: 'organize', name: 'Organize PDF', icon: 'layers', count: 6, desc: 'Merge, split, rotate, extract, reorder' },
     { id: 'edit-sign', name: 'Edit & Sign', icon: 'pen-tool', count: 6, desc: 'Sign, annotate, watermark, page numbers' },
     { id: 'security', name: 'Security & Lock', icon: 'lock', count: 5, desc: 'Protect, unlock, flatten, metadata' },
     { id: 'convert', name: 'Convert & Optimize', icon: 'arrow-left-right', count: 10, desc: 'PDF to JPG, JPG to PDF, Compress, Office' },
     { id: 'ai-smart', name: 'AI & Edge Tools', icon: 'sparkles', count: 5, desc: 'Summarizer, OCR scan, translator, blank detector' },
-    { id: 'image', name: 'Image Tools', icon: 'image', count: 8, desc: 'Compress, resize, crop, convert, ID photo & private OCR' }
+    { id: 'image', name: 'Image Tools', icon: 'image', count: 9, desc: 'Compress, resize, crop, convert, ID photo & private OCR' }
 ];
 
 export const TOOLS = [
@@ -649,5 +649,22 @@ export const TOOLS = [
         multiple: false,
         actionPrompt: 'Extract name, DOB, and document numbers locally with sensitive number masking',
         description: 'Extract text and fields from Aadhaar and PAN cards strictly in browser memory using Tesseract.js WebAssembly. Features automatic number masking (XXXX XXXX 1234), editable fields, and instant clear-memory control.'
+    }
+,
+    {
+        id: 'fill-form',
+        name: 'Fill Form (OCR Assistant)',
+        tagline: 'Extract all fields from PDFs & images with 1-click copy & docked side-by-side form assistant',
+        group: 'group-a',
+        category: 'Smart Utilities',
+        functionalCategory: 'image',
+        icon: 'clipboard-paste',
+        badge: 'Dual PDF & Image OCR',
+        status: 'ready',
+        isPopular: true,
+        accept: 'image/*,.pdf',
+        multiple: false,
+        actionPrompt: 'Extract all personal details, emails, phones, and IDs to fill any online form in split screen',
+        description: 'Upload any image or PDF document to extract Name, Email, Phone, DOB, IDs, and Address with 1-click copy buttons and a docked side-by-side assistant to fill any online form with zero hassle.'
     }
 ];
