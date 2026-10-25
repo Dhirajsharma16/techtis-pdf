@@ -42,14 +42,16 @@ class App {
         this.updateHistoryCounter();
         this.refreshLucideIcons();
 
-        // Support both dedicated tool pages (/merge-pdf/) and hash deep links (#merge-pdf)
+        // If page has a data-tool-id, mount tool on dedicated page
         const dedicatedToolId = document.body?.dataset?.toolId;
         if (this.isDedicatedPage && dedicatedToolId && TOOLS.some(t => t.id === dedicatedToolId)) {
             this.openToolWorkspace(dedicatedToolId, { isDedicatedPage: true });
         } else {
+            // Automatically redirect legacy /#merge-pdf to canonical dedicated URL /merge-pdf/
             const initialHash = window.location.hash.replace(/^#/, '');
             if (initialHash && TOOLS.some(t => t.id === initialHash)) {
-                this.openToolWorkspace(initialHash);
+                window.location.replace(`${initialHash}/`);
+                return;
             }
         }
 
@@ -455,15 +457,8 @@ class App {
             `;
         }).join('');
 
-        // Attach click listeners to cards (smooth SPA transition with fall-through for cmd/ctrl click)
-        grid.querySelectorAll('.tool-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-                e.preventDefault();
-                const toolId = card.getAttribute('data-tool-id');
-                this.openToolWorkspace(toolId);
-            });
-        });
+        // Cards navigate directly to their dedicated SEO page (/tool-id/)
+        // Native <a href="${tool.id}/"> handles navigation with zero hash fragments
 
         this.refreshLucideIcons();
     }
@@ -521,7 +516,7 @@ class App {
                 metaDesc.setAttribute('content', `${tool.name} online free: ${tool.tagline}. ${tool.description} 100% in-browser private execution, zero file uploads, unlimited free access.`);
             }
             if (window.location.hash !== `#${tool.id}`) {
-                history.pushState(null, '', `#${tool.id}`);
+                history.pushState(null, '', `${tool.id}/`);
             }
         }
 
