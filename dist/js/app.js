@@ -15,6 +15,16 @@ import { AllToolsEngine } from './tools/all-tools-engine.js';
 import { registerImageWorkspaces } from './tools/image-workspaces.js';
 import { UtilityWorkspaces } from './tools/utility-workspaces.js';
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 class App {
     constructor() {
         this.currentTool = null;
@@ -55,6 +65,9 @@ class App {
                 window.location.replace(`${initialHash}/`);
                 return;
             }
+            if (initialHash && FUNCTIONAL_CATEGORIES.some(c => c.id === initialHash)) {
+                this.setFunctionalCategory(initialHash);
+            }
         }
 
         window.addEventListener('hashchange', () => {
@@ -63,7 +76,10 @@ class App {
                 if (this.currentTool?.id !== h) {
                     this.openToolWorkspace(h);
                 }
+            } else if (h && FUNCTIONAL_CATEGORIES.some(c => c.id === h)) {
+                this.setFunctionalCategory(h, { scroll: true });
             } else if (!h) {
+                this.setFunctionalCategory('all');
                 this.showCatalogView();
             }
         });
@@ -116,24 +132,8 @@ class App {
         // Upper Category Navigation Bar
         document.querySelectorAll('.top-nav-cat').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.top-nav-cat').forEach(b => {
-                    b.classList.remove('active', 'bg-red-50', 'text-red-700', 'border-red-200');
-                    b.classList.add('text-slate-600', 'border-transparent');
-                });
-                btn.classList.add('active', 'bg-red-50', 'text-red-700', 'border-red-200');
-                btn.classList.remove('text-slate-600', 'border-transparent');
-
                 const fcat = btn.getAttribute('data-fcat');
-                this.functionalCategory = fcat;
-
-                // Sync with Universal Hub if document is loaded
-                if (this.hubDocFile && fcat !== 'all') {
-                    this.hubActiveCat = fcat;
-                    this.renderHubActions();
-                }
-
-                this.renderCatalog();
-                this.refreshLucideIcons();
+                this.setFunctionalCategory(fcat, { scroll: true });
             });
         });
 
@@ -396,11 +396,80 @@ class App {
         }
     }
 
+    // ================= FUNCTIONAL CATEGORY SELECTION =================
+    setFunctionalCategory(fcat, options = {}) {
+        this.functionalCategory = fcat || 'all';
+
+        // Update upper navigation button active states and badge styles
+        document.querySelectorAll('.top-nav-cat').forEach(btn => {
+            const btnFcat = btn.getAttribute('data-fcat');
+            const isActive = btnFcat === this.functionalCategory;
+            const badge = btn.querySelector('.cat-count');
+
+            if (isActive) {
+                btn.classList.add('active', 'bg-[#002244]', 'text-white', 'border-[#002244]', 'shadow-xs');
+                btn.classList.remove('text-slate-700', 'bg-white', 'border-slate-200/90', 'hover:border-slate-300', 'hover:bg-slate-50', 'shadow-2xs');
+                if (badge) {
+                    badge.className = 'cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-white/20 text-white font-extrabold';
+                }
+            } else {
+                btn.classList.remove('active', 'bg-[#002244]', 'text-white', 'border-[#002244]', 'shadow-xs');
+                btn.classList.add('text-slate-700', 'bg-white', 'border-slate-200/90', 'hover:border-slate-300', 'hover:bg-slate-50', 'shadow-2xs');
+                if (badge) {
+                    badge.className = 'cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold';
+                }
+            }
+        });
+
+        // Sync with Universal Hub if document is loaded
+        if (this.hubDocFile && this.functionalCategory !== 'all') {
+            this.hubActiveCat = this.functionalCategory;
+            this.renderHubActions();
+        }
+
+        this.renderCatalog();
+        this.refreshLucideIcons();
+
+        if (options.scroll) {
+            const catalogTarget = document.getElementById('catalog-view');
+            if (catalogTarget) {
+                const headerOffset = 130;
+                const elementPosition = catalogTarget.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({
+                    top: Math.max(0, offsetPosition),
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }
+
     // ================= CATALOG VIEW =================
     renderCatalog() {
         const grid = document.getElementById('tools-grid');
         const titleEl = document.getElementById('catalog-section-title');
+        const heroEl = document.getElementById('homepage-informative-hero');
+        const seoGuideEl = document.getElementById('homepage-seo-guide');
         if (!grid) return;
+
+        const isFiltered = (this.functionalCategory !== 'all') || Boolean(this.searchQuery);
+
+        // Hide or show the informative home sections based on filtering
+        if (heroEl) {
+            if (isFiltered) {
+                heroEl.classList.add('hidden');
+            } else {
+                heroEl.classList.remove('hidden');
+            }
+        }
+
+        if (seoGuideEl) {
+            if (isFiltered) {
+                seoGuideEl.classList.add('hidden');
+            } else {
+                seoGuideEl.classList.remove('hidden');
+            }
+        }
 
         let filtered = TOOLS.filter(tool => {
             // Functional Category filter
@@ -426,18 +495,64 @@ class App {
         });
 
         if (titleEl) {
-            const catObj = FUNCTIONAL_CATEGORIES.find(c => c.id === this.functionalCategory);
-            titleEl.textContent = catObj ? `${catObj.name} (${filtered.length})` : `All Tools (${filtered.length})`;
+            if (isFiltered) {
+                const catObj = FUNCTIONAL_CATEGORIES.find(c => c.id === this.functionalCategory);
+                const filterLabel = this.searchQuery 
+                    ? `Search results for "${escapeHtml(this.searchQuery)}"` 
+                    : (catObj ? catObj.name : 'Filtered Tools');
+
+                titleEl.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h1 class="text-base sm:text-xl font-extrabold text-[#002244]">${filterLabel}</h1>
+                                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-red-100 text-[#EA1D2C]">${filtered.length} ${filtered.length === 1 ? 'tool' : 'tools'}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">Showing filtered utilities. Zero upload &bull; Fast client-side execution.</p>
+                        </div>
+                        <button id="btn-clear-catalog-filter" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 hover:text-[#EA1D2C] border border-slate-300 rounded-xl shadow-2xs transition-all cursor-pointer">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            <span>Show All 60 Tools</span>
+                        </button>
+                    </div>
+                `;
+
+                document.getElementById('btn-clear-catalog-filter')?.addEventListener('click', () => {
+                    this.searchQuery = '';
+                    const searchInput = document.getElementById('tool-search-input');
+                    if (searchInput) searchInput.value = '';
+                    this.setFunctionalCategory('all', { scroll: true });
+                });
+            } else {
+                titleEl.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base sm:text-xl font-extrabold text-slate-900">All PDF, Dev &amp; Design Tools</h1>
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">60 tools</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5">Select any tool to begin. Processed 100% privately in your browser.</p>
+                `;
+            }
         }
 
         if (filtered.length === 0) {
             grid.innerHTML = `
-                <div class="col-span-full py-12 text-center text-slate-500">
-                    <i data-lucide="search-x" class="w-10 h-10 mx-auto text-slate-400 mb-2"></i>
-                    <p class="font-medium">No tools found matching your criteria</p>
-                    <p class="text-xs text-slate-400 mt-1">Try switching categories or clearing search keywords</p>
+                <div class="col-span-full py-16 text-center text-slate-500 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mb-3">
+                        <i data-lucide="search-x" class="w-6 h-6"></i>
+                    </div>
+                    <p class="font-bold text-slate-800 text-base">No tools found matching your criteria</p>
+                    <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Try switching categories, clearing search terms, or explore all 60 private utilities.</p>
+                    <button id="btn-no-results-reset" class="mt-4 px-4 py-2 text-xs font-bold bg-[#002244] text-white rounded-xl shadow-xs hover:bg-[#EA1D2C] transition-all cursor-pointer">
+                        View All 60 Tools
+                    </button>
                 </div>
             `;
+            document.getElementById('btn-no-results-reset')?.addEventListener('click', () => {
+                this.searchQuery = '';
+                const searchInput = document.getElementById('tool-search-input');
+                if (searchInput) searchInput.value = '';
+                this.setFunctionalCategory('all', { scroll: true });
+            });
             this.refreshLucideIcons();
             return;
         }
@@ -468,9 +583,6 @@ class App {
             `;
         }).join('');
 
-        // Cards navigate directly to their dedicated SEO page (/tool-id/)
-        // Native <a href="${tool.id}/"> handles navigation with zero hash fragments
-
         this.refreshLucideIcons();
     }
 
@@ -485,13 +597,14 @@ class App {
         document.title = 'TECHTIS — 100% Private, Free Online PDF Tools & Document Suite | techtis.in';
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) {
-            metaDesc.setAttribute('content', 'TECHTIS (techtis.in) is the world\'s most private and fastest free online PDF platform. 32 professional tools: Form Filler, Merge PDF, Compress PDF, Sign PDF, Split, OCR, Convert to Word/JPG, Protect & Unlock. 100% in-browser RAM execution, zero file uploads, zero server latency, unlimited free use across all countries.');
+            metaDesc.setAttribute('content', 'TECHTIS (techtis.in) is the world\'s most private and fastest free online PDF platform. 60 professional tools: Form Filler, Merge PDF, Compress PDF, Sign PDF, Split, OCR, Convert to Word/JPG, Protect & Unlock. 100% in-browser RAM execution, zero file uploads, zero server latency, unlimited free use across all countries.');
         }
 
         if (window.location.hash) {
             history.pushState(null, '', window.location.pathname + window.location.search);
         }
 
+        this.setFunctionalCategory('all');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 

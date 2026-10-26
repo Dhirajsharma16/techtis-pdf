@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -252,49 +252,65 @@
         </div>
     </header>
 
-    <!-- Upper Category Navigation Bar -->
-    <nav class="bg-white/95 border-b border-slate-200/90 sticky top-[65px] z-30 shadow-xs backdrop-blur-md overflow-x-auto scrollbar-none">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-start md:justify-center gap-1.5 sm:gap-2 py-2">
-            <button class="top-nav-cat active flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-red-50 text-red-700 border border-red-200 transition whitespace-nowrap" data-fcat="all">
-                <i data-lucide="grid" class="w-3.5 h-3.5"></i>
-                <span>All Tools (60)</span>
-            </button>
-            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="organize">
-                <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>Organize PDF</span>
-            </button>
-            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="edit-sign">
-                <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>Edit &amp; Sign</span>
-            </button>
-            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="security">
-                <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>Security &amp; Lock</span>
-            </button>
-            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="convert">
-                <i data-lucide="arrow-left-right" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>Convert &amp; Optimize</span>
-            </button>
-            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="ai-smart">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
-                <span>AI &amp; Smart Tools</span>
-            </button>
-            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="image">
-                <i data-lucide="image" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>Image Tools (13)</span>
-            </button>
-            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="developer">
-                <i data-lucide="code" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>Developer Tools (6)</span>
-            </button>
-            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="design">
-                <i data-lucide="palette" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>CSS &amp; Design (5)</span>
-            </button>
-            <button class="top-nav-cat flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent transition whitespace-nowrap" data-fcat="text">
-                <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>Text Tools (4)</span>
-            </button>
+    <!-- Upper Category Navigation Bar (Engineered in 2 Clean Balanced Lines) -->
+    <nav class="bg-white/95 border-b border-slate-200/90 sticky top-[65px] z-30 shadow-xs backdrop-blur-md py-2.5 px-3 sm:px-6">
+        <div class="max-w-7xl mx-auto space-y-2">
+            <!-- Line 1: Document & AI Suites -->
+            <div class="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 sm:pb-0 scrollbar-none">
+                <button class="top-nav-cat active px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#002244] text-white border border-[#002244] shadow-xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="all">
+                    <i data-lucide="grid" class="w-3.5 h-3.5 text-red-500"></i>
+                    <span>All Tools</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-white/20 text-white font-extrabold">60</span>
+                </button>
+                <button class="top-nav-cat px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="organize">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-blue-600"></i>
+                    <span>Organize PDF</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">6</span>
+                </button>
+                <button class="top-nav-cat px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="edit-sign">
+                    <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-purple-600"></i>
+                    <span>Edit &amp; Sign</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">6</span>
+                </button>
+                <button class="top-nav-cat px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="security">
+                    <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    <span>Security &amp; Lock</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">5</span>
+                </button>
+                <button class="top-nav-cat px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="convert">
+                    <i data-lucide="arrow-left-right" class="w-3.5 h-3.5 text-amber-600"></i>
+                    <span>Convert &amp; Optimize</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">10</span>
+                </button>
+                <button class="top-nav-cat px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="ai-smart">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-pink-600"></i>
+                    <span>AI &amp; Smart Tools</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">5</span>
+                </button>
+            </div>
+            <!-- Line 2: Creative, Developer, Design & Text Suites -->
+            <div class="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 sm:pb-0 scrollbar-none">
+                <button class="top-nav-cat px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="image">
+                    <i data-lucide="image" class="w-3.5 h-3.5 text-sky-600"></i>
+                    <span>Image Tools</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">13</span>
+                </button>
+                <button class="top-nav-cat px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="developer">
+                    <i data-lucide="code" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <span>Developer Tools</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">6</span>
+                </button>
+                <button class="top-nav-cat px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="design">
+                    <i data-lucide="palette" class="w-3.5 h-3.5 text-indigo-600"></i>
+                    <span>CSS &amp; Design</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">5</span>
+                </button>
+                <button class="top-nav-cat px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none" data-fcat="text">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-orange-600"></i>
+                    <span>Text Tools</span>
+                    <span class="cat-count text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">4</span>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -303,14 +319,99 @@
 
         <!-- ================= CATALOG VIEW (Dashboard) ================= -->
         <section id="catalog-view" class="space-y-6">
-            <!-- Filter & Catalog Section Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
-                <div>
-                    <h1 class="text-base sm:text-xl font-extrabold text-slate-900" id="catalog-section-title">All PDF, Dev &amp; Design Tools (60)</h1>
-                    <p class="text-xs text-slate-500">Select any tool to begin. Processed 100% privately in your browser.</p>
+            <!-- Informative Hero Section (Visible on All Tools default view, hidden on category filter) -->
+            <div id="homepage-informative-hero" class="mb-4 space-y-4">
+                <!-- Hero Announcement / Privacy Guarantee Card -->
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#002244] via-[#00315c] to-[#0a192f] text-white p-6 sm:p-8 shadow-xl border border-slate-700/50">
+                    <div class="absolute -right-16 -top-16 w-64 h-64 bg-red-600/15 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-sky-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="relative z-10 max-w-3xl space-y-3.5">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-400 text-xs font-semibold backdrop-blur-md border border-white/10">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>100% In-Browser Privacy &bull; Zero Server Uploads &bull; Free Worldwide</span>
+                        </div>
+
+                        <h2 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+                            Free, Private Online Tools for <span class="text-[#EA1D2C]">PDF</span>, <span class="text-sky-400">Images</span>, <span class="text-amber-400">Dev</span> &amp; <span class="text-purple-400">Design</span>
+                        </h2>
+
+                        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
+                            TECHTIS executes completely inside your device browser RAM using WebAssembly. Your documents, photos, forms, and code snippets never leave your device and never touch a remote server. Enjoy 60 professional utilities with zero daily limits and zero fees.
+                        </p>
+
+                        <!-- 4 Informative Benefit Highlights -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 text-xs">
+                            <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-sm">
+                                <div class="font-bold text-white flex items-center gap-1.5">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                                    <span>Zero Upload</span>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-1">Processed in browser RAM</p>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-sm">
+                                <div class="font-bold text-white flex items-center gap-1.5">
+                                    <i data-lucide="zap" class="w-4 h-4 text-amber-400 shrink-0"></i>
+                                    <span>Sub-100ms</span>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-1">Instant local execution</p>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-sm">
+                                <div class="font-bold text-white flex items-center gap-1.5">
+                                    <i data-lucide="infinity" class="w-4 h-4 text-sky-400 shrink-0"></i>
+                                    <span>Unlimited</span>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-1">No daily limits or caps</p>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-sm">
+                                <div class="font-bold text-white flex items-center gap-1.5">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-purple-400 shrink-0"></i>
+                                    <span>All 60 Tools</span>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-1">100% Free Forever</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-
+                <!-- 3-Step Informative Workflow Strip -->
+                <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <span class="w-6 h-6 rounded-full bg-red-100 text-[#EA1D2C] font-extrabold flex items-center justify-center shrink-0 text-xs">1</span>
+                            <div>
+                                <span class="font-bold text-slate-900 block">Choose Any Tool</span>
+                                <span class="text-slate-500 text-[11px]">Select from 60 tools below or filter by suite</span>
+                            </div>
+                        </div>
+                        <i data-lucide="chevron-right" class="hidden md:block w-4 h-4 text-slate-300 shrink-0"></i>
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <span class="w-6 h-6 rounded-full bg-red-100 text-[#EA1D2C] font-extrabold flex items-center justify-center shrink-0 text-xs">2</span>
+                            <div>
+                                <span class="font-bold text-slate-900 block">Select or Drop Your File</span>
+                                <span class="text-slate-500 text-[11px]">Computed in memory with 0 cloud transmission</span>
+                            </div>
+                        </div>
+                        <i data-lucide="chevron-right" class="hidden md:block w-4 h-4 text-slate-300 shrink-0"></i>
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <span class="w-6 h-6 rounded-full bg-red-100 text-[#EA1D2C] font-extrabold flex items-center justify-center shrink-0 text-xs">3</span>
+                            <div>
+                                <span class="font-bold text-slate-900 block">Instant Download</span>
+                                <span class="text-slate-500 text-[11px]">Get your converted document in seconds</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Filter & Catalog Section Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+                <div class="flex-1" id="catalog-section-title">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base sm:text-xl font-extrabold text-slate-900">All PDF, Dev &amp; Design Tools</h1>
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">60 tools</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5">Select any tool to begin. Processed 100% privately in your browser.</p>
+                </div>
             </div>
 
             <!-- Tool Cards Grid (Half-size, sleek compact cards) -->
@@ -319,7 +420,7 @@
             </div>
 
             <!-- Informative Details & Global SEO Section (Placed Below All Tools) -->
-            <section class="mt-14 pt-10 border-t border-slate-200 text-slate-600 space-y-12">
+            <section id="homepage-seo-guide" class="mt-14 pt-10 border-t border-slate-200 text-slate-600 space-y-12">
                 
                 <!-- Main Global Headline & Value Proposition -->
                 <div class="text-center max-w-3xl mx-auto space-y-3">
@@ -331,7 +432,7 @@
                         TECHTIS — The World's Most Private &amp; Fast Free PDF Platform
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-2xl mx-auto">
-                        TECHTIS (<a href="https://techtis.in" target="_blank" rel="noopener" class="text-red-600 font-semibold underline">techtis.in</a>) is a professional, serverless document suite providing 32 powerful tools engineered to execute 100% in your device's browser memory. Your confidential documents, government IDs, contracts, and financial spreadsheets are never uploaded to any remote server or database.
+                        TECHTIS (<a href="https://techtis.in" target="_blank" rel="noopener" class="text-red-600 font-semibold underline">techtis.in</a>) is a professional, serverless document suite providing 60 powerful tools engineered to execute 100% in your device's browser memory. Your confidential documents, government IDs, contracts, and financial spreadsheets are never uploaded to any remote server or database.
                     </p>
                 </div>
 
@@ -366,7 +467,7 @@
                     </div>
                 </div>
 
-                <!-- Complete 32 Tools SEO Directory & Guide -->
+                <!-- Complete 60 Tools SEO Directory & Guide -->
                 <div class="space-y-8 pt-6 border-t border-slate-200" id="tools-seo-directory">
                     <div class="text-center max-w-2xl mx-auto space-y-1.5">
                         <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">
