@@ -5,6 +5,7 @@ Desktop.ini
 
 # Logs and scratch
 *.log
+live_test_report.txt
 scratch/
 .system_generated/
 

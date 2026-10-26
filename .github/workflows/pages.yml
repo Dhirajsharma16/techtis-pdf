@@ -30,7 +30,7 @@ jobs:
           node-version: '20'
 
       - name: Build SEO Static Pages
-        run: node scripts/build-seo.js
+        run: node scripts/build-seo.js && node scripts/build-dist.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

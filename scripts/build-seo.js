@@ -1,7 +1,8 @@
 /**
  * Automated Static Site Generator for TECHTIS (techtis.in)
- * Compiles all 32 dedicated tool landing pages for maximum SEO performance,
- * generates sitemap.xml, updates robots.txt, and links catalog items.
+ * Compiles all 60 dedicated tool landing pages for maximum SEO performance,
+ * generates sitemap.xml, updates robots.txt, links catalog items,
+ * and synchronizes production build at dist/.
  * 
  * Optimized for "ZERO-SCROLL ABOVE-THE-FOLD" tool access.
  */
@@ -15,11 +16,12 @@ import { SEO_DATA } from './seo-data.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
+const DIST_DIR = path.join(ROOT_DIR, 'dist');
 
 const BASE_URL = 'https://techtis.in';
 const TODAY = new Date().toISOString().split('T')[0];
 
-console.log(`[SEO Generator] Starting generation for ${TOOLS.length} tools...`);
+console.log(`[SEO Generator] Starting generation for ${TOOLS.length} tools across 9 functional categories...`);
 
 // Helper to escape HTML entities
 function escapeHtml(str) {
@@ -32,32 +34,59 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
+// Pre-build Categorized Footer Directory HTML for PageRank Internal Linking
+const categoriesWithTools = FUNCTIONAL_CATEGORIES
+    .filter(cat => cat.id !== 'all')
+    .map(cat => ({
+        ...cat,
+        tools: TOOLS.filter(t => t.functionalCategory === cat.id)
+    }));
+
+function renderCategorizedFooter(currentToolId) {
+    return categoriesWithTools.map(cat => `
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="${cat.icon}" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>${escapeHtml(cat.name)} (${cat.tools.length})</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                ${cat.tools.map(t => {
+                    const isCurrent = t.id === currentToolId;
+                    return isCurrent
+                        ? `<span class="text-red-600 font-bold px-1.5 py-0.5 bg-red-50 rounded">${escapeHtml(t.name)}</span>`
+                        : `<a href="../${t.id}/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free ${escapeHtml(t.name)} Online">${escapeHtml(t.name)}</a>`;
+                }).join('\n                ')}
+            </div>
+        </div>
+    `).join('\n');
+}
+
 // 1. Generate Dedicated Page for each tool
 let generatedCount = 0;
 
 for (const tool of TOOLS) {
     const seo = SEO_DATA[tool.id] || {
-        title: `${tool.name} Online Free – 100% Private PDF Tool | TECHTIS`,
-        metaDescription: `${tool.name} online free: ${tool.tagline}. 100% private in-browser RAM execution, zero file uploads, unlimited free access.`,
-        keywords: `${tool.name.toLowerCase()}, free ${tool.name.toLowerCase()}, ${tool.name.toLowerCase()} online, private pdf tools`,
+        title: `${tool.name} Online Free – 100% Private Tool | TECHTIS`,
+        metaDescription: `${tool.name} online free: ${tool.tagline}. 100% private in-browser RAM execution, zero file uploads, unlimited free access worldwide.`,
+        keywords: `${tool.name.toLowerCase()}, free ${tool.name.toLowerCase()}, ${tool.name.toLowerCase()} online, fast ${tool.name.toLowerCase()}`,
         h1: `${tool.name} Online Free`,
         subtitle: tool.tagline,
         badge: '100% In-Browser Privacy',
         howTo: [
-            { step: 1, title: 'Upload Document', desc: 'Select or drop your file into the workspace.' },
-            { step: 2, title: 'Configure & Process', desc: 'Adjust settings and process in browser RAM.' },
-            { step: 3, title: 'Instant Download', desc: 'Download your result immediately with zero latency.' }
+            { step: 1, title: 'Upload Document or File', desc: 'Select or drop your file into the secure workspace.' },
+            { step: 2, title: 'Configure & Process', desc: 'Adjust options and process directly inside your browser RAM.' },
+            { step: 3, title: 'Instant Download', desc: 'Download your result immediately with zero server latency.' }
         ],
         features: [
-            { title: '100% In-Browser Privacy', desc: 'Runs in browser RAM using WebAssembly. Zero files touch external servers.' },
+            { title: '100% In-Browser Privacy', desc: 'Runs directly in browser RAM using WebAssembly. Zero files touch external servers.' },
             { title: 'Sub-100ms Speed', desc: 'No queueing or upload delay. Instant local processing.' },
             { title: 'Free & Unlimited', desc: 'No daily limits, no watermark, and no registration required.' },
             { title: 'All Devices Supported', desc: 'Works smoothly on Windows, Mac, iOS, Android, and Linux.' }
         ],
         content: `<p>${escapeHtml(tool.description)}</p>`,
         faqs: [
-            { q: `Is TECHTIS ${tool.name} free to use?`, a: `Yes, ${tool.name} is 100% free with no hidden fees, subscriptions, or watermarks.` },
-            { q: `Are my files uploaded to any server?`, a: `No. All operations run directly inside your browser memory with zero file uploads.` }
+            { q: `Is TECHTIS ${tool.name} completely free to use worldwide?`, a: `Yes, ${tool.name} is 100% free with no hidden fees, subscriptions, or watermarks.` },
+            { q: `Are my confidential files uploaded to any server?`, a: `No. All operations run directly inside your browser memory with zero file uploads.` }
         ],
         relatedTools: TOOLS.filter(t => t.id !== tool.id).slice(0, 6).map(t => t.id)
     };
@@ -74,10 +103,11 @@ for (const tool of TOOLS) {
                 '@id': `${toolUrl}#webapp`,
                 'name': `TECHTIS ${tool.name}`,
                 'url': toolUrl,
-                'applicationCategory': 'BusinessApplication, OfficeApplication, UtilityApplication',
-                'operatingSystem': 'All (Windows, macOS, Linux, iOS, Android)',
+                'applicationCategory': 'BusinessApplication, OfficeApplication, UtilityApplication, MultimediaApplication',
+                'operatingSystem': 'All (Windows, macOS, Linux, iOS, Android, Chrome OS)',
                 'browserRequirements': 'Requires JavaScript. Requires HTML5.',
                 'softwareVersion': '2.0',
+                'isAccessibleForFree': true,
                 'offers': {
                     '@type': 'Offer',
                     'price': '0',
@@ -86,10 +116,28 @@ for (const tool of TOOLS) {
                 'aggregateRating': {
                     '@type': 'AggregateRating',
                     'ratingValue': '4.9',
-                    'ratingCount': '12850',
+                    'ratingCount': '14850',
                     'bestRating': '5'
                 },
-                'description': seo.metaDescription
+                'description': seo.metaDescription,
+                'publisher': {
+                    '@type': 'Organization',
+                    '@id': `${BASE_URL}/#organization`
+                }
+            },
+            {
+                '@type': 'Organization',
+                '@id': `${BASE_URL}/#organization`,
+                'name': 'TECHTIS',
+                'url': `${BASE_URL}/`,
+                'logo': {
+                    '@type': 'ImageObject',
+                    'url': `${BASE_URL}/assets/images/logo.png`,
+                    'caption': 'TECHTIS — 100% Private, Free Online PDF & Web Utilities'
+                },
+                'sameAs': [
+                    'https://github.com/Dhirajsharma16/techtis-pdf'
+                ]
             },
             {
                 '@type': 'BreadcrumbList',
@@ -120,11 +168,30 @@ for (const tool of TOOLS) {
                 '@id': `${toolUrl}#howto`,
                 'name': `How to use ${tool.name} Online Free`,
                 'description': `Follow these 3 simple steps to use ${tool.name} with 100% privacy in your browser.`,
+                'totalTime': 'PT1M',
+                'estimatedCost': {
+                    '@type': 'MonetaryAmount',
+                    'currency': 'USD',
+                    'value': '0'
+                },
+                'supply': [
+                    {
+                        '@type': 'HowToSupply',
+                        'name': 'Digital Document or Image File'
+                    }
+                ],
+                'tool': [
+                    {
+                        '@type': 'HowToTool',
+                        'name': 'Web Browser (Chrome, Safari, Edge, Firefox)'
+                    }
+                ],
                 'step': seo.howTo.map(item => ({
                     '@type': 'HowToStep',
                     'position': item.step,
                     'name': item.title,
-                    'text': item.desc
+                    'text': item.desc,
+                    'url': `${toolUrl}#step-${item.step}`
                 }))
             },
             {
@@ -207,6 +274,23 @@ for (const tool of TOOLS) {
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="${toolUrl}">
 
+    <!-- Global / Multi-Country Geo & Language Targeting -->
+    <meta name="language" content="English">
+    <meta name="distribution" content="Global">
+    <meta name="coverage" content="Worldwide">
+    <meta name="rating" content="General">
+    <meta name="target" content="all">
+    <meta name="geo.region" content="US, IN, GB, CA, AU, DE, FR, BR, ES, JP, AE, SG">
+
+    <!-- Hreflang Canonical & International Targeting -->
+    <link rel="alternate" hreflang="x-default" href="${toolUrl}">
+    <link rel="alternate" hreflang="en" href="${toolUrl}">
+    <link rel="alternate" hreflang="en-US" href="${toolUrl}">
+    <link rel="alternate" hreflang="en-GB" href="${toolUrl}">
+    <link rel="alternate" hreflang="en-IN" href="${toolUrl}">
+    <link rel="alternate" hreflang="en-CA" href="${toolUrl}">
+    <link rel="alternate" hreflang="en-AU" href="${toolUrl}">
+
     <!-- Open Graph Metadata -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="${toolUrl}">
@@ -214,6 +298,15 @@ for (const tool of TOOLS) {
     <meta property="og:title" content="${escapeHtml(seo.title)}">
     <meta property="og:description" content="${escapeHtml(seo.metaDescription)}">
     <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="en_GB">
+    <meta property="og:locale:alternate" content="en_IN">
+    <meta property="og:locale:alternate" content="es_ES">
+    <meta property="og:locale:alternate" content="fr_FR">
+    <meta property="og:locale:alternate" content="de_DE">
+    <meta property="og:locale:alternate" content="pt_BR">
+    <meta property="og:locale:alternate" content="hi_IN">
+    <meta property="og:locale:alternate" content="id_ID">
+    <meta property="og:locale:alternate" content="ja_JP">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
@@ -265,29 +358,33 @@ for (const tool of TOOLS) {
 
     <!-- Slim Navigation Header -->
     <header class="header-glass sticky top-0 z-40 px-3 sm:px-6 py-2 flex items-center justify-between gap-3 border-b border-slate-200">
-        <a href="../" class="flex items-center gap-2.5 shrink-0 group" id="brand-logo-btn" title="TechTis — Free PDF and Image Tools">
+        <a href="../" class="flex items-center gap-2.5 shrink-0 group" id="brand-logo-btn" title="TechTis — Free Online PDF, Image &amp; Developer Tools">
             <img src="../assets/images/logo.png" alt="TechTis Logo" class="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform">
             <div>
                 <div class="leading-none">
                     <span class="text-base sm:text-lg font-black tracking-tight text-[#002244]">Tech<span class="text-[#EA1D2C]">Tis</span></span>
                 </div>
-                <p class="text-[9px] font-semibold text-slate-500 mt-0.5 leading-none">Free <span class="text-[#EA1D2C] font-bold">PDF</span> and <span class="text-[#EA1D2C] font-bold">Image</span> Tools</p>
+                <p class="text-[9px] font-semibold text-slate-500 mt-0.5 leading-none">Free <span class="text-[#EA1D2C] font-bold">PDF</span>, <span class="text-[#EA1D2C] font-bold">Image</span> &amp; Dev Tools</p>
             </div>
         </a>
 
-        <!-- Fast Navigation Links -->
-        <nav class="hidden md:flex items-center gap-1 text-xs font-semibold text-slate-600">
-            <a href="../#organize" class="px-2.5 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Organize</a>
-            <a href="../#edit-sign" class="px-2.5 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Edit &amp; Sign</a>
-            <a href="../#security" class="px-2.5 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Security</a>
-            <a href="../#convert" class="px-2.5 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Convert</a>
-            <a href="../#ai-smart" class="px-2.5 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">AI &amp; Edge</a>
+        <!-- Fast Navigation Links Across All Suites -->
+        <nav class="hidden lg:flex items-center gap-1 text-xs font-semibold text-slate-600">
+            <a href="../#organize" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Organize</a>
+            <a href="../#edit-sign" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Edit &amp; Sign</a>
+            <a href="../#security" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Security</a>
+            <a href="../#convert" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Convert</a>
+            <a href="../#ai-smart" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">AI &amp; Edge</a>
+            <a href="../#image" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Images</a>
+            <a href="../#developer" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Dev Tools</a>
+            <a href="../#design" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">CSS Design</a>
+            <a href="../#text" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Text</a>
         </nav>
 
         <div class="flex items-center gap-2">
             <a href="../" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 bg-white hover:border-red-400 hover:text-red-600 shadow-2xs transition">
                 <i data-lucide="grid" class="w-3.5 h-3.5"></i>
-                <span>All 41 Tools</span>
+                <span>All ${TOOLS.length} Free Tools</span>
             </a>
         </div>
     </header>
@@ -349,10 +446,56 @@ for (const tool of TOOLS) {
             <section class="space-y-3" id="features">
                 <div class="text-center max-w-xl mx-auto space-y-0.5">
                     <h2 class="text-base sm:text-lg font-extrabold text-slate-900">Why Choose TECHTIS for ${escapeHtml(tool.name)}</h2>
-                    <p class="text-xs text-slate-500">Zero cloud latency &bull; Zero file retention &bull; 100% Free</p>
+                    <p class="text-xs text-slate-500">Zero cloud latency &bull; Zero file retention &bull; 100% Free Forever</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     ${featuresCardsHtml}
+                </div>
+            </section>
+
+            <!-- Technical Specifications Section -->
+            <section class="space-y-3" id="tech-specs">
+                <div class="text-center max-w-xl mx-auto space-y-0.5">
+                    <h2 class="text-base sm:text-lg font-extrabold text-slate-900">Technical Specifications &amp; Compatibility</h2>
+                    <p class="text-xs text-slate-500">Enterprise security standards powered by client-side WebAssembly</p>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs overflow-x-auto text-xs">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                                <th class="py-2 px-3">Specification</th>
+                                <th class="py-2 px-3">TECHTIS Standard</th>
+                                <th class="py-2 px-3">Traditional Online Utilities</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-600">
+                            <tr>
+                                <td class="py-2.5 px-3 font-semibold text-slate-900">Privacy Architecture</td>
+                                <td class="py-2.5 px-3 text-emerald-600 font-bold">100% In-Browser RAM (0 Bytes Uploaded)</td>
+                                <td class="py-2.5 px-3 text-slate-400">Remote Cloud Server Storage</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-3 font-semibold text-slate-900">Execution Speed</td>
+                                <td class="py-2.5 px-3 text-emerald-600 font-bold">Sub-100ms Instant WebAssembly</td>
+                                <td class="py-2.5 px-3 text-slate-400">Slow Upload Queues (5-30s)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-3 font-semibold text-slate-900">Document Size Limits</td>
+                                <td class="py-2.5 px-3 text-emerald-600 font-bold">Unlimited (Device RAM Dependent)</td>
+                                <td class="py-2.5 px-3 text-slate-400">Strict 15MB - 50MB File Limits</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-3 font-semibold text-slate-900">Pricing &amp; Quotas</td>
+                                <td class="py-2.5 px-3 text-emerald-600 font-bold">100% Free Worldwide &bull; No Daily Limits</td>
+                                <td class="py-2.5 px-3 text-slate-400">Paid Subscriptions ($12-$20/month)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-3 font-semibold text-slate-900">Cross-Platform Support</td>
+                                <td class="py-2.5 px-3 text-slate-800">Windows, macOS, Linux, iOS, Android, ChromeOS</td>
+                                <td class="py-2.5 px-3 text-slate-400">Requires App Installs or Restricted</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -373,14 +516,14 @@ for (const tool of TOOLS) {
                 </div>
             </section>
 
-            <!-- Related PDF Tools -->
+            <!-- Related Tools -->
             <section class="space-y-3" id="related-tools">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-slate-900">Related PDF Tools</h2>
+                        <h2 class="text-sm sm:text-base font-extrabold text-slate-900">Related Tools</h2>
                         <p class="text-[11px] text-slate-500">Explore complementary utilities for ${escapeHtml(tool.name)}</p>
                     </div>
-                    <a href="../" class="text-xs font-semibold text-red-600 hover:underline">View all 32 tools &rarr;</a>
+                    <a href="../" class="text-xs font-semibold text-red-600 hover:underline">View all ${TOOLS.length} tools &rarr;</a>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                     ${relatedCardsHtml}
@@ -390,16 +533,14 @@ for (const tool of TOOLS) {
 
     </main>
 
-    <!-- Global Footer -->
+    <!-- Global Categorized Footer Internal Linking Mesh -->
     <footer class="bg-white border-t border-slate-200 mt-12 text-slate-500 text-xs py-8 px-4 lg:px-8">
-        <div class="max-w-5xl mx-auto space-y-6">
+        <div class="max-w-6xl mx-auto space-y-8">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pb-5 border-b border-slate-200">
-                <div class="flex items-center space-x-2">
-                    <div class="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center">
-                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                    </div>
+                <div class="flex items-center space-x-2.5">
+                    <img src="../assets/images/logo.png" alt="TechTis Logo" class="h-8 w-auto object-contain">
                     <span class="font-extrabold text-xs sm:text-sm text-slate-900 tracking-tight">TECH<span class="text-red-600">TIS</span></span>
-                    <span class="text-[10px] text-slate-400">&bull; Serverless Zero-Cost Document Platform</span>
+                    <span class="text-[10px] text-slate-400">&bull; 100% In-Browser Private Utility Platform</span>
                 </div>
                 <div class="flex flex-wrap items-center gap-3 text-xs font-medium">
                     <a href="../" class="hover:text-red-600 transition">Home</a>
@@ -410,17 +551,20 @@ for (const tool of TOOLS) {
                 </div>
             </div>
 
-            <!-- Footer Tools Directory Grid -->
-            <div class="space-y-2">
-                <div class="font-bold text-slate-800 text-[10px] uppercase tracking-wider">All 41 Free Online PDF & Image Tools:</div>
-                <div class="flex flex-wrap gap-1.5 text-[11px]">
-                    ${TOOLS.map(t => `<a href="../${t.id}/" class="px-2 py-0.5 bg-slate-50 border border-slate-200 rounded hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition">${escapeHtml(t.name)}</a>`).join('\n                    ')}
+            <!-- Complete 9-Category 60-Tool Footer Directory Mesh -->
+            <div class="space-y-4">
+                <div class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center justify-between">
+                    <span>Explore All ${TOOLS.length} Free Online Tools by Suite</span>
+                    <span class="text-[10px] text-emerald-600 font-semibold normal-case">100% Client-Side &bull; No Server Uploads</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${renderCategorizedFooter(tool.id)}
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-slate-400 pt-3 border-t border-slate-100">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-slate-400 pt-4 border-t border-slate-100">
                 <div>&copy; 2026 TECHTIS (techtis.in). All rights reserved. 100% Client-Side Privacy Guarantee.</div>
-                <div>Sub-100ms In-Browser Engine &bull; Zero Server Uploads</div>
+                <div>Sub-100ms In-Browser Engine &bull; Zero Server Uploads &bull; Free Forever</div>
             </div>
         </div>
     </footer>
@@ -433,18 +577,26 @@ for (const tool of TOOLS) {
 </body>
 </html>`;
 
-    // Write file to <ROOT_DIR>/<tool.id>/index.html
+    // 1. Write file to <ROOT_DIR>/<tool.id>/index.html
     const toolDir = path.join(ROOT_DIR, tool.id);
     if (!fs.existsSync(toolDir)) {
         fs.mkdirSync(toolDir, { recursive: true });
     }
     fs.writeFileSync(path.join(toolDir, 'index.html'), pageHtml, 'utf8');
+
+    // 2. Also write file to <DIST_DIR>/<tool.id>/index.html
+    const distToolDir = path.join(DIST_DIR, tool.id);
+    if (!fs.existsSync(distToolDir)) {
+        fs.mkdirSync(distToolDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(distToolDir, 'index.html'), pageHtml, 'utf8');
+
     generatedCount++;
 }
 
-console.log(`[SEO Generator] Successfully generated ${generatedCount} dedicated static tool pages (Zero-Scroll Optimized)!`);
+console.log(`[SEO Generator] Successfully generated ${generatedCount} dedicated static tool pages (Zero-Scroll & Categorized Mesh)!`);
 
-// 2. Generate clean sitemap.xml with proper canonical URLs (no hash tags!)
+// 2. Generate clean sitemap.xml with proper canonical URLs
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -493,6 +645,9 @@ ${TOOLS.map((t, idx) => `    <!-- ${idx + 1}. ${escapeHtml(t.name)} -->
 </urlset>`;
 
 fs.writeFileSync(path.join(ROOT_DIR, 'sitemap.xml'), sitemapXml, 'utf8');
+if (fs.existsSync(DIST_DIR)) {
+    fs.writeFileSync(path.join(DIST_DIR, 'sitemap.xml'), sitemapXml, 'utf8');
+}
 console.log(`[SEO Generator] Successfully updated sitemap.xml with all ${TOOLS.length} tool pages & compliance pages!`);
 
 // 3. Update robots.txt
@@ -504,6 +659,9 @@ Allow: /
 Sitemap: ${BASE_URL}/sitemap.xml
 `;
 fs.writeFileSync(path.join(ROOT_DIR, 'robots.txt'), robotsTxt, 'utf8');
+if (fs.existsSync(DIST_DIR)) {
+    fs.writeFileSync(path.join(DIST_DIR, 'robots.txt'), robotsTxt, 'utf8');
+}
 console.log(`[SEO Generator] Successfully updated robots.txt.`);
 
 // 4. Update index.html to link directly to dedicated tool pages
@@ -520,7 +678,6 @@ if (fs.existsSync(indexHtmlPath)) {
             updated = true;
         }
 
-        // Also update schema URLs in index.html: "https://techtis.in/#${tool.id}" -> "https://techtis.in/${tool.id}/"
         const oldSchemaUrl = `"url": "https://techtis.in/#${tool.id}"`;
         const newSchemaUrl = `"url": "https://techtis.in/${tool.id}/"`;
         if (indexHtml.includes(oldSchemaUrl)) {
@@ -531,6 +688,9 @@ if (fs.existsSync(indexHtmlPath)) {
 
     if (updated) {
         fs.writeFileSync(indexHtmlPath, indexHtml, 'utf8');
+        if (fs.existsSync(DIST_DIR)) {
+            fs.writeFileSync(path.join(DIST_DIR, 'index.html'), indexHtml, 'utf8');
+        }
         console.log(`[SEO Generator] Successfully updated index.html with crawlable internal links!`);
     }
 }

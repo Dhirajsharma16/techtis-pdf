@@ -8,7 +8,7 @@ export const SEO_DATA = {
     'merge-pdf': {
         title: 'Merge PDF Online Free – Combine PDF Files Securely in Browser | TECHTIS',
         metaDescription: 'Merge PDF files online free with TECHTIS. Combine multiple documents into one in seconds. 100% private client-side processing, zero file uploads, unlimited use.',
-        keywords: 'merge pdf, combine pdf files, join pdf online, free pdf merger, merge pdf without uploading, combine pdfs in browser, ilovepdf alternative merge, safe pdf combiner',
+        keywords: 'merge pdf, combine pdf files, join pdf online, free pdf merger, merge pdf without uploading, combine pdfs in browser, fastest pdf combiner, safe pdf joiner online',
         h1: 'Merge PDF Online Free',
         subtitle: 'Combine multiple PDF files into a single unified document in any order with instant client-side processing.',
         badge: '100% Client-Side Privacy',
@@ -40,7 +40,7 @@ export const SEO_DATA = {
     'split-pdf': {
         title: 'Split PDF Online Free – Extract Pages & Separate PDF Files | TECHTIS',
         metaDescription: 'Split PDF files online for free. Extract specific pages or divide a document into standalone PDFs with live thumbnail preview. 100% client-side privacy.',
-        keywords: 'split pdf, extract pdf pages, separate pdf, split pdf online free, break pdf into pages, cut pdf pages, client side pdf splitter, ilovepdf alternative split',
+        keywords: 'split pdf, extract pdf pages, separate pdf, split pdf online free, break pdf into pages, cut pdf pages, client side pdf splitter, fast pdf page extractor',
         h1: 'Split PDF Online Free',
         subtitle: 'Extract specific page ranges or separate every page into independent PDF files with real-time thumbnail previews.',
         badge: '100% Client-Side Privacy',
@@ -72,7 +72,7 @@ export const SEO_DATA = {
     'compress-pdf': {
         title: 'Compress PDF Online Free – Reduce PDF File Size in Browser | TECHTIS',
         metaDescription: 'Compress PDF files online free. Reduce document file size by up to 85% while keeping crisp text and images. 100% private, zero uploads, instant download.',
-        keywords: 'compress pdf, reduce pdf size, shrink pdf online, pdf compressor free, compress pdf without losing quality, client side pdf compressor, ilovepdf compress alternative',
+        keywords: 'compress pdf, reduce pdf size, shrink pdf online, pdf compressor free, compress pdf without losing quality, client side pdf compressor, instant pdf compressor, lossless pdf size reducer',
         h1: 'Compress PDF Online Free',
         subtitle: 'Shrink PDF file sizes dramatically for email attachments and web uploads without sacrificing text clarity.',
         badge: '100% Client-Side Privacy',
@@ -296,7 +296,7 @@ export const SEO_DATA = {
     'edit-pdf': {
         title: 'Edit PDF Online Free – Add Text, Shapes & Annotations | TECHTIS',
         metaDescription: 'Edit PDF online free with TECHTIS. Add text annotations, highlight content, insert rectangles, lines, and custom notes in your browser. 100% private, no signup.',
-        keywords: 'edit pdf online, free pdf editor, annotate pdf, add text to pdf, mark up pdf, write on pdf, pdf editor in browser, ilovepdf edit alternative',
+        keywords: 'edit pdf online, free pdf editor, annotate pdf, add text to pdf, mark up pdf, write on pdf, pdf editor in browser, professional pdf annotator online',
         h1: 'Edit PDF Online Free',
         subtitle: 'Add custom text annotations, notes, callout rectangles, freehand marks, and geometric highlights to any PDF in your browser.',
         badge: '100% Client-Side Privacy',
