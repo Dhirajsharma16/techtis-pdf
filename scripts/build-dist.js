@@ -40,7 +40,8 @@ const rootFiles = [
     'favicon.png',
     'logo.png',
     'robots.txt',
-    'sitemap.xml'
+    'sitemap.xml',
+    'ads.txt'
 ];
 
 for (const file of rootFiles) {
