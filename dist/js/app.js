@@ -2877,8 +2877,6 @@ class App {
         document.getElementById('flatten-filename').textContent = file.name;
         this.renderPagePreviewIntoImg(file, document.getElementById('flatten-preview-img'), 1);
     }
-        document.getElementById('flatten-filename').textContent = file.name;
-    }
 
     // ================= 19. FORM FILLER =================
     renderFormFillerWorkspace(container) {
@@ -4504,7 +4502,15 @@ This document was compiled directly in your browser using zero-cost serverless P
 // Instantiate application on DOM ready
 registerImageWorkspaces(App);
 
-document.addEventListener('DOMContentLoaded', () => {
-    window.TECHTISApp = new App();
-    window.PDFPulseApp = window.TECHTISApp; // backward compatibility
-});
+const initApp = () => {
+    if (!window.TECHTISApp) {
+        window.TECHTISApp = new App();
+        window.PDFPulseApp = window.TECHTISApp; // backward compatibility
+    }
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
