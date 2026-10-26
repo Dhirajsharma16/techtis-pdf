@@ -292,58 +292,276 @@ ${text.slice(0, 25000)}`;
     },
 
     /**
-     * OCR Engine: Client-Side Tesseract.js (Unlimited & $0) with OCR.space Cloud fallback
+     * Optical Character Recognition (OCR) Engine
+     * Multi-tier architecture: In-Browser Text Layer -> Fast AI Vision (Gemini / Groq) -> WASM Tesseract.js -> Cloud Fallback
      */
     async performOcr(file, onProgress = () => {}) {
-        // Option A: 100% Client-Side Tesseract.js (WASM / Web Worker)
-        if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
+        if (!file) return 'No file provided for OCR.';
+
+        const isPdf = Boolean(
+            (file.name && file.name.toLowerCase().endsWith('.pdf')) ||
+            file.type === 'application/pdf'
+        );
+
+        let targetCanvas = null;
+        let imageBase64 = null;
+
+        // 1. If PDF, check if digital text layer already exists (Sub-20ms, 100% accurate)
+        if (isPdf) {
+            onProgress({ step: 'init', message: 'Checking PDF document text layer...' });
             try {
-                onProgress({ step: 'ocr', message: 'Running in-browser WASM OCR (Zero Server Overhead)...' });
-                const worker = await window.Tesseract.createWorker('eng');
-                const ret = await worker.recognize(file);
-                await worker.terminate();
-                if (ret.data && ret.data.text && ret.data.text.trim()) {
-                    return ret.data.text.trim();
+                const extracted = await this.extractTextFromPdf(file);
+                if (extracted && extracted.text && extracted.text.trim().length > 40) {
+                    onProgress({ step: 'done', message: 'Extracted text from document text layer!' });
+                    return extracted.text.trim();
                 }
-            } catch (err) {
-                console.warn('Tesseract WASM notice, attempting cloud fallback:', err);
+            } catch (pdfTextErr) {
+                console.warn('PDF text layer extraction note:', pdfTextErr);
+            }
+
+            // Scanned PDF -> Render page 1 to high-resolution canvas
+            onProgress({ step: 'render', message: 'Rendering scanned PDF page for optical character recognition...' });
+            try {
+                if (window.pdfjsLib) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer.slice(0) }).promise;
+                    const page = await pdf.getPage(1);
+                    const viewport = page.getViewport({ scale: 2.0 });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    const ctx = canvas.getContext('2d');
+                    await page.render({ canvasContext: ctx, viewport }).promise;
+                    targetCanvas = canvas;
+                    imageBase64 = canvas.toDataURL('image/jpeg', 0.9);
+                }
+            } catch (renderErr) {
+                console.warn('PDF render for OCR note:', renderErr);
+            }
+        } else {
+            // It's an image file
+            onProgress({ step: 'image', message: 'Preparing image for recognition...' });
+            try {
+                imageBase64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            } catch (_) {}
+        }
+
+        const settings = StorageManager.getSettings();
+
+        // 2. Personal Google Gemini AI Vision (Fastest, state-of-the-art accuracy)
+        if (settings.geminiApiKey && imageBase64) {
+            try {
+                onProgress({ step: 'gemini', message: 'Transcribing document with Google Gemini Vision...' });
+                const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+                const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${settings.geminiApiKey}`;
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: 'Transcribe all text from this document image with 100% precision. Return ONLY the plain transcribed text, preserving paragraphs, numbers, and headings accurately.' },
+                                { inline_data: { mime_type: mime, data: cleanData } }
+                            ]
+                        }]
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text && text.trim()) {
+                        onProgress({ step: 'done', message: 'Gemini OCR transcription completed!' });
+                        return text.trim();
+                    }
+                }
+            } catch (geminiErr) {
+                console.warn('Gemini OCR fallback:', geminiErr);
             }
         }
 
-        // Option B: OCR.space Free API fallback (500 req/day per IP)
+        // 3. Personal Groq Cloud Vision (Llama 3.2 11B Vision - 400ms speed)
+        if (settings.groqApiKey && imageBase64) {
+            try {
+                onProgress({ step: 'groq', message: 'Transcribing document with Groq Vision...' });
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${settings.groqApiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.2-11b-vision-preview',
+                        messages: [
+                            {
+                                role: 'user',
+                                content: [
+                                    { type: 'text', text: 'Transcribe all text from this document image accurately. Return only the extracted text without introductory or conversational filler:' },
+                                    { type: 'image_url', image_url: { url: imageBase64 } }
+                                ]
+                            }
+                        ],
+                        temperature: 0.1
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const text = data.choices?.[0]?.message?.content;
+                    if (text && text.trim()) {
+                        onProgress({ step: 'done', message: 'Groq OCR transcription completed!' });
+                        return text.trim();
+                    }
+                }
+            } catch (groqErr) {
+                console.warn('Groq Vision OCR fallback:', groqErr);
+            }
+        }
+
+        // 4. In-Browser WASM Tesseract.js (100% Offline, Client-Side)
+        const ocrTarget = targetCanvas || file;
+        if (window.Tesseract && (targetCanvas || !isPdf)) {
+            try {
+                onProgress({ step: 'tesseract', message: 'Initializing in-browser WebAssembly OCR (100% Client-Side)...' });
+                if (typeof window.Tesseract.createWorker === 'function') {
+                    const worker = await window.Tesseract.createWorker('eng', 1, {
+                        logger: m => {
+                            if (m && m.status) {
+                                const pct = Math.round((m.progress || 0) * 100);
+                                onProgress({ step: 'tesseract', message: `WASM OCR: ${m.status} (${pct}%)` });
+                            }
+                        }
+                    });
+                    const ret = await worker.recognize(ocrTarget);
+                    await worker.terminate();
+                    if (ret.data && ret.data.text && ret.data.text.trim()) {
+                        onProgress({ step: 'done', message: 'WASM OCR completed successfully!' });
+                        return ret.data.text.trim();
+                    }
+                } else if (typeof window.Tesseract.recognize === 'function') {
+                    const ret = await window.Tesseract.recognize(ocrTarget, 'eng');
+                    if (ret.data && ret.data.text && ret.data.text.trim()) {
+                        return ret.data.text.trim();
+                    }
+                }
+            } catch (err) {
+                console.warn('WASM Tesseract note, attempting cloud fallback:', err);
+            }
+        }
+
+        // 5. OCR.space Free API fallback (with realistic 15s timeout)
         try {
-            const settings = StorageManager.getSettings();
+            onProgress({ step: 'cloud', message: 'Running Optical Character Recognition engine...' });
             const apiKey = settings.ocrSpaceApiKey || 'K87899142388957';
             const formData = new FormData();
-            formData.append('file', file);
+            if (targetCanvas) {
+                const blob = await new Promise(r => targetCanvas.toBlob(r, 'image/jpeg', 0.9));
+                formData.append('file', blob, 'page.jpg');
+            } else {
+                formData.append('file', file);
+            }
             formData.append('language', 'eng');
             formData.append('apikey', apiKey);
 
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 15000);
+
             const response = await fetch('https://api.ocr.space/parse/image', {
-                method: 'POST', body: formData, signal: (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) ? AbortSignal.timeout(2500) : undefined
+                method: 'POST',
+                body: formData,
+                signal: controller.signal
             });
+            clearTimeout(timer);
 
             if (response.ok) {
                 const result = await response.json();
                 const parsedResults = result.ParsedResults || [];
                 const fullText = parsedResults.map(p => p.ParsedText).join('\n\n');
-                if (fullText && fullText.trim()) return fullText.trim();
-            }
-        } catch (ocrErr) {
-            console.warn('Cloud OCR notice, attempting local PDF text extraction:', ocrErr);
-        }
-
-        // Option C: Local PDF text stream extractor (100% Offline / Zero API)
-        try {
-            if (file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
-                const extracted = await this.extractTextFromPdf(file);
-                if (extracted && extracted.text && extracted.text.trim()) {
-                    return `[Extracted from Document Text Layer]:\n\n` + extracted.text.trim();
+                if (fullText && fullText.trim()) {
+                    onProgress({ step: 'done', message: 'OCR completed successfully!' });
+                    return fullText.trim();
                 }
             }
-        } catch (_) {}
+        } catch (ocrErr) {
+            console.warn('OCR.space fallback note:', ocrErr);
+        }
 
-        return 'No selectable or optical text could be recognized. Please ensure the document is clear and high resolution.';
+        // 6. Final attempt: fallback text extraction if PDF
+        if (isPdf) {
+            try {
+                const extracted = await this.extractTextFromPdf(file);
+                if (extracted && extracted.text && extracted.text.trim()) {
+                    return `[Extracted Document Text]:\n\n` + extracted.text.trim();
+                }
+            } catch (_) {}
+        }
+
+        return 'No readable text could be recognized. Please verify the document or image is clear and well-lit. You can also add your free Google Gemini or Groq API key in Settings for enhanced AI OCR.';
+    },
+
+    /**
+     * Direct Vision OCR Helper for base64 images
+     */
+    async performVisionOcr(imageBase64, settings = null) {
+        if (!settings) settings = StorageManager.getSettings();
+        const geminiKey = settings.geminiApiKey;
+        const groqKey = settings.groqApiKey;
+
+        if (geminiKey && imageBase64) {
+            try {
+                const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+                const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: 'Transcribe all text, numbers, and labels from this document image. Return only the plain transcribed text.' },
+                                { inline_data: { mime_type: mime, data: cleanData } }
+                            ]
+                        }]
+                    })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+                }
+            } catch (_) {}
+        }
+
+        if (groqKey && imageBase64) {
+            try {
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
+                    body: JSON.stringify({
+                        model: 'llama-3.2-11b-vision-preview',
+                        messages: [{
+                            role: 'user',
+                            content: [
+                                { type: 'text', text: 'Transcribe all text from this document image accurately. Return only the plain extracted text:' },
+                                { type: 'image_url', image_url: { url: imageBase64 } }
+                            ]
+                        }],
+                        temperature: 0.1
+                    })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    return data.choices?.[0]?.message?.content?.trim() || '';
+                }
+            } catch (_) {}
+        }
+
+        return '';
     },
 
     /**

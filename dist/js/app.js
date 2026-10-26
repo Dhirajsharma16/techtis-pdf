@@ -1263,30 +1263,86 @@ class App {
         }
     }
 
+    async renderPagePreviewIntoImg(file, imgElement, pageNum = 1) {
+        if (!file || !imgElement) return null;
+        try {
+            if (file.name?.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
+                const buffer = await PdfHelpers.fileToArrayBuffer(file);
+                const dataUrl = await PdfHelpers.renderPageThumbnail(buffer, pageNum, 360);
+                if (dataUrl) {
+                    imgElement.src = dataUrl;
+                    return dataUrl;
+                }
+            } else {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imgElement.src = e.target.result;
+                        resolve(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        } catch (e) {
+            console.warn('Page preview render note:', e);
+        }
+        return null;
+    }
+
     // ================= 3. ROTATE PDF =================
     renderRotateWorkspace(container) {
         container.innerHTML = `
             <div class="space-y-6">
-                <div id="rotate-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
+                <div id="rotate-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer relative group">
                     <input type="file" id="rotate-file-input" accept=".pdf" class="hidden">
-                    <div class="space-y-3 pointer-events-none">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
-                            <i data-lucide="rotate-cw" class="w-7 h-7"></i>
+                    <div class="space-y-3 pointer-events-none max-w-md mx-auto">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-105 transition shadow-sm">
+                            <i data-lucide="rotate-cw" class="w-8 h-8"></i>
                         </div>
-                        <h4 class="text-base font-bold text-slate-800">Select PDF to Rotate</h4>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800">Select PDF to Rotate</h4>
+                        <p class="text-xs text-slate-500">Rotate document pages permanently in browser RAM. Zero server uploads.</p>
+                        <div class="pt-2">
+                            <button type="button" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
+                                Select PDF
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div id="rotate-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h4 id="rotate-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                        <div class="flex items-center gap-2">
-                            <button class="btn-rot px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-bold" data-angle="90">+90° Clockwise</button>
-                            <button class="btn-rot px-3 py-1.5 bg-white text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold" data-angle="180">180° Flip</button>
-                            <button class="btn-rot px-3 py-1.5 bg-white text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold" data-angle="270">270° (90° CCW)</button>
+                <div id="rotate-editor" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column -->
+                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[360px] max-h-[500px] overflow-hidden bg-slate-900/5 relative">
+                            <div class="flex items-center justify-center p-4">
+                                <img id="rotate-preview-img" src="" alt="Page 1 Preview" class="max-h-[340px] w-auto max-w-full object-contain rounded-lg shadow-md border border-slate-200 transition-transform duration-300" style="transform: rotate(90deg)">
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded font-mono">
+                                Live Rotation Preview
+                            </div>
+                        </div>
+
+                        <!-- Controls Column -->
+                        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+                            <div>
+                                <h4 id="rotate-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                                <p id="rotate-meta" class="text-xs text-slate-500 mt-0.5">Choose angle to rotate pages:</p>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button type="button" class="btn-rot px-3 py-2 bg-red-50 text-red-700 border border-red-300 rounded-xl text-xs font-bold transition cursor-pointer" data-angle="90">+90° CW</button>
+                                <button type="button" class="btn-rot px-3 py-2 bg-white text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-50 transition cursor-pointer" data-angle="180">180° Flip</button>
+                                <button type="button" class="btn-rot px-3 py-2 bg-white text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-50 transition cursor-pointer" data-angle="270">270° CCW</button>
+                            </div>
+                            <button id="btn-execute-rotate" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                                <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                                <span>Apply Rotation &amp; Download</span>
+                            </button>
+                            <div class="text-center">
+                                <button id="btn-rotate-new" class="text-xs font-medium text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                                    &larr; Choose another PDF
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <button id="btn-execute-rotate" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold">Apply &amp; Download</button>
                 </div>
             </div>
         `;
@@ -1294,6 +1350,8 @@ class App {
         let angle = 90;
         const dropzone = document.getElementById('rotate-dropzone');
         const fileInput = document.getElementById('rotate-file-input');
+        const previewImg = document.getElementById('rotate-preview-img');
+
         dropzone?.addEventListener('click', () => fileInput?.click());
         fileInput?.addEventListener('change', (e) => {
             if (e.target?.files?.length) {
@@ -1301,27 +1359,42 @@ class App {
                 dropzone.classList.add('hidden');
                 document.getElementById('rotate-editor').classList.remove('hidden');
                 document.getElementById('rotate-filename').textContent = e.target.files[0].name;
+                this.renderPagePreviewIntoImg(e.target.files[0], previewImg, 1);
             }
         });
 
         document.querySelectorAll('.btn-rot').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.btn-rot').forEach(b => b.classList.replace('bg-red-50', 'bg-white'));
-                btn.classList.replace('bg-white', 'bg-red-50');
+                document.querySelectorAll('.btn-rot').forEach(b => {
+                    b.classList.remove('bg-red-50', 'text-red-700', 'border-red-300', 'font-bold');
+                    b.classList.add('bg-white', 'text-slate-700', 'border-slate-200', 'font-semibold');
+                });
+                btn.classList.add('bg-red-50', 'text-red-700', 'border-red-300', 'font-bold');
+                btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200', 'font-semibold');
                 angle = parseInt(btn.getAttribute('data-angle'), 10);
+                if (previewImg) {
+                    previewImg.style.transform = `rotate(${angle}deg)`;
+                }
             });
         });
 
         document.getElementById('btn-execute-rotate')?.addEventListener('click', async () => {
             if (!this.uploadedFiles.length) return;
             try {
-                this.showToast('Rotating PDF pages...', 'info');
+                this.showToast('Rotating PDF pages in browser memory...', 'info');
                 await RotateTool.execute(this.uploadedFiles[0], { rotationDegrees: angle });
                 this.updateHistoryCounter();
                 this.showToast('Rotated and downloaded!', 'success');
             } catch (err) {
                 this.showToast(err.message, 'error');
             }
+        });
+
+        document.getElementById('btn-rotate-new')?.addEventListener('click', () => {
+            this.uploadedFiles = [];
+            document.getElementById('rotate-editor')?.classList.add('hidden');
+            dropzone?.classList.remove('hidden');
+            if (fileInput) fileInput.value = '';
         });
 
         this.refreshLucideIcons();
@@ -1651,41 +1724,56 @@ class App {
                             <i data-lucide="stamp" class="w-7 h-7"></i>
                         </div>
                         <h4 class="text-base font-bold text-slate-800">Select PDF to Add Watermark</h4>
-                        <p class="text-xs text-slate-500">Stamp confidential marks, copyright stamps, or custom text.</p>
+                        <p class="text-xs text-slate-500">Stamp confidential marks, copyright stamps, or custom text with live visual preview.</p>
                     </div>
                 </div>
 
                 <div id="watermark-editor" class="hidden space-y-4">
-                    <div class="p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                        <h4 id="watermark-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Watermark Text</label>
-                                <input type="text" id="wm-text" value="CONFIDENTIAL" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column -->
+                        <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[320px] max-h-[460px] overflow-hidden bg-slate-900/5 relative">
+                            <img id="wm-preview-img" src="" alt="Watermark Preview" class="max-h-[380px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
+                            <div id="wm-preview-overlay" class="absolute pointer-events-none select-none font-bold uppercase transition-all duration-150 transform -rotate-45 text-center text-red-500 opacity-30 text-3xl font-mono">
+                                CONFIDENTIAL
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Color</label>
-                                <select id="wm-color" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
-                                    <option value="#ef4444">Red Stamp</option>
-                                    <option value="#64748b">Slate Gray</option>
-                                    <option value="#2563eb">Blue</option>
-                                    <option value="#059669">Green</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Opacity</label>
-                                <input type="range" id="wm-opacity" min="0.1" max="0.8" step="0.05" value="0.3" class="w-full">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Font Size</label>
-                                <input type="number" id="wm-size" min="16" max="96" value="48" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded font-mono">
+                                Live In-Browser Preview
                             </div>
                         </div>
 
-                        <button id="btn-execute-watermark" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition">
-                            Apply Watermark &amp; Download PDF
-                        </button>
+                        <!-- Controls Column -->
+                        <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+                            <h4 id="watermark-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Watermark Text</label>
+                                    <input type="text" id="wm-text" value="CONFIDENTIAL" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Color</label>
+                                    <select id="wm-color" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                                        <option value="#ef4444">Red Stamp</option>
+                                        <option value="#64748b">Slate Gray</option>
+                                        <option value="#2563eb">Blue</option>
+                                        <option value="#059669">Green</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Font Size (<span id="wm-size-val">48px</span>)</label>
+                                    <input type="number" id="wm-size" min="16" max="96" value="48" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Opacity (<span id="wm-opacity-val">30%</span>)</label>
+                                    <input type="range" id="wm-opacity" min="0.1" max="0.8" step="0.05" value="0.3" class="w-full accent-red-600">
+                                </div>
+                            </div>
+
+                            <button id="btn-execute-watermark" class="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
+                                <i data-lucide="stamp" class="w-4 h-4"></i>
+                                <span>Apply Watermark &amp; Download PDF</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1693,6 +1781,30 @@ class App {
 
         const dropzone = document.getElementById('watermark-dropzone');
         const fileInput = document.getElementById('watermark-file-input');
+        const textInp = document.getElementById('wm-text');
+        const colorSel = document.getElementById('wm-color');
+        const opacityInp = document.getElementById('wm-opacity');
+        const sizeInp = document.getElementById('wm-size');
+        const overlay = document.getElementById('wm-preview-overlay');
+
+        const updateLiveOverlay = () => {
+            if (!overlay) return;
+            overlay.textContent = textInp?.value || 'CONFIDENTIAL';
+            overlay.style.color = colorSel?.value || '#ef4444';
+            overlay.style.opacity = opacityInp?.value || '0.3';
+            const sz = Math.min(Math.max(parseInt(sizeInp?.value || 48, 10), 14), 72);
+            overlay.style.fontSize = `${sz * 0.65}px`;
+            const opVal = document.getElementById('wm-opacity-val');
+            if (opVal) opVal.textContent = `${Math.round(parseFloat(opacityInp?.value || 0.3) * 100)}%`;
+            const szVal = document.getElementById('wm-size-val');
+            if (szVal) szVal.textContent = `${sizeInp?.value || 48}px`;
+        };
+
+        textInp?.addEventListener('input', updateLiveOverlay);
+        colorSel?.addEventListener('change', updateLiveOverlay);
+        opacityInp?.addEventListener('input', updateLiveOverlay);
+        sizeInp?.addEventListener('input', updateLiveOverlay);
+
         dropzone?.addEventListener('click', () => fileInput?.click());
         fileInput?.addEventListener('change', (e) => {
             if (e.target?.files?.length) this.handleWatermarkFile(e.target.files[0]);
@@ -1702,10 +1814,10 @@ class App {
             if (!this.uploadedFiles.length) return;
             try {
                 this.showToast('Applying watermark in browser RAM...', 'info');
-                const text = document.getElementById('wm-text')?.value || 'CONFIDENTIAL';
-                const opacity = document.getElementById('wm-opacity')?.value || 0.3;
-                const fontSize = document.getElementById('wm-size')?.value || 48;
-                const color = document.getElementById('wm-color')?.value || '#ef4444';
+                const text = textInp?.value || 'CONFIDENTIAL';
+                const opacity = parseFloat(opacityInp?.value || 0.3);
+                const fontSize = parseInt(sizeInp?.value || 48, 10);
+                const color = colorSel?.value || '#ef4444';
 
                 const result = await AllToolsEngine.addWatermark(this.uploadedFiles[0], { text, opacity, fontSize, color });
                 PdfHelpers.downloadBytes(result.pdfBytes, `watermarked_${Date.now()}.pdf`, 'application/pdf');
@@ -1725,6 +1837,7 @@ class App {
         document.getElementById('watermark-dropzone')?.classList.add('hidden');
         document.getElementById('watermark-editor')?.classList.remove('hidden');
         document.getElementById('watermark-filename').textContent = file.name;
+        this.renderPagePreviewIntoImg(file, document.getElementById('wm-preview-img'), 1);
     }
 
     // ================= 8. ADD PAGE NUMBERS =================
@@ -1738,38 +1851,53 @@ class App {
                             <i data-lucide="hash" class="w-7 h-7"></i>
                         </div>
                         <h4 class="text-base font-bold text-slate-800">Select PDF to Add Page Numbers</h4>
-                        <p class="text-xs text-slate-500">Insert custom numbered footers or headers.</p>
+                        <p class="text-xs text-slate-500">Insert custom numbered footers or headers with live document preview.</p>
                     </div>
                 </div>
 
                 <div id="numbers-editor" class="hidden space-y-4">
-                    <div class="p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                        <h4 id="numbers-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Format</label>
-                                <select id="pn-format" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
-                                    <option value="page_of_total">Page 1 of N</option>
-                                    <option value="simple">1 / N</option>
-                                    <option value="page_only">Page 1</option>
-                                </select>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column -->
+                        <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[320px] max-h-[460px] overflow-hidden bg-slate-900/5 relative">
+                            <img id="pn-preview-img" src="" alt="Page Numbers Preview" class="max-h-[380px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
+                            <div id="pn-preview-badge" class="absolute bottom-4 left-1/2 -translate-x-1/2 font-mono text-[11px] font-bold bg-slate-900/85 text-white px-2.5 py-0.5 rounded shadow-sm">
+                                Page 1 of N
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Position</label>
-                                <select id="pn-position" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
-                                    <option value="bottom-center">Bottom Center</option>
-                                    <option value="bottom-right">Bottom Right</option>
-                                    <option value="bottom-left">Bottom Left</option>
-                                    <option value="top-right">Top Right</option>
-                                    <option value="top-center">Top Center</option>
-                                </select>
+                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded font-mono">
+                                Live In-Browser Preview
                             </div>
                         </div>
 
-                        <button id="btn-execute-numbers" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition">
-                            Stamp Numbers &amp; Download PDF
-                        </button>
+                        <!-- Controls Column -->
+                        <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+                            <h4 id="numbers-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Format</label>
+                                    <select id="pn-format" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                                        <option value="page_of_total">Page 1 of N</option>
+                                        <option value="simple">1 / N</option>
+                                        <option value="page_only">Page 1</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Position</label>
+                                    <select id="pn-position" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                                        <option value="bottom-center">Bottom Center</option>
+                                        <option value="bottom-right">Bottom Right</option>
+                                        <option value="bottom-left">Bottom Left</option>
+                                        <option value="top-right">Top Right</option>
+                                        <option value="top-center">Top Center</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button id="btn-execute-numbers" class="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
+                                <i data-lucide="hash" class="w-4 h-4"></i>
+                                <span>Stamp Numbers &amp; Download PDF</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1777,6 +1905,26 @@ class App {
 
         const dropzone = document.getElementById('numbers-dropzone');
         const fileInput = document.getElementById('numbers-file-input');
+        const formatSel = document.getElementById('pn-format');
+        const posSel = document.getElementById('pn-position');
+        const badge = document.getElementById('pn-preview-badge');
+
+        const updateBadge = () => {
+            if (!badge) return;
+            const fmt = formatSel?.value || 'page_of_total';
+            badge.textContent = fmt === 'simple' ? '1 / N' : fmt === 'page_only' ? 'Page 1' : 'Page 1 of N';
+            const pos = posSel?.value || 'bottom-center';
+            badge.className = 'absolute font-mono text-[11px] font-bold bg-slate-900/85 text-white px-2.5 py-0.5 rounded shadow-sm';
+            if (pos === 'bottom-center') badge.classList.add('bottom-4', 'left-1/2', '-translate-x-1/2');
+            else if (pos === 'bottom-right') badge.classList.add('bottom-4', 'right-4');
+            else if (pos === 'bottom-left') badge.classList.add('bottom-4', 'left-4');
+            else if (pos === 'top-right') badge.classList.add('top-4', 'right-4');
+            else if (pos === 'top-center') badge.classList.add('top-4', 'left-1/2', '-translate-x-1/2');
+        };
+
+        formatSel?.addEventListener('change', updateBadge);
+        posSel?.addEventListener('change', updateBadge);
+
         dropzone?.addEventListener('click', () => fileInput?.click());
         fileInput?.addEventListener('change', (e) => {
             if (e.target?.files?.length) this.handlePageNumbersFile(e.target.files[0]);
@@ -1786,8 +1934,8 @@ class App {
             if (!this.uploadedFiles.length) return;
             try {
                 this.showToast('Numbering pages in browser RAM...', 'info');
-                const format = document.getElementById('pn-format')?.value;
-                const position = document.getElementById('pn-position')?.value;
+                const format = formatSel?.value;
+                const position = posSel?.value;
                 const result = await AllToolsEngine.addPageNumbers(this.uploadedFiles[0], { format, position });
                 PdfHelpers.downloadBytes(result.pdfBytes, `numbered_${Date.now()}.pdf`, 'application/pdf');
                 this.updateHistoryCounter();
@@ -1806,6 +1954,7 @@ class App {
         document.getElementById('numbers-dropzone')?.classList.add('hidden');
         document.getElementById('numbers-editor')?.classList.remove('hidden');
         document.getElementById('numbers-filename').textContent = file.name;
+        this.renderPagePreviewIntoImg(file, document.getElementById('pn-preview-img'), 1);
     }
 
     // ================= 9. SIGN PDF (CANVAS DRAWING) =================
@@ -2078,12 +2227,22 @@ class App {
                 dropzone.classList.add('hidden');
                 document.getElementById('j2p-editor').classList.remove('hidden');
                 document.getElementById('j2p-count').textContent = `${this.uploadedFiles.length} Images Selected`;
-                document.getElementById('j2p-list').innerHTML = this.uploadedFiles.map((f, i) => `
-                    <div class="p-3 bg-white border border-slate-200 rounded-xl flex items-center justify-between text-xs">
-                        <span class="font-semibold text-slate-800">${i + 1}. ${f.name}</span>
-                        <span class="text-slate-400">${PdfHelpers.formatBytes(f.size)}</span>
+                document.getElementById('j2p-list').innerHTML = `
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                        ${this.uploadedFiles.map((f, i) => {
+                            const url = URL.createObjectURL(f);
+                            return `
+                                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 relative group">
+                                    <div class="w-full aspect-square bg-white rounded-lg overflow-hidden border border-slate-200 flex items-center justify-center">
+                                        <img src="${url}" class="w-full h-full object-cover" alt="Image ${i + 1}"/>
+                                    </div>
+                                    <div class="text-[11px] font-semibold text-slate-800 truncate" title="${f.name}">${i + 1}. ${f.name}</div>
+                                    <div class="text-[10px] text-slate-400">${PdfHelpers.formatBytes(f.size)}</div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
-                `).join('');
+                `;
             }
         });
 
@@ -2107,24 +2266,50 @@ class App {
     renderCompressWorkspace(container) {
         container.innerHTML = `
             <div class="space-y-6">
-                <div id="comp-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
+                <div id="comp-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer relative group">
                     <input type="file" id="comp-file-input" accept=".pdf" class="hidden">
-                    <div class="space-y-3 pointer-events-none">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
-                            <i data-lucide="minimize-2" class="w-7 h-7"></i>
+                    <div class="space-y-3 pointer-events-none max-w-md mx-auto">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-105 transition shadow-sm">
+                            <i data-lucide="minimize-2" class="w-8 h-8"></i>
                         </div>
-                        <h4 class="text-base font-bold text-slate-800">Select PDF to Compress</h4>
-                        <p class="text-xs text-slate-500">Optimizes internal streams and strips redundant objects.</p>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800">Select PDF to Compress</h4>
+                        <p class="text-xs text-slate-500">Optimizes font streams, removes redundant metadata, and compacts PDF byte structure in browser RAM.</p>
+                        <div class="pt-2">
+                            <button type="button" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
+                                Select PDF
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div id="comp-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <h4 id="comp-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                    <p id="comp-meta" class="text-xs text-slate-500">Original Size: 0 MB</p>
-                    <button id="btn-execute-comp" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition">
-                        Compress PDF Now (Browser RAM)
-                    </button>
-                    <div id="comp-result" class="hidden p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800"></div>
+                <div id="comp-editor" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column -->
+                        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[300px] max-h-[440px] overflow-hidden bg-slate-900/5 relative">
+                            <img id="comp-preview-img" src="" alt="Page 1 Preview" class="max-h-[360px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
+                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded font-mono">
+                                Page 1 Preview
+                            </div>
+                        </div>
+
+                        <!-- Controls Column -->
+                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+                            <div>
+                                <h4 id="comp-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                                <p id="comp-meta" class="text-xs text-slate-500 mt-0.5">Original Size: 0 MB</p>
+                            </div>
+                            <button id="btn-execute-comp" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                                <i data-lucide="file-minus" class="w-4 h-4"></i>
+                                <span>Compress PDF Now (Browser RAM)</span>
+                            </button>
+                            <div id="comp-result" class="hidden p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800"></div>
+                            <div class="text-center">
+                                <button id="btn-comp-new-pdf" class="text-xs font-medium text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                                    &larr; Choose another PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -2152,6 +2337,13 @@ class App {
             }
         });
 
+        document.getElementById('btn-comp-new-pdf')?.addEventListener('click', () => {
+            this.uploadedFiles = [];
+            document.getElementById('comp-editor')?.classList.add('hidden');
+            dropzone?.classList.remove('hidden');
+            if (fileInput) fileInput.value = '';
+        });
+
         this.refreshLucideIcons();
     }
 
@@ -2162,28 +2354,57 @@ class App {
         document.getElementById('comp-editor')?.classList.remove('hidden');
         document.getElementById('comp-filename').textContent = file.name;
         document.getElementById('comp-meta').textContent = `Original Size: ${PdfHelpers.formatBytes(file.size)}`;
+        const previewImg = document.getElementById('comp-preview-img');
+        if (previewImg) this.renderPagePreviewIntoImg(file, previewImg, 1);
     }
 
     // ================= 13. GRAYSCALE PDF =================
     renderGrayscaleWorkspace(container) {
         container.innerHTML = `
             <div class="space-y-6">
-                <div id="gray-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
+                <div id="gray-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer relative group">
                     <input type="file" id="gray-file-input" accept=".pdf" class="hidden">
-                    <div class="space-y-3 pointer-events-none">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center">
-                            <i data-lucide="circle" class="w-7 h-7"></i>
+                    <div class="space-y-3 pointer-events-none max-w-md mx-auto">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center group-hover:scale-105 transition shadow-sm">
+                            <i data-lucide="circle" class="w-8 h-8"></i>
                         </div>
-                        <h4 class="text-base font-bold text-slate-800">Select PDF to Convert to Grayscale</h4>
-                        <p class="text-xs text-slate-500">Converts color documents to clean black &amp; white to save ink.</p>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800">Select PDF to Convert to Grayscale</h4>
+                        <p class="text-xs text-slate-500">Converts all color elements to monochrome black &amp; white to save printing toner.</p>
+                        <div class="pt-2">
+                            <button type="button" class="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
+                                Select PDF
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div id="gray-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <h4 id="gray-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                    <button id="btn-execute-gray" class="px-6 py-3 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold shadow-md transition">
-                        Convert to Monochrome &amp; Download
-                    </button>
+                <div id="gray-editor" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column with monochrome filter -->
+                        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[300px] max-h-[440px] overflow-hidden bg-slate-900/5 relative">
+                            <img id="gray-preview-img" src="" alt="Monochrome Preview" class="max-h-[360px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200" style="filter: grayscale(100%);">
+                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded font-mono">
+                                Live Monochrome Preview
+                            </div>
+                        </div>
+
+                        <!-- Controls Column -->
+                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+                            <div>
+                                <h4 id="gray-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                                <p class="text-xs text-slate-500 mt-0.5">Converts all pages, text and graphics to pure grayscale in browser RAM.</p>
+                            </div>
+                            <button id="btn-execute-gray" class="w-full py-3 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                                <i data-lucide="circle" class="w-4 h-4"></i>
+                                <span>Convert to Monochrome &amp; Download</span>
+                            </button>
+                            <div class="text-center">
+                                <button id="btn-gray-new-pdf" class="text-xs font-medium text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                                    &larr; Choose another PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -2208,6 +2429,13 @@ class App {
             }
         });
 
+        document.getElementById('btn-gray-new-pdf')?.addEventListener('click', () => {
+            this.uploadedFiles = [];
+            document.getElementById('gray-editor')?.classList.add('hidden');
+            dropzone?.classList.remove('hidden');
+            if (fileInput) fileInput.value = '';
+        });
+
         this.refreshLucideIcons();
     }
 
@@ -2217,6 +2445,8 @@ class App {
         document.getElementById('gray-dropzone')?.classList.add('hidden');
         document.getElementById('gray-editor')?.classList.remove('hidden');
         document.getElementById('gray-filename').textContent = file.name;
+        const previewImg = document.getElementById('gray-preview-img');
+        if (previewImg) this.renderPagePreviewIntoImg(file, previewImg, 1);
     }
 
     // ================= 14. PDF METADATA EDITOR =================
@@ -2235,28 +2465,39 @@ class App {
                 </div>
 
                 <div id="meta-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <h4 id="meta-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Document Title</label>
-                            <input type="text" id="meta-title" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column -->
+                        <div class="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center min-h-[300px]">
+                            <img id="meta-preview-img" src="" alt="Document Preview" class="max-h-[320px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200 block">
+                            <span class="text-[10px] text-slate-400 mt-2">Document Page 1 Preview</span>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Author</label>
-                            <input type="text" id="meta-author" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Subject</label>
-                            <input type="text" id="meta-subject" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Keywords (comma separated)</label>
-                            <input type="text" id="meta-keywords" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+
+                        <!-- Fields Column -->
+                        <div class="lg:col-span-7 space-y-4">
+                            <h4 id="meta-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Document Title</label>
+                                    <input type="text" id="meta-title" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Author</label>
+                                    <input type="text" id="meta-author" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Subject</label>
+                                    <input type="text" id="meta-subject" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Keywords (comma separated)</label>
+                                    <input type="text" id="meta-keywords" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg">
+                                </div>
+                            </div>
+                            <button id="btn-execute-meta" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition">
+                                Save Metadata &amp; Download PDF
+                            </button>
                         </div>
                     </div>
-                    <button id="btn-execute-meta" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition">
-                        Save Metadata &amp; Download PDF
-                    </button>
                 </div>
             </div>
         `;
@@ -2295,6 +2536,7 @@ class App {
         document.getElementById('meta-dropzone')?.classList.add('hidden');
         document.getElementById('meta-editor')?.classList.remove('hidden');
         document.getElementById('meta-filename').textContent = file.name;
+        this.renderPagePreviewIntoImg(file, document.getElementById('meta-preview-img'), 1);
 
         const meta = await AllToolsEngine.readMetadata(file);
         document.getElementById('meta-title').value = meta.title;
@@ -2347,26 +2589,65 @@ class App {
     renderOcrWorkspace(container) {
         container.innerHTML = `
             <div class="space-y-6">
-                <div id="ocr-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
+                <div id="ocr-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer relative group">
                     <input type="file" id="ocr-file-input" accept=".pdf,image/*" class="hidden">
-                    <div class="space-y-3 pointer-events-none">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                            <i data-lucide="scan-text" class="w-7 h-7"></i>
+                    <div class="space-y-3 pointer-events-none max-w-md mx-auto">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-105 transition shadow-sm">
+                            <i data-lucide="scan-text" class="w-8 h-8"></i>
                         </div>
-                        <h4 class="text-base font-bold text-slate-800">Select Scanned Document or Image</h4>
-                        <p class="text-xs text-slate-500">Extracts selectable and searchable text from scanned PDFs & images.</p>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800">Select Scanned Document or Image</h4>
+                        <p class="text-xs text-slate-500">Extracts selectable and searchable text from scanned PDFs &amp; photos via in-browser WebAssembly &amp; Fast AI Vision.</p>
+                        <div class="pt-2">
+                            <button type="button" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
+                                Select File
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div id="ocr-output-card" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-sm font-bold text-slate-800">Recognized Text Output</h4>
-                        <div class="flex items-center gap-2">
-                            <button id="btn-copy-ocr" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Copy Text</button>
-                            <button id="btn-dl-ocr" class="px-3 py-1 bg-purple-600 text-white rounded-lg text-xs font-semibold">Download .TXT</button>
+                <!-- Active Workspace with Live Preview & Recognition -->
+                <div id="ocr-output-card" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column -->
+                        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[360px] max-h-[520px] overflow-hidden bg-slate-900/5 relative">
+                            <img id="ocr-preview-img" src="" alt="Document Preview" class="max-h-[440px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200">
+                            <div id="ocr-preview-badge" class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded font-mono">
+                                Document Preview
+                            </div>
+                        </div>
+
+                        <!-- OCR Results & Actions Column -->
+                        <div class="lg:col-span-7 space-y-4">
+                            <!-- Progress Status Card -->
+                            <div id="ocr-progress-card" class="p-4 bg-purple-50 border border-purple-200 rounded-2xl flex items-center gap-3">
+                                <div class="w-5 h-5 rounded-full border-2 border-purple-600 border-t-transparent animate-spin shrink-0"></div>
+                                <span id="ocr-status-text" class="text-xs font-semibold text-purple-900">Initializing Optical Character Recognition...</span>
+                            </div>
+
+                            <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-xs">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Recognized Text Output</h4>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" id="btn-copy-ocr" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition flex items-center gap-1 cursor-pointer">
+                                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                            <span>Copy</span>
+                                        </button>
+                                        <button type="button" id="btn-dl-ocr" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold shadow-xs transition flex items-center gap-1 cursor-pointer">
+                                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                            <span>Download .TXT</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea id="ocr-text-result" rows="12" class="w-full p-3.5 text-xs font-mono bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 leading-relaxed"></textarea>
+                                
+                                <div class="pt-2 text-center">
+                                    <button type="button" id="btn-ocr-new" class="text-xs font-medium text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                                        &larr; Choose another document
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <textarea id="ocr-text-result" rows="10" class="w-full p-3 text-xs font-mono bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
                 </div>
             </div>
         `;
@@ -2394,22 +2675,57 @@ class App {
             }
         });
 
+        document.getElementById('btn-ocr-new')?.addEventListener('click', () => {
+            this.uploadedFiles = [];
+            document.getElementById('ocr-output-card')?.classList.add('hidden');
+            dropzone?.classList.remove('hidden');
+            if (fileInput) fileInput.value = '';
+        });
+
         this.refreshLucideIcons();
     }
 
     async handleOcrFile(file) {
         if (!file) return;
         this.uploadedFiles = [file];
-        document.getElementById('ocr-dropzone')?.classList.add('hidden');
-        this.showToast('Extracting text via Free Edge OCR...', 'info');
+
+        const dropzone = document.getElementById('ocr-dropzone');
+        const outputCard = document.getElementById('ocr-output-card');
+        const previewImg = document.getElementById('ocr-preview-img');
+        const progressCard = document.getElementById('ocr-progress-card');
+        const statusText = document.getElementById('ocr-status-text');
+        const resultTextarea = document.getElementById('ocr-text-result');
+
+        dropzone?.classList.add('hidden');
+        outputCard?.classList.remove('hidden');
+        progressCard?.classList.remove('hidden');
+        if (resultTextarea) resultTextarea.value = '';
+
+        // Render document preview immediately
+        if (previewImg) {
+            this.renderPagePreviewIntoImg(file, previewImg, 1);
+        }
+
+        this.showToast('Running Optical Character Recognition...', 'info');
+
         try {
-            const text = await EdgeAIBridge.performOcr(file);
-            document.getElementById('ocr-output-card')?.classList.remove('hidden');
-            document.getElementById('ocr-text-result').value = text;
+            const text = await EdgeAIBridge.performOcr(file, (p) => {
+                if (statusText && p.message) {
+                    statusText.textContent = p.message;
+                }
+            });
+
+            if (resultTextarea) {
+                resultTextarea.value = text;
+            }
+            progressCard?.classList.add('hidden');
             this.showToast('OCR completed successfully!', 'success');
+            this.refreshLucideIcons();
         } catch (err) {
-            document.getElementById('ocr-dropzone')?.classList.remove('hidden');
-            this.showToast(err.message || 'OCR parsing failed.', 'error');
+            if (statusText) {
+                statusText.textContent = `OCR Note: ${err.message || 'Processing encountered an issue.'}`;
+            }
+            this.showToast(err.message || 'OCR parsing encountered an issue.', 'error');
         }
     }
 
@@ -2429,11 +2745,25 @@ class App {
                 </div>
 
                 <div id="ai-output-card" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-sm font-bold text-slate-800">Executive AI Summary</h4>
-                        <button id="btn-copy-ai" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Copy Summary</button>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Left: Document Preview -->
+                        <div class="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center min-h-[300px]">
+                            <img id="ai-sum-preview-img" src="" alt="Document Preview" class="max-h-[360px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200 block">
+                            <span id="ai-sum-filename" class="text-[11px] font-bold text-slate-700 mt-2 truncate max-w-full">document.pdf</span>
+                        </div>
+
+                        <!-- Right: AI Summary -->
+                        <div class="lg:col-span-7 space-y-3">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                                <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+                                    <span>Executive AI Summary</span>
+                                </h4>
+                                <button id="btn-copy-ai" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Copy Summary</button>
+                            </div>
+                            <div id="ai-summary-result" class="p-4 text-xs text-slate-800 bg-slate-50 border border-slate-200 rounded-xl leading-relaxed whitespace-pre-line font-sans max-h-96 overflow-y-auto"></div>
+                        </div>
                     </div>
-                    <div id="ai-summary-result" class="p-4 text-xs text-slate-800 bg-slate-50 border border-slate-200 rounded-xl leading-relaxed whitespace-pre-line font-sans"></div>
                 </div>
             </div>
         `;
@@ -2460,16 +2790,19 @@ class App {
         if (!file) return;
         this.uploadedFiles = [file];
         document.getElementById('ai-dropzone')?.classList.add('hidden');
+        document.getElementById('ai-output-card')?.classList.remove('hidden');
+        document.getElementById('ai-sum-filename').textContent = file.name;
+        document.getElementById('ai-summary-result').innerHTML = '<div class="py-6 text-center text-xs text-slate-500 animate-pulse">Analyzing document & synthesizing executive summary...</div>';
+        this.renderPagePreviewIntoImg(file, document.getElementById('ai-sum-preview-img'), 1);
         this.showToast('Extracting text locally in browser RAM...', 'info');
         try {
             const { text } = await EdgeAIBridge.extractTextFromPdf(file);
             this.showToast('Analyzing content with AI...', 'info');
             const summary = await EdgeAIBridge.summarizeDocument(text);
-            document.getElementById('ai-output-card')?.classList.remove('hidden');
             document.getElementById('ai-summary-result').textContent = summary;
             this.showToast('Summary generated successfully!', 'success');
         } catch (err) {
-            document.getElementById('ai-dropzone')?.classList.remove('hidden');
+            document.getElementById('ai-summary-result').innerHTML = `<div class="text-xs text-red-500 p-2">${err.message}</div>`;
             this.showToast(err.message, 'error');
         }
     }
@@ -2490,11 +2823,25 @@ class App {
                 </div>
 
                 <div id="flatten-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <h4 id="flatten-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                    <p class="text-xs text-slate-500">Flattening locks all interactive text fields so they cannot be modified or tampered with.</p>
-                    <button id="btn-execute-flatten" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition">
-                        Flatten Form Fields &amp; Download PDF
-                    </button>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column -->
+                        <div class="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center min-h-[300px]">
+                            <img id="flatten-preview-img" src="" alt="Document Preview" class="max-h-[340px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200 block">
+                            <span class="text-[10px] text-slate-400 mt-2">Page 1 Form Preview</span>
+                        </div>
+
+                        <!-- Actions Column -->
+                        <div class="lg:col-span-7 space-y-4 flex flex-col justify-center">
+                            <h4 id="flatten-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">Flattening permanently converts interactive form fields, checkmarks, radio buttons, and annotations into immutable document vectors so they cannot be modified.</p>
+                            <div>
+                                <button id="btn-execute-flatten" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-2">
+                                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                                    <span>Flatten Form Fields &amp; Download PDF</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -2527,6 +2874,9 @@ class App {
         this.uploadedFiles = [file];
         document.getElementById('flatten-dropzone')?.classList.add('hidden');
         document.getElementById('flatten-editor')?.classList.remove('hidden');
+        document.getElementById('flatten-filename').textContent = file.name;
+        this.renderPagePreviewIntoImg(file, document.getElementById('flatten-preview-img'), 1);
+    }
         document.getElementById('flatten-filename').textContent = file.name;
     }
 
@@ -3105,19 +3455,40 @@ class App {
                             <i data-lucide="crop" class="w-7 h-7"></i>
                         </div>
                         <h4 class="text-base font-bold text-slate-800">Select PDF to Crop Margins</h4>
-                        <p class="text-xs text-slate-500">Trim excessive whitespace borders from document pages.</p>
+                        <p class="text-xs text-slate-500">Trim excessive whitespace borders from document pages with live visual preview.</p>
                     </div>
                 </div>
 
-                <div id="crop-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <h4 id="crop-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold text-slate-700">Margin Trim Percentage: <span id="crop-val-label">10%</span></label>
-                        <input type="range" id="crop-slider" min="2" max="30" value="10" class="w-full">
+                <div id="crop-editor" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column -->
+                        <div class="lg:col-span-6 bg-slate-100 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[340px] relative overflow-hidden">
+                            <div class="relative inline-block">
+                                <img id="crop-preview-img" src="" alt="Crop Preview" class="max-h-[360px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200 block">
+                                <div id="crop-preview-box" class="absolute border-2 border-dashed border-teal-500 bg-teal-500/10 pointer-events-none transition-all duration-150" style="inset: 10%;"></div>
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded font-mono">
+                                In-Browser Margin Preview
+                            </div>
+                        </div>
+
+                        <!-- Controls Column -->
+                        <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm flex flex-col justify-center">
+                            <h4 id="crop-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs font-semibold text-slate-700">Margin Trim Percentage</label>
+                                    <span id="crop-val-label" class="text-xs font-bold text-teal-600">10%</span>
+                                </div>
+                                <input type="range" id="crop-slider" min="2" max="30" value="10" class="w-full accent-teal-600">
+                                <p class="text-[11px] text-slate-400">Trims outer margins equally on left, top, right, and bottom borders across all pages.</p>
+                            </div>
+                            <button id="btn-execute-crop" class="w-full px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
+                                <i data-lucide="crop" class="w-4 h-4"></i>
+                                <span>Trim Margins &amp; Download PDF</span>
+                            </button>
+                        </div>
                     </div>
-                    <button id="btn-execute-crop" class="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition">
-                        Trim Margins &amp; Download PDF
-                    </button>
                 </div>
             </div>
         `;
@@ -3130,8 +3501,11 @@ class App {
         });
 
         const slider = document.getElementById('crop-slider');
+        const box = document.getElementById('crop-preview-box');
         slider?.addEventListener('input', (e) => {
-            document.getElementById('crop-val-label').textContent = `${e.target.value}%`;
+            const val = e.target.value;
+            document.getElementById('crop-val-label').textContent = `${val}%`;
+            if (box) box.style.inset = `${val}%`;
         });
 
         document.getElementById('btn-execute-crop')?.addEventListener('click', async () => {
@@ -3157,6 +3531,7 @@ class App {
         document.getElementById('crop-dropzone')?.classList.add('hidden');
         document.getElementById('crop-editor')?.classList.remove('hidden');
         document.getElementById('crop-filename').textContent = file.name;
+        this.renderPagePreviewIntoImg(file, document.getElementById('crop-preview-img'), 1);
     }
 
     // ================= 21. REPAIR PDF =================
@@ -3174,12 +3549,26 @@ class App {
                     </div>
                 </div>
 
-                <div id="repair-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <h4 id="repair-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                    <p class="text-xs text-slate-500">Client-side parser reads valid byte sequences and generates a reconstructed, valid PDF stream.</p>
-                    <button id="btn-execute-repair" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition">
-                        Reconstruct PDF &amp; Download
-                    </button>
+                <div id="repair-editor" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Preview Column -->
+                        <div class="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[300px]">
+                            <img id="repair-preview-img" src="" alt="Damaged PDF Preview" class="max-h-[340px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200 block">
+                            <span class="text-[10px] text-slate-400 mt-2">Recovered Page 1 Preview</span>
+                        </div>
+
+                        <!-- Controls Column -->
+                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm flex flex-col justify-center">
+                            <h4 id="repair-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">Client-side parser reads valid byte sequences, reconstructs broken object pointers, and generates a valid, standard-compliant PDF stream.</p>
+                            <div>
+                                <button id="btn-execute-repair" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-2">
+                                    <i data-lucide="wrench" class="w-4 h-4"></i>
+                                    <span>Reconstruct PDF &amp; Download</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -3213,6 +3602,7 @@ class App {
         document.getElementById('repair-dropzone')?.classList.add('hidden');
         document.getElementById('repair-editor')?.classList.remove('hidden');
         document.getElementById('repair-filename').textContent = file.name;
+        this.renderPagePreviewIntoImg(file, document.getElementById('repair-preview-img'), 1);
     }
 
     // ================= 22. MARKDOWN TO PDF =================
@@ -3530,13 +3920,24 @@ This document was compiled directly in your browser using zero-cost serverless P
                             <i data-lucide="alert-circle" class="w-7 h-7"></i>
                         </div>
                         <h4 class="text-base font-bold text-slate-800">Select Contract or Form to Scan</h4>
-                        <p class="text-xs text-slate-500">Detects unsigned signature blocks, blank date fields, and unfilled inputs.</p>
+                        <p class="text-xs text-slate-500">Detects unsigned signature blocks, blank date fields, and unfilled inputs with document preview.</p>
                     </div>
                 </div>
 
                 <div id="blank-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <h4 id="blank-filename" class="text-sm font-bold text-slate-800">contract.pdf</h4>
-                    <div id="blank-results-list" class="space-y-2"></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Left: Document Preview -->
+                        <div class="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center min-h-[300px]">
+                            <img id="blank-preview-img" src="" alt="Contract Preview" class="max-h-[360px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200 block">
+                            <span class="text-[10px] text-slate-400 mt-2">Document Page 1 Preview</span>
+                        </div>
+
+                        <!-- Right: Findings Checklist -->
+                        <div class="lg:col-span-7 space-y-3">
+                            <h4 id="blank-filename" class="text-sm font-bold text-slate-800">contract.pdf</h4>
+                            <div id="blank-results-list" class="space-y-2"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -3557,6 +3958,7 @@ This document was compiled directly in your browser using zero-cost serverless P
         document.getElementById('blank-dropzone')?.classList.add('hidden');
         document.getElementById('blank-editor')?.classList.remove('hidden');
         document.getElementById('blank-filename').textContent = file.name;
+        this.renderPagePreviewIntoImg(file, document.getElementById('blank-preview-img'), 1);
 
         const listEl = document.getElementById('blank-results-list');
         listEl.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">Scanning document for missing entries...</div>`;
@@ -3603,24 +4005,35 @@ This document was compiled directly in your browser using zero-cost serverless P
                 </div>
 
                 <div id="trans-editor" class="hidden p-6 bg-white border border-slate-200 rounded-2xl space-y-4 shadow-sm">
-                    <div class="flex items-center justify-between">
-                        <h4 id="trans-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                        <div class="flex items-center gap-2">
-                            <select id="trans-target-lang" class="px-3 py-1.5 text-xs border border-slate-300 rounded-lg">
-                                <option value="Spanish">Spanish</option>
-                                <option value="French">French</option>
-                                <option value="German">German</option>
-                                <option value="Hindi">Hindi</option>
-                                <option value="Chinese">Chinese</option>
-                                <option value="Japanese">Japanese</option>
-                                <option value="Arabic">Arabic</option>
-                            </select>
-                            <button id="btn-execute-trans" class="px-4 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold">
-                                Translate Document
-                            </button>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Left: Document Preview -->
+                        <div class="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center min-h-[300px]">
+                            <img id="trans-preview-img" src="" alt="Document Preview" class="max-h-[360px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200 block">
+                            <span class="text-[10px] text-slate-400 mt-2">Document Page 1 Preview</span>
+                        </div>
+
+                        <!-- Right: Translation Settings & Output -->
+                        <div class="lg:col-span-7 space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                                <h4 id="trans-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
+                                <div class="flex items-center gap-2">
+                                    <select id="trans-target-lang" class="px-3 py-1.5 text-xs border border-slate-300 rounded-lg">
+                                        <option value="Spanish">Spanish</option>
+                                        <option value="French">French</option>
+                                        <option value="German">German</option>
+                                        <option value="Hindi">Hindi</option>
+                                        <option value="Chinese">Chinese</option>
+                                        <option value="Japanese">Japanese</option>
+                                        <option value="Arabic">Arabic</option>
+                                    </select>
+                                    <button id="btn-execute-trans" class="px-4 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold transition">
+                                        Translate
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="trans-output" class="hidden p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs whitespace-pre-line max-h-80 overflow-y-auto font-sans leading-relaxed"></div>
                         </div>
                     </div>
-                    <div id="trans-output" class="hidden p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs whitespace-pre-line max-h-80 overflow-y-auto font-sans"></div>
                 </div>
             </div>
         `;
@@ -3640,6 +4053,7 @@ This document was compiled directly in your browser using zero-cost serverless P
                 const { text } = await EdgeAIBridge.extractTextFromPdf(this.uploadedFiles[0]);
                 const outEl = document.getElementById('trans-output');
                 outEl?.classList.remove('hidden');
+                outEl.textContent = 'Translating content with Edge AI...';
 
                 const translated = await EdgeAIBridge.translateDocument(text, lang);
                 outEl.textContent = translated;
@@ -3658,6 +4072,7 @@ This document was compiled directly in your browser using zero-cost serverless P
         document.getElementById('trans-dropzone')?.classList.add('hidden');
         document.getElementById('trans-editor')?.classList.remove('hidden');
         document.getElementById('trans-filename').textContent = file.name;
+        this.renderPagePreviewIntoImg(file, document.getElementById('trans-preview-img'), 1);
     }
 
     // ================= 29. EDIT PDF =================

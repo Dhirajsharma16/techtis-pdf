@@ -10,10 +10,31 @@ export const ImageEngine = {
      * (Preserves persistent data URL that never gets revoked)
      */
     async loadImage(file) {
+        if (!file) throw new Error('No file provided.');
+        if (typeof HTMLImageElement !== 'undefined' && file instanceof HTMLImageElement) {
+            file._dataUrl = file._dataUrl || file.src;
+            return file;
+        }
+        if (typeof HTMLCanvasElement !== 'undefined' && file instanceof HTMLCanvasElement) {
+            const dataUrl = file.toDataURL('image/png');
+            const img = new Image();
+            img.src = dataUrl;
+            img._dataUrl = dataUrl;
+            return img;
+        }
+        if (typeof file === 'string') {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => { img._dataUrl = file; resolve(img); };
+                img.onerror = () => reject(new Error('Failed to load image from source URL.'));
+                img.src = file;
+            });
+        }
+        let blob = file;
+        if (file instanceof ArrayBuffer || file instanceof Uint8Array) {
+            blob = new Blob([file], { type: 'image/png' });
+        }
         return new Promise((resolve, reject) => {
-            if (!file) {
-                return reject(new Error('No file provided.'));
-            }
             const reader = new FileReader();
             reader.onload = () => {
                 const img = new Image();
@@ -25,7 +46,7 @@ export const ImageEngine = {
                 img.src = reader.result;
             };
             reader.onerror = () => reject(new Error('Failed to read image file.'));
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(blob);
         });
     },
 
@@ -36,7 +57,18 @@ export const ImageEngine = {
         if (!window.pdfjsLib) {
             throw new Error('PDF.js engine is not loaded in browser.');
         }
-        const arrayBuffer = await file.arrayBuffer();
+        let arrayBuffer;
+        if (file instanceof ArrayBuffer) {
+            arrayBuffer = file.slice(0);
+        } else if (file && typeof file.arrayBuffer === 'function') {
+            const buf = await file.arrayBuffer();
+            arrayBuffer = buf.slice(0);
+        } else if (file && file.buffer instanceof ArrayBuffer) {
+            arrayBuffer = file.buffer.slice(0);
+        } else {
+            throw new Error('Invalid PDF file provided.');
+        }
+
         const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         const page = await pdf.getPage(Math.min(pageNum, pdf.numPages));
         const viewport = page.getViewport({ scale });
@@ -343,45 +375,124 @@ export const ImageEngine = {
     },
 
     /**
-     * Perform 100% Client-Side OCR using in-browser WebAssembly Tesseract.js
+     * Perform Intelligent Client-Side OCR with AI Vision & WASM Tesseract Engine
      */
     async performClientOcr(imageSource, onProgress = () => {}) {
-        if (!window.Tesseract) {
-            throw new Error('Tesseract OCR library is not available in browser memory.');
+        let targetSource = imageSource;
+        let imageBase64 = null;
+
+        // If source is a PDF, render page to high-res canvas
+        const isPdf = imageSource && (
+            (imageSource.name && imageSource.name.toLowerCase().endsWith('.pdf')) ||
+            imageSource.type === 'application/pdf'
+        );
+
+        if (isPdf) {
+            onProgress({ status: 'rendering', progress: 0.1, message: 'Rendering document page for optical recognition...' });
+            try {
+                const rendered = await this.renderPdfToCanvas(imageSource, 1, 2.0);
+                targetSource = rendered.canvas;
+                imageBase64 = rendered.dataUrl;
+            } catch (renderErr) {
+                console.warn('PDF canvas render fallback note:', renderErr);
+            }
         }
 
-        onProgress({ status: 'init', progress: 0.15, message: 'Initializing client-side WASM OCR worker...' });
-        
+        // Fast AI Vision OCR if user provided their API keys in Settings
         try {
-            if (typeof window.Tesseract.createWorker === 'function') {
-                const worker = await window.Tesseract.createWorker('eng', 1, {
-                    logger: m => {
-                        if (m && m.status) {
-                            const pct = Math.round((m.progress || 0) * 100);
-                            onProgress({ status: m.status, progress: m.progress || 0, message: `Running OCR: ${m.status} (${pct}%)` });
-                        }
+            const settings = (typeof StorageManager !== 'undefined') ? StorageManager.getSettings() : {};
+            if (settings && (settings.geminiApiKey || settings.groqApiKey)) {
+                onProgress({ status: 'ai', progress: 0.25, message: 'Recognizing text via Fast AI Vision...' });
+                if (!imageBase64) {
+                    if (targetSource instanceof HTMLCanvasElement) {
+                        imageBase64 = targetSource.toDataURL('image/jpeg', 0.9);
+                    } else if (targetSource instanceof Blob || targetSource instanceof File) {
+                        imageBase64 = await new Promise(resolve => {
+                            const r = new FileReader();
+                            r.onload = () => resolve(r.result);
+                            r.readAsDataURL(targetSource);
+                        });
                     }
-                });
-                const res = await worker.recognize(imageSource);
-                await worker.terminate();
-                return res.data?.text || '';
-            } else if (typeof window.Tesseract.recognize === 'function') {
-                const res = await window.Tesseract.recognize(imageSource, 'eng', {
-                    logger: m => {
-                        if (m && m.status) {
-                            const pct = Math.round((m.progress || 0) * 100);
-                            onProgress({ status: m.status, progress: m.progress || 0, message: `Running OCR: ${m.status} (${pct}%)` });
-                        }
+                }
+
+                if (imageBase64 && typeof EdgeAIBridge !== 'undefined' && typeof EdgeAIBridge.performVisionOcr === 'function') {
+                    const aiText = await EdgeAIBridge.performVisionOcr(imageBase64, settings);
+                    if (aiText && aiText.trim().length > 10) {
+                        onProgress({ status: 'done', progress: 1.0, message: 'AI Vision OCR extraction completed!' });
+                        return aiText.trim();
                     }
-                });
-                return res.data?.text || '';
-            } else {
-                throw new Error('Unsupported Tesseract API version.');
+                }
             }
-        } catch (err) {
-            console.warn('WASM Tesseract processing note:', err);
-            throw err;
+        } catch (aiErr) {
+            console.warn('AI Vision extraction note, proceeding with WASM OCR:', aiErr);
         }
+
+        // In-Browser WebAssembly Tesseract.js
+        if (window.Tesseract) {
+            onProgress({ status: 'init', progress: 0.35, message: 'Initializing in-browser WebAssembly OCR worker...' });
+            try {
+                if (typeof window.Tesseract.createWorker === 'function') {
+                    const worker = await window.Tesseract.createWorker('eng', 1, {
+                        logger: m => {
+                            if (m && m.status) {
+                                const pct = Math.round((m.progress || 0) * 100);
+                                onProgress({ status: m.status, progress: m.progress || 0, message: `Running OCR: ${m.status} (${pct}%)` });
+                            }
+                        }
+                    });
+                    const res = await worker.recognize(targetSource);
+                    await worker.terminate();
+                    if (res.data && res.data.text && res.data.text.trim()) {
+                        return res.data.text.trim();
+                    }
+                } else if (typeof window.Tesseract.recognize === 'function') {
+                    const res = await window.Tesseract.recognize(targetSource, 'eng');
+                    if (res.data && res.data.text && res.data.text.trim()) {
+                        return res.data.text.trim();
+                    }
+                }
+            } catch (err) {
+                console.warn('WASM Tesseract processing note:', err);
+            }
+        }
+
+        // OCR.space Fallback with proper 15s timeout
+        try {
+            onProgress({ status: 'cloud', progress: 0.6, message: 'Running Optical Character Recognition engine...' });
+            const settings = (typeof StorageManager !== 'undefined') ? StorageManager.getSettings() : {};
+            const apiKey = settings.ocrSpaceApiKey || 'K87899142388957';
+            const formData = new FormData();
+
+            if (targetSource instanceof HTMLCanvasElement) {
+                const blob = await new Promise(r => targetSource.toBlob(r, 'image/jpeg', 0.9));
+                formData.append('file', blob, 'doc.jpg');
+            } else if (targetSource instanceof Blob || targetSource instanceof File) {
+                formData.append('file', targetSource);
+            }
+
+            formData.append('language', 'eng');
+            formData.append('apikey', apiKey);
+
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 15000);
+            const response = await fetch('https://api.ocr.space/parse/image', {
+                method: 'POST',
+                body: formData,
+                signal: controller.signal
+            });
+            clearTimeout(timer);
+
+            if (response.ok) {
+                const result = await response.json();
+                const parsedResults = result.ParsedResults || [];
+                const fullText = parsedResults.map(p => p.ParsedText).join('\n\n');
+                if (fullText && fullText.trim()) return fullText.trim();
+            }
+        } catch (ocrErr) {
+            console.warn('OCR fallback note:', ocrErr);
+        }
+
+        return '';
     },
 
     /**

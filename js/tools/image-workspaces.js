@@ -1529,6 +1529,7 @@ export function registerImageWorkspaces(AppClass) {
 
     // ================= 6. PRIVATE DOCUMENT OCR (AADHAAR, PAN, PASSPORT & MORE) =================
     AppClass.prototype.renderIdCardOcrWorkspace = function(container) {
+        const self = this;
         container.innerHTML = `
             <div class="space-y-6">
                 <!-- Dropzone -->
@@ -1681,18 +1682,18 @@ export function registerImageWorkspaces(AppClass) {
             }
         });
 
-        aiSettingsBtn?.addEventListener('click', () => this.openSettingsModal());
+        aiSettingsBtn?.addEventListener('click', () => self.openSettingsModal());
 
         aiEnhanceBtn?.addEventListener('click', async () => {
             if (!lastRecognizedText || !lastRecognizedText.trim()) {
-                this.showToast('Please upload an ID card or document first.', 'warning');
+                self.showToast('Please upload an ID card or document first.', 'warning');
                 return;
             }
 
             const quota = AIQuotaManager.getQuota();
             if (!quota.canUseAi && !quota.isUnlimited) {
-                this.showToast('Daily free AI limit reached (5/5). Add your own free Groq API key in Settings for unlimited AI!', 'warning');
-                this.openSettingsModal();
+                self.showToast('Daily free AI limit reached (5/5). Add your own free Groq API key in Settings for unlimited AI!', 'warning');
+                self.openSettingsModal();
                 return;
             }
 
@@ -1700,7 +1701,7 @@ export function registerImageWorkspaces(AppClass) {
             aiEnhanceBtn.innerHTML = '<span class="animate-spin inline-block mr-1">⏳</span> Analyzing with AI...';
 
             try {
-                this.showToast('Analyzing document with AI neural vision...', 'info');
+                self.showToast('Analyzing document with AI neural vision...', 'info');
                 const aiResult = await EdgeAIBridge.extractFieldsWithAI(lastRecognizedText, docPreview.src || null);
 
                 currentExtracted = {
@@ -1722,18 +1723,18 @@ export function registerImageWorkspaces(AppClass) {
                 badgeDocType.textContent = currentExtracted.docType;
                 renderFieldInputs(currentExtracted);
                 updateAiQuotaBadge();
-                this.showToast('Document details enhanced with AI precision!', 'success');
+                self.showToast('Document details enhanced with AI precision!', 'success');
             } catch (err) {
                 if (err.message.includes('NO_API_KEY')) {
-                    this.showToast('Please add your personal free Groq API key in Settings.', 'info');
-                    this.openSettingsModal();
+                    self.showToast('Please add your personal free Groq API key in Settings.', 'info');
+                    self.openSettingsModal();
                 } else {
-                    this.showToast(err.message, 'error');
+                    self.showToast(err.message, 'error');
                 }
             } finally {
                 aiEnhanceBtn.disabled = false;
                 aiEnhanceBtn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span>Enhance with AI</span>';
-                this.refreshLucideIcons();
+                self.refreshLucideIcons();
             }
         });
 
@@ -1787,12 +1788,12 @@ export function registerImageWorkspaces(AppClass) {
                 editor.classList.remove('hidden');
 
                 StorageManager.logActivity('id-card-ocr', 'Private Document OCR', `Extracted details from ${currentExtracted.docType}`);
-                this.updateHistoryCounter();
-                this.showToast('Document processed locally in 100% private RAM!', 'success');
+                self.updateHistoryCounter();
+                self.showToast('Document processed locally in 100% private RAM!', 'success');
             } catch (err) {
                 progressCard.classList.add('hidden');
                 dropzone.classList.remove('hidden');
-                this.showToast(`OCR error: ${err.message}`, 'error');
+                self.showToast(`OCR error: ${err.message}`, 'error');
             }
         }
 
@@ -1846,7 +1847,7 @@ export function registerImageWorkspaces(AppClass) {
                         navigator.clipboard.writeText(inputEl.value);
                         copyBtn.classList.add('text-emerald-600');
                         setTimeout(() => copyBtn.classList.remove('text-emerald-600'), 1500);
-                        this.showToast(`Copied ${f.label}!`, 'success');
+                        self.showToast(`Copied ${f.label}!`, 'success');
                     }
                 });
 
@@ -1878,7 +1879,7 @@ export function registerImageWorkspaces(AppClass) {
                 }
             });
             navigator.clipboard.writeText(lines.join('\n'));
-            this.showToast('All fields copied to clipboard!', 'success');
+            self.showToast('All fields copied to clipboard!', 'success');
         });
 
         clearBtn?.addEventListener('click', () => {
@@ -1890,14 +1891,15 @@ export function registerImageWorkspaces(AppClass) {
             input.value = '';
             editor.classList.add('hidden');
             dropzone.classList.remove('hidden');
-            this.showToast('All extracted data purged from browser memory!', 'success');
+            self.showToast('All extracted data purged from browser memory!', 'success');
         });
 
-        this.refreshLucideIcons();
+        self.refreshLucideIcons();
     };
 
     // ================= 7. NEW TOOL: "FILL FORM" (UNIVERSAL OCR ASSISTANT WITH DOCK-TO-SIDE & SESSION VAULT) =================
     AppClass.prototype.renderFillFormWorkspace = function(container) {
+        const self = this;
         container.innerHTML = `
             <div id="fill-form-main-container" class="space-y-6">
                 <!-- Dropzone (Shown when no documents uploaded yet) -->
@@ -2170,7 +2172,7 @@ export function registerImageWorkspaces(AppClass) {
             }
         });
 
-        aiSettingsBtn?.addEventListener('click', () => this.openSettingsModal());
+        aiSettingsBtn?.addEventListener('click', () => self.openSettingsModal());
 
         async function processDocumentUpload(file) {
             dropzone.classList.add('hidden');
@@ -2220,8 +2222,8 @@ export function registerImageWorkspaces(AppClass) {
                 editor.classList.remove('hidden');
 
                 StorageManager.logActivity('fill-form', 'Fill Form Assistant', `Added ${newDoc.name} (${extracted.docType}) to session database`);
-                this.updateHistoryCounter();
-                this.showToast(`Added ${newDoc.name} to Session Vault!`, 'success');
+                self.updateHistoryCounter();
+                self.showToast(`Added ${newDoc.name} to Session Vault!`, 'success');
 
                 renderAll();
             } catch (err) {
@@ -2229,7 +2231,7 @@ export function registerImageWorkspaces(AppClass) {
                 if (SessionDocVault.getDocs().length === 0) {
                     dropzone.classList.remove('hidden');
                 }
-                this.showToast(`Extraction Error: ${err.message}`, 'error');
+                self.showToast(`Extraction Error: ${err.message}`, 'error');
             }
         }
 
@@ -2319,9 +2321,16 @@ export function registerImageWorkspaces(AppClass) {
 
             if (activeTab === 'master') {
                 const master = SessionDocVault.getMasterProfile();
-                previewImg.classList.add('hidden');
-                masterGraphic.classList.remove('hidden');
-                previewBadge.textContent = `${docs.length} Documents Merged`;
+                if (docs.length > 0 && docs[0].previewUrl) {
+                    previewImg.classList.remove('hidden');
+                    masterGraphic.classList.add('hidden');
+                    previewImg.src = docs[0].previewUrl;
+                    previewBadge.textContent = `${docs.length} Docs Merged (Preview: ${docs[0].name})`;
+                } else {
+                    previewImg.classList.add('hidden');
+                    masterGraphic.classList.remove('hidden');
+                    previewBadge.textContent = `${docs.length} Documents Merged`;
+                }
                 sectionTitle.querySelector('span').textContent = 'Unified Master Profile';
                 fieldsCount.textContent = `${master.allFields.length} combined fields`;
 
@@ -2389,7 +2398,7 @@ export function registerImageWorkspaces(AppClass) {
                             copyBtn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i><span>Copy</span>';
                             if (window.lucide) window.lucide.createIcons();
                         }, 1400);
-                        this.showToast(`Copied ${f.label}!`, 'success');
+                        self.showToast(`Copied ${f.label}!`, 'success');
                     }
                 });
 
@@ -2467,14 +2476,14 @@ export function registerImageWorkspaces(AppClass) {
         aiEnhanceBtn?.addEventListener('click', async () => {
             const docs = SessionDocVault.getDocs();
             if (docs.length === 0) {
-                this.showToast('Please upload a document first.', 'warning');
+                self.showToast('Please upload a document first.', 'warning');
                 return;
             }
 
             const quota = AIQuotaManager.getQuota();
             if (!quota.canUseAi && !quota.isUnlimited) {
-                this.showToast('Daily free AI limit reached (5/5). Add your own free Groq/Gemini key in Settings for unlimited AI!', 'warning');
-                this.openSettingsModal();
+                self.showToast('Daily free AI limit reached (5/5). Add your own free Groq/Gemini key in Settings for unlimited AI!', 'warning');
+                self.openSettingsModal();
                 return;
             }
 
@@ -2487,7 +2496,7 @@ export function registerImageWorkspaces(AppClass) {
             aiEnhanceBtn.innerHTML = '<span class="animate-spin inline-block mr-1">⏳</span> Analyzing with AI Vision...';
 
             try {
-                this.showToast('Analyzing with multimodal AI vision...', 'info');
+                self.showToast('Analyzing with multimodal AI vision...', 'info');
                 const aiResult = await EdgeAIBridge.extractFieldsWithAI(rawText, previewData);
 
                 const newAllFields = [];
@@ -2509,25 +2518,25 @@ export function registerImageWorkspaces(AppClass) {
                 });
 
                 renderAll();
-                this.showToast(`${targetDoc.docType} fields enhanced with AI precision!`, 'success');
+                self.showToast(`${targetDoc.docType} fields enhanced with AI precision!`, 'success');
             } catch (err) {
                 if (err.message.includes('NO_API_KEY')) {
-                    this.showToast('Please add your personal free Groq or Gemini API key in Settings.', 'info');
-                    this.openSettingsModal();
+                    self.showToast('Please add your personal free Groq or Gemini API key in Settings.', 'info');
+                    self.openSettingsModal();
                 } else {
-                    this.showToast(err.message, 'error');
+                    self.showToast(err.message, 'error');
                 }
             } finally {
                 aiEnhanceBtn.disabled = false;
                 aiEnhanceBtn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span>Enhance with AI</span>';
-                this.refreshLucideIcons();
+                self.refreshLucideIcons();
             }
         });
 
         // Activate Docked Sidebar Mode
         dockBtn?.addEventListener('click', () => {
             dockedSidebar?.classList.remove('hidden');
-            this.showToast('Form Assistant docked to right! You can now browse any site and 1-click copy fields.', 'info');
+            self.showToast('Form Assistant docked to right! You can now browse any site and 1-click copy fields.', 'info');
         });
 
         undockBtn?.addEventListener('click', () => dockedSidebar?.classList.add('hidden'));
@@ -2544,7 +2553,7 @@ export function registerImageWorkspaces(AppClass) {
             if (fieldsToCopy.length === 0) return;
             const text = fieldsToCopy.map(f => `${f.label}: ${f.value}`).join('\n');
             navigator.clipboard.writeText(text);
-            this.showToast('All fields copied to clipboard!', 'success');
+            self.showToast('All fields copied to clipboard!', 'success');
         });
 
         clearDbBtn?.addEventListener('click', () => {
@@ -2555,10 +2564,10 @@ export function registerImageWorkspaces(AppClass) {
                 dropzone.classList.remove('hidden');
                 input.value = '';
                 addDocInput.value = '';
-                this.showToast('Session database cleared!', 'info');
+                self.showToast('Session database cleared!', 'info');
             }
         });
 
-        this.refreshLucideIcons();
+        self.refreshLucideIcons();
     };
 }
