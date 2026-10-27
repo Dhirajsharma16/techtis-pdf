@@ -50,7 +50,8 @@ const rootFiles = [
     'favicon-32x32.png',
     'favicon-16x16.png',
     'apple-touch-icon.png',
-    'site.webmanifest'
+    'site.webmanifest',
+    '_headers'
 ];
 
 for (const file of rootFiles) {

@@ -204,15 +204,20 @@
         }
     </script>
 
+    <!-- Performance Resource Hints -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+
     <!-- Custom Platform Styles -->
     <link rel="stylesheet" href="css/styles.css">
 
-    <!-- Vendor Libraries (Local with fallback to CDN) -->
-    <script src="vendor/pdf-lib.min.js"></script>
-    <script src="vendor/pdf.min.js"></script>
-    <script src="vendor/jszip.min.js"></script>
-    <script src="vendor/tesseract.min.js"></script>
-    <script src="vendor/lucide.min.js"></script>
+    <!-- Non-Blocking Deferred Vendor Libraries -->
+    <script defer src="vendor/lucide.min.js"></script>
+    <script defer src="vendor/pdf-lib.min.js"></script>
+    <script defer src="vendor/pdf.min.js"></script>
+    <script defer src="vendor/jszip.min.js"></script>
 
     <!-- TechTis Official Brand Icons & Favicons (Google Search & Multi-Browser Compliant) -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -235,7 +240,7 @@
     <!-- Main Navigation Header -->
     <header class="header-glass sticky top-0 z-40 px-4 lg:px-8 py-2.5 flex items-center justify-between gap-4">
         <a href="./" class="flex items-center gap-2.5 sm:gap-3 cursor-pointer shrink-0 group" id="brand-logo-btn" title="TechTis — Free PDF and Image Tools">
-            <img src="assets/images/logo.png" alt="TechTis Logo" class="h-9 sm:h-10 w-auto object-contain group-hover:scale-105 transition-transform">
+            <img src="assets/images/logo.png" alt="TechTis Logo" width="69" height="40" fetchpriority="high" class="h-9 sm:h-10 w-auto object-contain group-hover:scale-105 transition-transform">
             <div>
                 <div class="leading-none">
                     <span class="text-xl sm:text-2xl font-black tracking-tight text-[#002244]">Tech<span class="text-[#EA1D2C]">Tis</span></span>
@@ -1040,7 +1045,7 @@
         <div class="max-w-7xl mx-auto space-y-4">
             <div class="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div class="flex items-center gap-3">
-                    <img src="assets/images/logo.png" alt="TechTis Logo" class="h-10 w-auto object-contain rounded-lg">
+                    <img src="assets/images/logo.png" alt="TechTis Logo" width="69" height="40" loading="lazy" class="h-10 w-auto object-contain rounded-lg">
                     <div>
                         <div class="flex items-center gap-2">
                             <span class="font-extrabold text-[#002244] text-sm">Tech<span class="text-[#EA1D2C]">Tis</span></span>

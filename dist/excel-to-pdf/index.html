@@ -244,12 +244,17 @@
     <!-- Custom Platform Styles -->
     <link rel="stylesheet" href="../css/styles.css">
 
-    <!-- Vendor Libraries -->
-    <script src="../vendor/pdf-lib.min.js"></script>
-    <script src="../vendor/pdf.min.js"></script>
-    <script src="../vendor/jszip.min.js"></script>
-    <script src="../vendor/tesseract.min.js"></script>
-    <script src="../vendor/lucide.min.js"></script>
+    <!-- Performance Resource Hints -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+
+    <!-- Non-Blocking Deferred Vendor Libraries -->
+    <script defer src="../vendor/lucide.min.js"></script>
+    <script defer src="../vendor/pdf-lib.min.js"></script>
+    <script defer src="../vendor/pdf.min.js"></script>
+    <script defer src="../vendor/jszip.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col" data-tool-id="excel-to-pdf">
 
