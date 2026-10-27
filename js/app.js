@@ -52,7 +52,9 @@ class App {
         this.bindHubEvents();
         this.renderCatalog();
         this.updateHistoryCounter();
-        this.refreshLucideIcons();
+        if (this.isDedicatedPage) {
+            this.refreshLucideIcons();
+        }
 
         // If page has a data-tool-id, mount tool on dedicated page
         const dedicatedToolId = document.body?.dataset?.toolId;
@@ -469,6 +471,11 @@ class App {
             } else {
                 seoGuideEl.classList.remove('hidden');
             }
+        }
+
+        // If not filtered and grid already contains pre-rendered tools, skip expensive DOM rebuild
+        if (!isFiltered && grid.querySelectorAll('.tool-card').length >= 60 && !this._forceRerender) {
+            return;
         }
 
         let filtered = TOOLS.filter(tool => {

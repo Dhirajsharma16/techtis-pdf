@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TECHTIS — 100% Private, Free Online PDF Tools &amp; Document Suite | techtis.in</title>
+    <title>TECHTIS â€” 100% Private, Free Online PDF Tools &amp; Document Suite | techtis.in</title>
     <meta name="description" content="TECHTIS (techtis.in) is the world's most private and fastest free online document and utility platform. 60 professional tools: PDF Form Filler, Merge PDF, Compress PDF, Sign, OCR, Image Compressor, Dev Tools, CSS Generators &amp; Text Utilities. 100% in-browser RAM execution, zero file uploads, zero server latency, unlimited free use across all countries.">
     <meta name="keywords" content="free pdf editor, merge pdf online, split pdf, compress pdf, pdf form filler, sign pdf online, ocr scanned pdf to text, convert pdf to jpg, jpg to pdf, word to pdf, excel to pdf, watermark pdf, protect pdf password, unlock pdf, aadhaar form filler, rotate pdf pages, grayscale pdf, flatten pdf, private pdf tools, client side pdf, zero upload pdf converter, techtis pdf, techtis.in">
     <meta name="author" content="TECHTIS (techtis.in)">
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://techtis.in/">
     <meta property="og:site_name" content="TECHTIS">
-    <meta property="og:title" content="TECHTIS — 100% Private &amp; Fast Free Online PDF Suite">
+    <meta property="og:title" content="TECHTIS â€” 100% Private &amp; Fast Free Online PDF Suite">
     <meta property="og:description" content="Edit, fill forms, merge, compress, sign, and convert PDFs directly inside your browser memory. 0 bytes uploaded to external servers. Free forever worldwide.">
     <meta property="og:locale" content="en_US">
     <meta property="og:locale:alternate" content="en_GB">
@@ -37,7 +37,7 @@
 
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="TECHTIS — 100% Private Free Online PDF Suite">
+    <meta name="twitter:title" content="TECHTIS â€” 100% Private Free Online PDF Suite">
     <meta name="twitter:description" content="Fill government forms, merge, compress, sign, and convert PDFs locally in browser RAM. Zero file uploads, unlimited free access worldwide.">
 
     <!-- JSON-LD Structured Data (WebApplication, ItemList of 60 Tools, FAQPage) -->
@@ -48,7 +48,7 @@
         {
           "@type": "WebApplication",
           "@id": "https://techtis.in/#app",
-          "name": "TECHTIS — 100% Private Free Online PDF Suite",
+          "name": "TECHTIS â€” 100% Private Free Online PDF Suite",
           "url": "https://techtis.in/",
           "applicationCategory": "BusinessApplication, OfficeApplication, UtilityApplication",
           "operatingSystem": "All (Windows, macOS, Linux, iOS, Android)",
@@ -109,7 +109,7 @@
             { "@type": "ListItem", "position": 35, "name": "JPG to PNG", "url": "https://techtis.in/jpg-to-png/", "description": "Convert JPEG photos to lossless PNG format in browser memory." },
             { "@type": "ListItem", "position": 36, "name": "PNG to JPG", "url": "https://techtis.in/png-to-jpg/", "description": "Convert transparent PNG images to compact JPG format with background color fill." },
             { "@type": "ListItem", "position": 37, "name": "JPG to WebP", "url": "https://techtis.in/jpg-to-webp/", "description": "Convert images to ultra-efficient WebP format for fast web performance." },
-            { "@type": "ListItem", "position": 38, "name": "Image Cropper", "url": "https://techtis.in/image-cropper/", "description": "Crop and rotate photos with ratio presets (1:1, 4:3, 16:9, Passport) and 90° rotation." },
+            { "@type": "ListItem", "position": 38, "name": "Image Cropper", "url": "https://techtis.in/image-cropper/", "description": "Crop and rotate photos with ratio presets (1:1, 4:3, 16:9, Passport) and 90Â° rotation." },
             { "@type": "ListItem", "position": 39, "name": "Passport & ID Photo Maker", "url": "https://techtis.in/passport-photo-maker/", "description": "Generate compliant passport and ID photos with official country presets, face guides, and A4 print sheets." },
             { "@type": "ListItem", "position": 40, "name": "Private Document OCR", "url": "https://techtis.in/id-card-ocr/", "description": "Extract text from Aadhaar and PAN cards with 100% in-browser WebAssembly privacy and sensitive number masking." },
             { "@type": "ListItem", "position": 41, "name": "Fill Form (OCR Assistant)", "url": "https://techtis.in/fill-form/", "description": "Extract all fields from PDFs & images with 1-click copy & docked side-by-side form assistant." },
@@ -208,8 +208,25 @@
     <meta property="og:image" content="https://techtis.in/favicon-512x512.png">
     <meta name="twitter:image" content="https://techtis.in/favicon-512x512.png">
 
-    <!-- Google AdSense Official Script -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7999838604829896" crossorigin="anonymous"></script>
+    <!-- Google AdSense Official Script (Idle-Loaded for 95+ Mobile Performance) -->
+    <script>
+        (function() {
+            function loadAdSense() {
+                if (window._adsenseLoaded) return;
+                window._adsenseLoaded = true;
+                var s = document.createElement('script');
+                s.async = true;
+                s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7999838604829896";
+                s.crossOrigin = "anonymous";
+                document.head.appendChild(s);
+            }
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(loadAdSense, { timeout: 2000 });
+            } else {
+                window.addEventListener('load', loadAdSense);
+            }
+        })();
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
 
@@ -421,9 +438,1029 @@
                 </div>
             </div>
 
-            <!-- Tool Cards Grid (Half-size, sleek compact cards) -->
+            <!-- Tool Cards Grid (Pre-rendered for Instant Paint & Zero CLS) -->
             <div id="tools-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-5 pt-2">
-                <!-- Dynamically populated by app.js -->
+
+                <a href="merge-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="merge-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="layers" class="lucide lucide-layers w-6 h-6 sm:w-7 sm:h-7"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Merge PDF</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Combine multiple PDFs into one unified document in seconds</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="split-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="split-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="scissors" class="lucide lucide-scissors w-6 h-6 sm:w-7 sm:h-7"><circle cx="6" cy="6" r="3"></circle><path d="M8.12 8.12 12 12"></path><path d="M20 4 8.12 15.88"></path><circle cx="6" cy="18" r="3"></circle><path d="M14.8 14.8 20 20"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Split PDF</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Extract specific pages or separate every page into standalone files</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="rotate-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="rotate-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="rotate-cw" class="lucide lucide-rotate-cw w-6 h-6 sm:w-7 sm:h-7"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Rotate PDF</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Rotate PDF pages clockwise or counter-clockwise</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="remove-pages/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="remove-pages">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2" class="lucide lucide-trash-2 w-6 h-6 sm:w-7 sm:h-7"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Remove Pages</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Delete unwanted pages from your document</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="extract-pages/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="extract-pages">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="external-link" class="lucide lucide-external-link w-6 h-6 sm:w-7 sm:h-7"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Extract Pages</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Pull out individual pages to create a new PDF</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="organize-pages/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="organize-pages">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="grid" class="lucide lucide-grid w-6 h-6 sm:w-7 sm:h-7"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Organize Pages</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Rearrange, sort, duplicate, or delete PDF pages visually</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="add-page-numbers/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="add-page-numbers">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="hash" class="lucide lucide-hash w-6 h-6 sm:w-7 sm:h-7"><line x1="4" x2="20" y1="9" y2="9"></line><line x1="4" x2="20" y1="15" y2="15"></line><line x1="10" x2="8" y1="3" y2="21"></line><line x1="16" x2="14" y1="3" y2="21"></line></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Add Page Numbers</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Insert customizable page numbers with position &amp; typography control</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="add-watermark/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="add-watermark">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="stamp" class="lucide lucide-stamp w-6 h-6 sm:w-7 sm:h-7"><path d="M5 22h14"></path><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"></path><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Add Watermark</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Stamp custom text or confidential stamps across pages</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="edit-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="edit-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pen-tool" class="lucide lucide-pen-tool w-6 h-6 sm:w-7 sm:h-7"><path d="M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z"></path><path d="m18 13-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18"></path><path d="m2.3 2.3 7.286 7.286"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Edit PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Add text annotations, rectangles, and freehand highlights</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="sign-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="sign-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="edit-3" class="lucide lucide-edit-3 w-6 h-6 sm:w-7 sm:h-7"><path d="M12 20h9"></path><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Sign PDF</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Draw, type, or upload an electronic signature</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="form-filler/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="form-filler">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check-square" class="lucide lucide-check-square w-6 h-6 sm:w-7 sm:h-7"><path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.5"></path><path d="m9 11 3 3L22 4"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Form Filler</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Fill out interactive AcroForm text fields and checkboxes</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="crop-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="crop-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="crop" class="lucide lucide-crop w-6 h-6 sm:w-7 sm:h-7"><path d="M6 2v14a2 2 0 0 0 2 2h14"></path><path d="M18 22V8a2 2 0 0 0-2-2H2"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Crop PDF Margins</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Trim excessive margins or isolate content boxes</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="protect-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="protect-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="lock" class="lucide lucide-lock w-6 h-6 sm:w-7 sm:h-7"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Protect PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Encrypt your PDF with client-side password protection</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="unlock-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="unlock-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="unlock" class="lucide lucide-unlock w-6 h-6 sm:w-7 sm:h-7"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Unlock PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Remove owner passwords and printing restrictions</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="flatten-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="flatten-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-check" class="lucide lucide-shield-check w-6 h-6 sm:w-7 sm:h-7"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Flatten PDF Forms</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Lock fillable form fields and annotations into static vectors</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="metadata-editor/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="metadata-editor">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="tag" class="lucide lucide-tag w-6 h-6 sm:w-7 sm:h-7"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">PDF Metadata Editor</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Inspect and modify Title, Author, Subject, and Producer tags</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="repair-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="repair-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="wrench" class="lucide lucide-wrench w-6 h-6 sm:w-7 sm:h-7"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Repair PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Rebuild corrupted cross-reference tables and broken trees</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="pdf-to-jpg/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="pdf-to-jpg">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="image" class="lucide lucide-image w-6 h-6 sm:w-7 sm:h-7"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">PDF to JPG</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Render PDF pages into crisp high-resolution images</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="compress-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="compress-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="minimize-2" class="lucide lucide-minimize-2 w-6 h-6 sm:w-7 sm:h-7"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" x2="21" y1="10" y2="3"></line><line x1="3" x2="10" y1="21" y2="14"></line></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Compress PDF</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Reduce file size by optimizing internal streams and objects</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="grayscale-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="grayscale-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="circle" class="lucide lucide-circle w-6 h-6 sm:w-7 sm:h-7"><circle cx="12" cy="12" r="10"></circle></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Grayscale PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert full-color documents to black &amp; white for ink saving</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="jpg-to-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="jpg-to-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="file-image" class="lucide lucide-file-image w-6 h-6 sm:w-7 sm:h-7"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><circle cx="10" cy="12" r="2"></circle><path d="m20 17-1.296-1.296a2.41 2.41 0 0 0-3.408 0L9 22"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">JPG to PDF</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert images (JPG, PNG, WebP) into a multi-page PDF</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="markdown-to-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="markdown-to-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="file-text" class="lucide lucide-file-text w-6 h-6 sm:w-7 sm:h-7"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Markdown to PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Compile Markdown notes into styled, downloadable PDFs</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="text-to-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="text-to-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="align-left" class="lucide lucide-align-left w-6 h-6 sm:w-7 sm:h-7"><path d="M15 12H3"></path><path d="M17 18H3"></path><path d="M21 6H3"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Text to PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert plain text, code, or logs into clean PDF docs</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="excel-to-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="excel-to-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="table" class="lucide lucide-table w-6 h-6 sm:w-7 sm:h-7"><path d="M12 3v18"></path><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Excel (XLSX) to PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Parse spreadsheets with SheetJS and convert into tables</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="word-to-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="word-to-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="file-type" class="lucide lucide-file-type w-6 h-6 sm:w-7 sm:h-7"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M9 13v-1h6v1"></path><path d="M12 12v6"></path><path d="M11 18h2"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Word (DOCX) to PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Extract structured text and headings from DOCX to PDF</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="ppt-to-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="ppt-to-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="presentation" class="lucide lucide-presentation w-6 h-6 sm:w-7 sm:h-7"><path d="M2 3h20"></path><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"></path><path d="m7 21 5-5 5 5"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">PowerPoint to PDF</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Extract slide presentations into printable handouts</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="document-compare/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="document-compare">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="columns" class="lucide lucide-columns w-6 h-6 sm:w-7 sm:h-7"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M12 3v18"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Document Compare</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Diff check two PDFs to highlight text revisions side-by-side</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="ai-summarizer/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="ai-summarizer">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" class="lucide lucide-sparkles w-6 h-6 sm:w-7 sm:h-7"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">AI Document Summarizer</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Get instant key takeaways and executive summaries</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="ocr-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="ocr-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="scan-text" class="lucide lucide-scan-text w-6 h-6 sm:w-7 sm:h-7"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8h8"></path><path d="M7 12h10"></path><path d="M7 16h6"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">OCR PDF (Scan to Text)</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Extract text from scanned PDFs via Free Edge OCR API</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="ai-translator/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="ai-translator">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="languages" class="lucide lucide-languages w-6 h-6 sm:w-7 sm:h-7"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">AI PDF Translator</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Translate document contents into 50+ languages</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="form-blank-detector/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="form-blank-detector">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="alert-circle" class="lucide lucide-alert-circle w-6 h-6 sm:w-7 sm:h-7"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Form Blank Detector</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Scan contracts to locate unfilled blanks and missing signatures</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="scan-to-pdf/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="scan-to-pdf">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="camera" class="lucide lucide-camera w-6 h-6 sm:w-7 sm:h-7"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Scan to PDF (Webcam)</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Use your camera with WebGL auto-cropping &amp; contrast enhancement</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="image-compressor/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="image-compressor">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="image-minus" class="lucide lucide-image-minus w-6 h-6 sm:w-7 sm:h-7"><path d="M21 9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path><line x1="16" x2="22" y1="5" y2="5"></line><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Image Compressor</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Compress JPG, PNG &amp; WebP images with custom quality and byte savings</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="image-resizer/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="image-resizer">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="maximize-2" class="lucide lucide-maximize-2 w-6 h-6 sm:w-7 sm:h-7"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" x2="14" y1="3" y2="10"></line><line x1="3" x2="10" y1="21" y2="14"></line></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Image Resizer</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Resize images by pixels, percentage, or physical dimensions with aspect ratio lock</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="jpg-to-png/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="jpg-to-png">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="image" class="lucide lucide-image w-6 h-6 sm:w-7 sm:h-7"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">JPG to PNG</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert JPEG photos to lossless PNG format with zero compression artifacts</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="png-to-jpg/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="png-to-jpg">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="file-image" class="lucide lucide-file-image w-6 h-6 sm:w-7 sm:h-7"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><circle cx="10" cy="12" r="2"></circle><path d="m20 17-1.296-1.296a2.41 2.41 0 0 0-3.408 0L9 22"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">PNG to JPG</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert PNG images to lightweight JPG with custom background fill</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="jpg-to-webp/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="jpg-to-webp">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="zap" class="lucide lucide-zap w-6 h-6 sm:w-7 sm:h-7"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">JPG to WebP</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert JPG and PNG images to ultra-efficient next-gen WebP format</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="image-cropper/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="image-cropper">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="crop" class="lucide lucide-crop w-6 h-6 sm:w-7 sm:h-7"><path d="M6 2v14a2 2 0 0 0 2 2h14"></path><path d="M18 22V8a2 2 0 0 0-2-2H2"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Image Cropper</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Crop and rotate images with freeform or fixed aspect ratio presets</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="passport-photo-maker/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="passport-photo-maker">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="user-check" class="lucide lucide-user-check w-6 h-6 sm:w-7 sm:h-7"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Passport &amp; ID Photo Maker</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Create compliant passport photos with official presets &amp; A4 print sheet tiling</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="id-card-ocr/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="id-card-ocr">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="scan-line" class="lucide lucide-scan-line w-6 h-6 sm:w-7 sm:h-7"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 12h10"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Private Document OCR</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Extract text from Aadhaar, PAN &amp; ID cards with 100% in-browser privacy</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="fill-form/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="fill-form">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="clipboard-paste" class="lucide lucide-clipboard-paste w-6 h-6 sm:w-7 sm:h-7"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"></path><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"></path><path d="m17 10 4 4-4 4"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Fill Form (OCR Assistant)</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Extract all fields from PDFs &amp; images with 1-click copy &amp; docked side-by-side form assistant</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="qr-code-generator/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="qr-code-generator">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="qr-code" class="lucide lucide-qr-code w-6 h-6 sm:w-7 sm:h-7"><rect width="5" height="5" x="3" y="3" rx="1"></rect><rect width="5" height="5" x="16" y="3" rx="1"></rect><rect width="5" height="5" x="3" y="16" rx="1"></rect><path d="M21 16h-3a2 2 0 0 0-2 2v3"></path><path d="M21 21v.01"></path><path d="M12 7v3a2 2 0 0 1-2 2H7"></path><path d="M3 12h.01"></path><path d="M12 3h.01"></path><path d="M12 16v.01"></path><path d="M16 12h1"></path><path d="M21 12v.01"></path><path d="M12 21v-1"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">QR Code Generator</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Generate custom colored high-res QR codes with instant SVG &amp; PNG download</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="json-formatter/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="json-formatter">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="code" class="lucide lucide-code w-6 h-6 sm:w-7 sm:h-7"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">JSON Formatter &amp; Validator</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Beautify, validate, minify, and inspect JSON payloads in browser memory</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="base64-converter/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="base64-converter">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="binary" class="lucide lucide-binary w-6 h-6 sm:w-7 sm:h-7"><rect x="14" y="14" width="4" height="6" rx="2"></rect><rect x="6" y="4" width="4" height="6" rx="2"></rect><path d="M6 20h4"></path><path d="M14 10h4"></path><path d="M6 14h2v6"></path><path d="M14 4h2v6"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Base64 Encoder / Decoder</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Encode and decode UTF-8 text and binary files to/from Base64</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="url-encoder-decoder/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="url-encoder-decoder">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="link" class="lucide lucide-link w-6 h-6 sm:w-7 sm:h-7"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">URL Encoder / Decoder</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Encode or decode URI components and parse query parameters securely</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="hash-generator/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="hash-generator">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="hash" class="lucide lucide-hash w-6 h-6 sm:w-7 sm:h-7"><line x1="4" x2="20" y1="9" y2="9"></line><line x1="4" x2="20" y1="15" y2="15"></line><line x1="10" x2="8" y1="3" y2="21"></line><line x1="16" x2="14" y1="3" y2="21"></line></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Hash Generator</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Calculate MD5, SHA-1, SHA-256, and SHA-512 cryptographic hashes</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="password-generator/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="password-generator">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="key" class="lucide lucide-key w-6 h-6 sm:w-7 sm:h-7"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"></path><path d="m21 2-9.6 9.6"></path><circle cx="7.5" cy="15.5" r="5.5"></circle></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Password Generator</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Generate cryptographically strong, custom-length passwords with entropy scoring</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="css-glassmorphism/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="css-glassmorphism">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" class="lucide lucide-sparkles w-6 h-6 sm:w-7 sm:h-7"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">CSS Glassmorphism Generator</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Design frosted glass UI elements with backdrop-filter &amp; live CSS copy</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="css-box-shadow/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="css-box-shadow">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="box" class="lucide lucide-box w-6 h-6 sm:w-7 sm:h-7"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">CSS Box Shadow Generator</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Create sleek multi-layered box shadows with live preview &amp; CSS export</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="css-gradient/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="css-gradient">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="palette" class="lucide lucide-palette w-6 h-6 sm:w-7 sm:h-7"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">CSS Gradient Generator</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Design linear &amp; radial color gradients with angle control and curated presets</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="css-neumorphism/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="css-neumorphism">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="circle-dot" class="lucide lucide-circle-dot w-6 h-6 sm:w-7 sm:h-7"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">CSS Neumorphism Generator</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Create soft UI neumorphic elements with flat, concave, convex, &amp; pressed modes</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="color-converter/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="color-converter">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pipette" class="lucide lucide-pipette w-6 h-6 sm:w-7 sm:h-7"><path d="m2 22 1-1h3l9-9"></path><path d="M3 21v-3l9-9"></path><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Color Converter &amp; Palette</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert colors across HEX, RGB, HSL, and CMYK with WCAG contrast &amp; shades</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="word-counter/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="word-counter">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="type" class="lucide lucide-type w-6 h-6 sm:w-7 sm:h-7"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" x2="15" y1="20" y2="20"></line><line x1="12" x2="12" y1="4" y2="20"></line></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Word &amp; Character Counter</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Real-time word, character, sentence, paragraph, reading &amp; speaking time counter</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="case-converter/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="case-converter">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="type" class="lucide lucide-type w-6 h-6 sm:w-7 sm:h-7"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" x2="15" y1="20" y2="20"></line><line x1="12" x2="12" y1="4" y2="20"></line></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Case Converter</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert text between UPPERCASE, lowercase, Title Case, camelCase, snake_case, etc.</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="lorem-ipsum-generator/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="lorem-ipsum-generator">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="align-left" class="lucide lucide-align-left w-6 h-6 sm:w-7 sm:h-7"><path d="M15 12H3"></path><path d="M17 18H3"></path><path d="M21 6H3"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Lorem Ipsum Generator</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Generate placeholder dummy text by paragraphs, sentences, words, or lists</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="markdown-to-html/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="markdown-to-html">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-[#EA1D2C] group-hover:bg-[#EA1D2C] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="file-text" class="lucide lucide-file-text w-6 h-6 sm:w-7 sm:h-7"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Markdown to HTML Converter</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Live GitHub Flavored Markdown editor with real-time HTML preview &amp; code export</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="svg-to-png/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="svg-to-png">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="image" class="lucide lucide-image w-6 h-6 sm:w-7 sm:h-7"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">SVG to High-Res PNG</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert SVG vector files to crisp raster PNGs at 1x, 2x, 4x, or custom resolution</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="image-to-svg/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="image-to-svg">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shapes" class="lucide lucide-shapes w-6 h-6 sm:w-7 sm:h-7"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"></path><rect x="3" y="14" width="7" height="7" rx="1"></rect><circle cx="17.5" cy="17.5" r="3.5"></circle></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Image to SVG Vectorizer</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Trace and vectorize raster JPG &amp; PNG images into scalable vector SVG markup</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="webp-to-jpg/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="webp-to-jpg">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="zap" class="lucide lucide-zap w-6 h-6 sm:w-7 sm:h-7"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">WebP to JPG / PNG</h3>
+                            
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Convert WebP images to universal JPG or lossless PNG format with quality control</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="social-media-resizer/" class="tool-card p-4.5 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#EA1D2C] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-start gap-4 group relative" data-tool-id="social-media-resizer">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/80 text-[#002244] group-hover:bg-[#002244] group-hover:text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-all shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="share-2" class="lucide lucide-share-2 w-6 h-6 sm:w-7 sm:h-7"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <h3 class="text-sm sm:text-base font-bold text-[#002244] group-hover:text-[#EA1D2C] transition truncate">Social Media Image Resizer</h3>
+                            <span class="text-[10px] font-bold text-[#EA1D2C] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200 shrink-0">Popular</span>
+                        </div>
+                        <p class="text-xs sm:text-[13px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">Crop and resize images to official dimensions for Instagram, YouTube, LinkedIn, X &amp; Facebook</p>
+                        <div class="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#002244] group-hover:text-[#EA1D2C] transition">
+                            <span>Open Tool</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            
             </div>
 
             <!-- ================= AD ZONE 3: MID-CATALOG NATIVE BANNER ================= -->
@@ -452,7 +1489,7 @@
                         <span>100% Client-Side Privacy &bull; Zero Server Latency &bull; Global Access</span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                        TECHTIS — The World's Most Private &amp; Fast Free PDF Platform
+                        TECHTIS â€” The World's Most Private &amp; Fast Free PDF Platform
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-2xl mx-auto">
                         TECHTIS (<a href="https://techtis.in" target="_blank" rel="noopener" class="text-red-600 font-semibold underline">techtis.in</a>) is a professional, serverless document suite providing 60 powerful tools engineered to execute 100% in your device's browser memory. Your confidential documents, government IDs, contracts, and financial spreadsheets are never uploaded to any remote server or database.
@@ -522,7 +1559,7 @@
                             </div>
                             <div class="p-5 bg-white border border-slate-200/90 rounded-2xl space-y-2.5 hover:border-red-500 hover:shadow-md transition text-xs sm:text-[13px]">
                                 <h5 class="font-bold text-slate-900 text-sm">Rotate PDF Pages Online</h5>
-                                <p class="text-slate-500 leading-relaxed">Rotate single pages or the entire PDF document by 90°, 180°, or 270° clockwise or counter-clockwise with instant visual orientation preview.</p>
+                                <p class="text-slate-500 leading-relaxed">Rotate single pages or the entire PDF document by 90Â°, 180Â°, or 270Â° clockwise or counter-clockwise with instant visual orientation preview.</p>
                                 <div class="text-[11px] text-slate-400 bg-slate-50 p-2 rounded-lg"><strong>How to use:</strong> Select PDF &bull; Click rotate angle &bull; Save rotated document.</div>
                                 <a href="rotate-pdf/" class="inline-flex items-center gap-1 text-xs font-semibold text-red-600 hover:underline">Open Rotate PDF &rarr;</a>
                             </div>
@@ -936,7 +1973,7 @@
                                 <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
                             </summary>
                             <p class="mt-2.5 text-slate-600 leading-relaxed">
-                                TECHTIS Form Filler includes a visual click-to-type engine. Simply click anywhere on any PDF—including flat scanned government forms like Aadhaar or PAN card applications—to type text, place checkmarks (X), and stamp dates, permanently burning them into the PDF at exact coordinates.
+                                TECHTIS Form Filler includes a visual click-to-type engine. Simply click anywhere on any PDFâ€”including flat scanned government forms like Aadhaar or PAN card applicationsâ€”to type text, place checkmarks (X), and stamp dates, permanently burning them into the PDF at exact coordinates.
                             </p>
                         </details>
 
