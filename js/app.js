@@ -109,6 +109,27 @@ class App {
             this.showCatalogView();
         });
 
+        // Instant Client-Side Tool Workspace Navigation (0ms Click-to-Open)
+        document.addEventListener('click', (e) => {
+            const card = e.target.closest('.tool-card');
+            if (card && card.dataset.toolId && !this.isDedicatedPage) {
+                e.preventDefault();
+                const toolId = card.dataset.toolId;
+                this.openToolWorkspace(toolId);
+            }
+        });
+
+        // Instant Back/Forward Browser History Handling
+        window.addEventListener('popstate', (e) => {
+            if (this.isDedicatedPage) return;
+            const path = window.location.pathname.replace(/^\/|\/$/g, '');
+            if (path && TOOLS.some(t => t.id === path)) {
+                this.openToolWorkspace(path);
+            } else {
+                this.showCatalogView();
+            }
+        });
+
         // Search bar
         const searchInput = document.getElementById('tool-search-input');
         searchInput?.addEventListener('input', (e) => {
@@ -607,12 +628,14 @@ class App {
             metaDesc.setAttribute('content', 'TECHTIS (techtis.in) is the world\'s most private and fastest free online PDF platform. 60 professional tools: Form Filler, Merge PDF, Compress PDF, Sign PDF, Split, OCR, Convert to Word/JPG, Protect & Unlock. 100% in-browser RAM execution, zero file uploads, zero server latency, unlimited free use across all countries.');
         }
 
-        if (window.location.hash) {
+        if (!this.isDedicatedPage && window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+            history.pushState(null, '', '/');
+        } else if (window.location.hash) {
             history.pushState(null, '', window.location.pathname + window.location.search);
         }
 
         this.setFunctionalCategory('all');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
     openToolWorkspace(toolId, options = {}) {
@@ -646,8 +669,8 @@ class App {
             if (metaDesc) {
                 metaDesc.setAttribute('content', `${tool.name} online free: ${tool.tagline}. ${tool.description} 100% in-browser private execution, zero file uploads, unlimited free access.`);
             }
-            if (window.location.hash !== `#${tool.id}`) {
-                history.pushState(null, '', `${tool.id}/`);
+            if (window.location.pathname !== `/${tool.id}/`) {
+                history.pushState(null, '', `/${tool.id}/`);
             }
         }
 
@@ -657,7 +680,7 @@ class App {
         }
         this.refreshLucideIcons();
         if (!options.isDedicatedPage) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: 'instant' });
         }
     }
 

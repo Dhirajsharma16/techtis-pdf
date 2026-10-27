@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Automated Static Site Generator for TECHTIS (techtis.in)
  * Compiles all 60 dedicated tool landing pages for maximum SEO performance,
  * generates sitemap.xml, updates robots.txt, links catalog items,
@@ -66,7 +66,7 @@ let generatedCount = 0;
 
 for (const tool of TOOLS) {
     const seo = SEO_DATA[tool.id] || {
-        title: `${tool.name} Online Free – 100% Private Tool | TECHTIS`,
+        title: `${tool.name} Online Free â€“ 100% Private Tool | TECHTIS`,
         metaDescription: `${tool.name} online free: ${tool.tagline}. 100% private in-browser RAM execution, zero file uploads, unlimited free access worldwide.`,
         keywords: `${tool.name.toLowerCase()}, free ${tool.name.toLowerCase()}, ${tool.name.toLowerCase()} online, fast ${tool.name.toLowerCase()}`,
         h1: `${tool.name} Online Free`,
@@ -133,7 +133,7 @@ for (const tool of TOOLS) {
                 'logo': {
                     '@type': 'ImageObject',
                     'url': `${BASE_URL}/assets/images/logo.png`,
-                    'caption': 'TECHTIS — 100% Private, Free Online PDF & Web Utilities'
+                    'caption': 'TECHTIS â€” 100% Private, Free Online PDF & Web Utilities'
                 },
                 'sameAs': [
                     'https://github.com/Dhirajsharma16/techtis-pdf'
@@ -318,26 +318,6 @@ for (const tool of TOOLS) {
     ${JSON.stringify(schemaGraph, null, 2)}
     </script>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fef2f2',
-                            100: '#fee2e2',
-                            500: '#ef4444',
-                            600: '#dc2626',
-                            700: '#b91c1c'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
     <!-- TechTis Official Brand Icons & Favicons (Google Search & Multi-Browser Compliant) -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
@@ -350,14 +330,12 @@ for (const tool of TOOLS) {
     <meta name="theme-color" content="#002244">
     <meta property="og:image" content="https://techtis.in/favicon-512x512.png">
     <meta name="twitter:image" content="https://techtis.in/favicon-512x512.png">
-
-    <!-- Custom Platform Styles -->
+    <!-- Precompiled High-Performance CSS (Zero JavaScript Compilation Delay) -->
+    <link rel="stylesheet" href="../css/tailwind.min.css">
     <link rel="stylesheet" href="../css/styles.css">
 
     <!-- Performance Resource Hints -->
-    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
 
     <!-- Non-Blocking Deferred Vendor Libraries -->
@@ -370,7 +348,7 @@ for (const tool of TOOLS) {
 
     <!-- Slim Navigation Header -->
     <header class="header-glass sticky top-0 z-40 px-3 sm:px-6 py-2 flex items-center justify-between gap-3 border-b border-slate-200">
-        <a href="../" class="flex items-center gap-2.5 shrink-0 group" id="brand-logo-btn" title="TechTis — Free Online PDF, Image &amp; Developer Tools">
+        <a href="../" class="flex items-center gap-2.5 shrink-0 group" id="brand-logo-btn" title="TechTis â€” Free Online PDF, Image &amp; Developer Tools">
             <img src="../assets/images/logo.png" alt="TechTis Logo" class="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform">
             <div>
                 <div class="leading-none">
