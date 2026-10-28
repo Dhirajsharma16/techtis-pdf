@@ -146,47 +146,55 @@ ${text.slice(0, 25000)}`;
             }
         }
 
-        // 2. If Groq API Key is configured (14,400 free requests/day at 800 tokens/sec)
+        // 2. If Groq API Key is configured
         if (groqKey) {
-            try {
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${groqKey}`
-                    },
-                    body: JSON.stringify({
-                        model: 'llama-3.1-8b-instant',
-                        messages: [{ role: 'user', content: prompt }],
-                        temperature: 0.3
-                    })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    return data.choices?.[0]?.message?.content;
+            const groqModels = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+            for (const model of groqModels) {
+                try {
+                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${groqKey}`
+                        },
+                        body: JSON.stringify({
+                            model,
+                            messages: [{ role: 'user', content: prompt }],
+                            temperature: 0.3
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const content = data.choices?.[0]?.message?.content;
+                        if (content && content.trim()) return content.trim();
+                    }
+                } catch (e) {
+                    console.warn(`Groq API (${model}) fallback:`, e);
                 }
-            } catch (e) {
-                console.warn('Groq API fallback:', e);
             }
         }
 
         // 3. If Gemini Free Tier Key is configured
         if (geminiKey) {
-            try {
-                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text;
+            const geminiModels = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+            for (const model of geminiModels) {
+                try {
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }]
+                        })
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const textVal = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (textVal && textVal.trim()) return textVal.trim();
+                    }
+                } catch (e) {
+                    console.warn(`Gemini API (${model}) fallback:`, e);
                 }
-            } catch (e) {
-                console.warn('Gemini API fallback:', e);
             }
         }
 
@@ -220,48 +228,56 @@ ${text.slice(0, 25000)}`;
 
         // 2. Groq Cloud API
         if (settings.groqApiKey) {
-            try {
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${settings.groqApiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: 'llama-3.1-8b-instant',
-                        messages: [
-                            { role: 'system', content: `Translate the document text accurately into ${targetLang}. Preserve layout and paragraphs.` },
-                            { role: 'user', content: text.slice(0, 12000) }
-                        ],
-                        temperature: 0.2
-                    })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    return data.choices?.[0]?.message?.content;
+            const groqModels = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+            for (const model of groqModels) {
+                try {
+                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${settings.groqApiKey}`
+                        },
+                        body: JSON.stringify({
+                            model,
+                            messages: [
+                                { role: 'system', content: `Translate the document text accurately into ${targetLang}. Preserve layout and paragraphs.` },
+                                { role: 'user', content: text.slice(0, 12000) }
+                            ],
+                            temperature: 0.2
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const trans = data.choices?.[0]?.message?.content;
+                        if (trans && trans.trim()) return trans.trim();
+                    }
+                } catch (err) {
+                    console.warn(`Groq translation (${model}) fallback:`, err);
                 }
-            } catch (err) {
-                console.warn('Groq translation fallback:', err);
             }
         }
 
         // 3. Google Gemini Free Tier
         if (settings.geminiApiKey) {
-            try {
-                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${settings.geminiApiKey}`;
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Translate the following text accurately into ${targetLang}. Return the translation directly:\n\n${text.slice(0, 20000)}` }] }]
-                    })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text;
+            const geminiModels = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+            for (const model of geminiModels) {
+                try {
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${settings.geminiApiKey}`;
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: `Translate the following text accurately into ${targetLang}. Return the translation directly:\n\n${text.slice(0, 20000)}` }] }]
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const trans = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (trans && trans.trim()) return trans.trim();
+                    }
+                } catch (err) {
+                    console.warn(`Gemini translation (${model}) fallback:`, err);
                 }
-            } catch (err) {
-                console.warn('Gemini translation fallback:', err);
             }
         }
 
@@ -355,34 +371,37 @@ ${text.slice(0, 25000)}`;
 
         // 2. Personal Google Gemini AI Vision (Fastest, state-of-the-art accuracy)
         if (settings.geminiApiKey && imageBase64) {
-            try {
-                onProgress({ step: 'gemini', message: 'Transcribing document with Google Gemini Vision...' });
-                const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
-                const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${settings.geminiApiKey}`;
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: 'Transcribe all text from this document image with 100% precision. Return ONLY the plain transcribed text, preserving paragraphs, numbers, and headings accurately.' },
-                                { inline_data: { mime_type: mime, data: cleanData } }
-                            ]
-                        }]
-                    })
-                });
+            const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+            const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+            const geminiModels = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+            for (const model of geminiModels) {
+                try {
+                    onProgress({ step: 'gemini', message: 'Transcribing document with Google Gemini Vision...' });
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${settings.geminiApiKey}`;
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [
+                                    { text: 'Transcribe all text from this document image with 100% precision. Return ONLY the plain transcribed text, preserving paragraphs, numbers, and headings accurately.' },
+                                    { inline_data: { mime_type: mime, data: cleanData } }
+                                ]
+                            }]
+                        })
+                    });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (text && text.trim()) {
-                        onProgress({ step: 'done', message: 'Gemini OCR transcription completed!' });
-                        return text.trim();
+                    if (res.ok) {
+                        const data = await res.json();
+                        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (text && text.trim()) {
+                            onProgress({ step: 'done', message: 'Gemini OCR transcription completed!' });
+                            return text.trim();
+                        }
                     }
+                } catch (geminiErr) {
+                    console.warn(`Gemini OCR (${model}) fallback:`, geminiErr);
                 }
-            } catch (geminiErr) {
-                console.warn('Gemini OCR fallback:', geminiErr);
             }
         }
 
@@ -514,27 +533,31 @@ ${text.slice(0, 25000)}`;
         const groqKey = settings.groqApiKey;
 
         if (geminiKey && imageBase64) {
-            try {
-                const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
-                const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: 'Transcribe all text, numbers, and labels from this document image. Return only the plain transcribed text.' },
-                                { inline_data: { mime_type: mime, data: cleanData } }
-                            ]
-                        }]
-                    })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-                }
-            } catch (_) {}
+            const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+            const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+            const geminiModels = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+            for (const model of geminiModels) {
+                try {
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [
+                                    { text: 'Transcribe all text, numbers, and labels from this document image with 100% precision. Return only the plain transcribed text.' },
+                                    { inline_data: { mime_type: mime, data: cleanData } }
+                                ]
+                            }]
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (text && text.trim()) return text.trim();
+                    }
+                } catch (_) {}
+            }
         }
 
         if (groqKey && imageBase64) {
@@ -648,7 +671,7 @@ Return only JSON. Do not include markdown code fences or any conversational text
             try {
                 const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
                 const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-                const geminiModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-8b'];
+                const geminiModels = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
 
                 for (const model of geminiModels) {
                     try {
@@ -751,9 +774,9 @@ Return only JSON. Do not include markdown code fences or any conversational text
             }
         }
 
-        // 4. Personal Groq Key for Text Reasoning (Llama 3.3 70B Versatile)
+        // 4. Personal Groq Key for Text Reasoning
         if (!parsedFields && groqKey && rawText) {
-            const groqModels = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+            const groqModels = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
             for (const model of groqModels) {
                 try {
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -789,24 +812,30 @@ Return only JSON. Do not include markdown code fences or any conversational text
 
         // 5. Personal Gemini Key for Text Reasoning
         if (!parsedFields && geminiKey && rawText) {
-            try {
-                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
-                        generationConfig: { responseMimeType: 'application/json' }
-                    })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (text) {
-                        parsedFields = JSON.parse(text);
+            const geminiModels = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+            for (const model of geminiModels) {
+                try {
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
+                            generationConfig: { responseMimeType: 'application/json' }
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (text) {
+                            parsedFields = JSON.parse(text);
+                            break;
+                        }
                     }
+                } catch (e) {
+                    console.warn(`Gemini text reasoning (${model}) fallback:`, e);
                 }
-            } catch (_) {}
+            }
         }
 
         if (parsedFields) {

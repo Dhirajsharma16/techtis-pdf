@@ -91,11 +91,12 @@ export const StorageManager = {
     getSettings() {
         try {
             const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS) || localStorage.getItem(STORAGE_KEYS.LEGACY_SETTINGS);
-            return raw ? JSON.parse(raw) : {
-                geminiApiKey: '',
-                groqApiKey: '',
-                ocrSpaceApiKey: '',
-                cloudflareWorkerUrl: ''
+            const user = raw ? JSON.parse(raw) : {};
+            return {
+                geminiApiKey: (user.geminiApiKey && user.geminiApiKey.trim()) ? user.geminiApiKey.trim() : '',
+                groqApiKey: (user.groqApiKey && user.groqApiKey.trim()) ? user.groqApiKey.trim() : '',
+                ocrSpaceApiKey: user.ocrSpaceApiKey || '',
+                cloudflareWorkerUrl: user.cloudflareWorkerUrl || ''
             };
         } catch (e) {
             return {
