@@ -619,7 +619,7 @@ class App {
         this.uploadedFiles = [];
 
         // Reset document title & meta for homepage SEO
-        document.title = 'TECHTIS — 100% Private, Free Online PDF Tools & Document Suite | techtis.in';
+        document.title = 'TECHTIS - 100% Private, Free Online PDF Tools & Document Suite | techtis.in';
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) {
             metaDesc.setAttribute('content', 'TECHTIS (techtis.in) is the world\'s most private and fastest free online PDF platform. 60 professional tools: Form Filler, Merge PDF, Compress PDF, Sign PDF, Split, OCR, Convert to Word/JPG, Protect & Unlock. 100% in-browser RAM execution, zero file uploads, zero server latency, unlimited free use across all countries.');
@@ -665,7 +665,7 @@ class App {
 
         // Dynamic SEO Update for this tool in SPA mode
         if (!options.isDedicatedPage) {
-            document.title = `${tool.name} Free Online — 100% Private PDF Tool | TECHTIS`;
+            document.title = `${tool.name} Free Online - 100% Private PDF Tool | TECHTIS`;
             const metaDesc = document.querySelector('meta[name="description"]');
             if (metaDesc) {
                 metaDesc.setAttribute('content', `${tool.name} online free: ${tool.tagline}. ${tool.description} 100% in-browser private execution, zero file uploads, unlimited free access.`);
@@ -3652,18 +3652,11 @@ class App {
                 <textarea id="md-editor-text" rows="14" class="w-full p-4 text-xs font-mono border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"># Project Roadmap &amp; Overview
 
 ## 1. Executive Summary
-This document was compiled directly in your browser using zero-cost serverless PDF rendering.
-
-- High performance: Sub-100ms in-memory processing
-- 100% Private: Bytes never leave your device
-- $0 Server footprint: Unlimited free scale
+This document was compiled directly in your browser using zero-cost serverless PDF rendering. - High performance: Sub-100ms in-memory processing - 100% Private: Bytes never leave your device - $0 Server footprint: Unlimited free scale
 
 > Note: All layout and rendering operations run inside client RAM.
 
-### 2. Next Milestones
-- [x] Complete 32-tool routing suite
-- [x] Integrate PDF.js and pdf-lib
-- [x] Edge AI integration for summaries and OCR</textarea>
+### 2. Next Milestones - [x] Complete 32-tool routing suite - [x] Integrate PDF.js and pdf-lib - [x] Edge AI integration for summaries and OCR</textarea>
             </div>
         `;
 

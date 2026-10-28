@@ -6,7 +6,7 @@
 
 export const SEO_DATA = {
     'merge-pdf': {
-        title: 'Merge PDF Online Free – Combine PDF Files Securely in Browser | TECHTIS',
+        title: 'Merge PDF Online Free - Combine PDF Files Securely in Browser | TECHTIS',
         metaDescription: 'Merge PDF files online free with TECHTIS. Combine multiple documents into one in seconds. 100% private client-side processing, zero file uploads, unlimited use.',
         keywords: 'merge pdf, combine pdf files, join pdf online, free pdf merger, merge pdf without uploading, combine pdfs in browser, fastest pdf combiner, safe pdf joiner online',
         h1: 'Merge PDF Online Free',
@@ -38,7 +38,7 @@ export const SEO_DATA = {
     },
 
     'split-pdf': {
-        title: 'Split PDF Online Free – Extract Pages & Separate PDF Files | TECHTIS',
+        title: 'Split PDF Online Free - Extract Pages & Separate PDF Files | TECHTIS',
         metaDescription: 'Split PDF files online for free. Extract specific pages or divide a document into standalone PDFs with live thumbnail preview. 100% client-side privacy.',
         keywords: 'split pdf, extract pdf pages, separate pdf, split pdf online free, break pdf into pages, cut pdf pages, client side pdf splitter, fast pdf page extractor',
         h1: 'Split PDF Online Free',
@@ -56,7 +56,7 @@ export const SEO_DATA = {
             { title: 'Preserves Quality & Hyperlinks', desc: 'Retains all original vector fonts, high-DPI images, form structures, and bookmarks.' }
         ],
         content: `
-            <p>Splitting large PDF documents into focused individual sections is a daily necessity for legal discovery, tax preparation, academic research, and client reporting. TECHTIS Split PDF gives you total control over how pages are extracted, allowing you to isolate exact page ranges (like pages 3–7 and 12) or split a 100-page catalog into individual single-page documents.</p>
+            <p>Splitting large PDF documents into focused individual sections is a daily necessity for legal discovery, tax preparation, academic research, and client reporting. TECHTIS Split PDF gives you total control over how pages are extracted, allowing you to isolate exact page ranges (like pages 3 - 7 and 12) or split a 100-page catalog into individual single-page documents.</p>
             <p>Our built-in thumbnail rendering engine gives you an immediate visual preview of every page in your document. You can visually inspect pages before deciding which sections to extract. When splitting multiple pages, TECHTIS uses client-side JSZip to bundle the resulting documents into a convenient ZIP archive in seconds.</p>
             <p>Because all operations run locally in your browser, you never have to wait for large multi-megabyte files to upload over slow connections. Experience desktop-class splitting performance directly in your browser.</p>
         `,
@@ -70,7 +70,7 @@ export const SEO_DATA = {
     },
 
     'compress-pdf': {
-        title: 'Compress PDF Online Free – Reduce PDF File Size in Browser | TECHTIS',
+        title: 'Compress PDF Online Free - Reduce PDF File Size in Browser | TECHTIS',
         metaDescription: 'Compress PDF files online free. Reduce document file size by up to 85% while keeping crisp text and images. 100% private, zero uploads, instant download.',
         keywords: 'compress pdf, reduce pdf size, shrink pdf online, pdf compressor free, compress pdf without losing quality, client side pdf compressor, instant pdf compressor, lossless pdf size reducer',
         h1: 'Compress PDF Online Free',
@@ -102,7 +102,7 @@ export const SEO_DATA = {
     },
 
     'rotate-pdf': {
-        title: 'Rotate PDF Online Free – Rotate Pages & Save Permanently | TECHTIS',
+        title: 'Rotate PDF Online Free - Rotate Pages & Save Permanently | TECHTIS',
         metaDescription: 'Rotate PDF pages online for free. Turn individual pages or the entire document 90, 180, or 270 degrees clockwise or counter-clockwise. Instant save.',
         keywords: 'rotate pdf, rotate pdf pages, turn pdf, permanent rotate pdf, clockwise rotate pdf, rotate upside down pdf, free pdf rotator, client side rotate pdf',
         h1: 'Rotate PDF Online Free',
@@ -134,7 +134,7 @@ export const SEO_DATA = {
     },
 
     'remove-pages': {
-        title: 'Remove Pages from PDF Online Free – Delete Unwanted PDF Pages | TECHTIS',
+        title: 'Remove Pages from PDF Online Free - Delete Unwanted PDF Pages | TECHTIS',
         metaDescription: 'Remove pages from PDF online free. Delete blank pages, covers, or duplicate sheets with interactive visual thumbnail selection. 100% private.',
         keywords: 'remove pdf pages, delete pages from pdf, delete unwanted pdf pages, cut pages from pdf, strip pdf pages, remove blank pages pdf, free pdf page remover',
         h1: 'Remove Pages from PDF Online Free',
@@ -152,7 +152,7 @@ export const SEO_DATA = {
             { title: 'Instant In-Browser Assembly', desc: 'Zero cloud latency; your trimmed document downloads instantly.' }
         ],
         content: `
-            <p>PDF documents often accumulate unnecessary pages—such as blank separator sheets, outdated terms of service, redundant cover sheets, or confidential appendices that should not be shared with outside parties. TECHTIS Remove Pages makes it effortless to trim documents down to only the essential content.</p>
+            <p>PDF documents often accumulate unnecessary pages - such as blank separator sheets, outdated terms of service, redundant cover sheets, or confidential appendices that should not be shared with outside parties. TECHTIS Remove Pages makes it effortless to trim documents down to only the essential content.</p>
             <p>With our interactive visual grid, you simply click on any page to mark it for removal. If you already know which page numbers need to be removed, type them directly into the range field for batch selection. Once confirmed, TECHTIS constructs a clean document tree omitting those pages entirely.</p>
             <p>Since your documents never leave your local device, you can safely sanitize confidential records, financial filings, and medical histories without compromising patient or client privacy.</p>
         `,
@@ -166,7 +166,7 @@ export const SEO_DATA = {
     },
 
     'extract-pages': {
-        title: 'Extract PDF Pages Online Free – Save Selected Pages to New PDF | TECHTIS',
+        title: 'Extract PDF Pages Online Free - Save Selected Pages to New PDF | TECHTIS',
         metaDescription: 'Extract PDF pages online free. Select specific pages or custom ranges and export them into a brand-new, lightweight PDF document in browser RAM.',
         keywords: 'extract pdf pages, save specific pdf pages, pull pages from pdf, export pdf pages, isolate pdf pages, extract pages from pdf free, client side pdf extractor',
         h1: 'Extract PDF Pages Online Free',
@@ -198,7 +198,7 @@ export const SEO_DATA = {
     },
 
     'organize-pages': {
-        title: 'Organize PDF Pages Online Free – Reorder, Sort & Rearrange | TECHTIS',
+        title: 'Organize PDF Pages Online Free - Reorder, Sort & Rearrange | TECHTIS',
         metaDescription: 'Organize PDF pages online free. Drag and drop thumbnail tiles to rearrange, sort, duplicate, or delete pages visually with instant preview. 100% private.',
         keywords: 'organize pdf pages, reorder pdf, sort pdf pages, rearrange pdf pages visual, drag and drop pdf pages, arrange pdf pages online free, client side pdf organizer',
         h1: 'Organize PDF Pages Online Free',
@@ -216,7 +216,7 @@ export const SEO_DATA = {
             { title: '100% Private in Browser', desc: 'All reorganization runs in your device\'s local memory for total confidentiality.' }
         ],
         content: `
-            <p>Complex PDF documents often require structural reorganizing—whether you are sorting presentation slides, reordering scanned contract pages that were fed out of order, or placing an executive summary in front of detailed appendices. TECHTIS Organize Pages provides an intuitive visual canvas where you can arrange pages effortlessly.</p>
+            <p>Complex PDF documents often require structural reorganizing - whether you are sorting presentation slides, reordering scanned contract pages that were fed out of order, or placing an executive summary in front of detailed appendices. TECHTIS Organize Pages provides an intuitive visual canvas where you can arrange pages effortlessly.</p>
             <p>Our drag-and-drop workspace gives you full command over your document layout. Move pages forward or backward, rotate individual sheets that are sideways, or eliminate unwanted pages in a single workflow. Once you are satisfied with the arrangement, TECHTIS compiles the new page tree instantly in memory.</p>
             <p>Eliminate expensive desktop software suites. TECHTIS gives you pro-level document organization in your web browser with zero server latency and total data privacy.</p>
         `,
@@ -230,7 +230,7 @@ export const SEO_DATA = {
     },
 
     'add-page-numbers': {
-        title: 'Add Page Numbers to PDF Online Free – Header & Footer Stamping | TECHTIS',
+        title: 'Add Page Numbers to PDF Online Free - Header & Footer Stamping | TECHTIS',
         metaDescription: 'Add page numbers to PDF online free. Customize position, typography, numbering format (Page X of Y), margins, and page ranges. 100% private in browser.',
         keywords: 'add page numbers to pdf, number pdf pages, stamp bates numbers, pdf page numbering online, insert page numbers pdf free, header footer page numbers pdf',
         h1: 'Add Page Numbers to PDF Online Free',
@@ -262,7 +262,7 @@ export const SEO_DATA = {
     },
 
     'add-watermark': {
-        title: 'Add Watermark to PDF Online Free – Stamp Text or Logo on PDF | TECHTIS',
+        title: 'Add Watermark to PDF Online Free - Stamp Text or Logo on PDF | TECHTIS',
         metaDescription: 'Add watermark to PDF online free. Stamp custom text, confidential notices, copyright tags, or dates across pages with opacity and angle control. 100% private.',
         keywords: 'add watermark to pdf, stamp pdf, confidential watermark pdf, draft watermark online, copyright watermark pdf, watermark pdf free, client side pdf watermark',
         h1: 'Add Watermark to PDF Online Free',
@@ -294,7 +294,7 @@ export const SEO_DATA = {
     },
 
     'edit-pdf': {
-        title: 'Edit PDF Online Free – Add Text, Shapes & Annotations | TECHTIS',
+        title: 'Edit PDF Online Free - Add Text, Shapes & Annotations | TECHTIS',
         metaDescription: 'Edit PDF online free with TECHTIS. Add text annotations, highlight content, insert rectangles, lines, and custom notes in your browser. 100% private, no signup.',
         keywords: 'edit pdf online, free pdf editor, annotate pdf, add text to pdf, mark up pdf, write on pdf, pdf editor in browser, professional pdf annotator online',
         h1: 'Edit PDF Online Free',
@@ -326,7 +326,7 @@ export const SEO_DATA = {
     },
 
     'sign-pdf': {
-        title: 'Sign PDF Online Free – Draw, Type & Add Digital Signature | TECHTIS',
+        title: 'Sign PDF Online Free - Draw, Type & Add Digital Signature | TECHTIS',
         metaDescription: 'Sign PDF documents online free. Draw your handwritten signature, type with calligraphy fonts, or upload signature image. 100% private in browser RAM.',
         keywords: 'sign pdf online, e-sign pdf free, electronic signature pdf, add signature to document, draw signature pdf, sign contract free, client side pdf signer',
         h1: 'Sign PDF Online Free',
@@ -358,7 +358,7 @@ export const SEO_DATA = {
     },
 
     'form-filler': {
-        title: 'PDF Form Filler Online Free – Fill Flat Forms & AcroForms | TECHTIS',
+        title: 'PDF Form Filler Online Free - Fill Flat Forms & AcroForms | TECHTIS',
         metaDescription: 'Fill PDF forms online for free. Click-to-type anywhere on flat scanned government forms (Aadhaar, PAN, applications) or fill standard digital AcroForms.',
         keywords: 'fill pdf form, flat form filler, fill scanned pdf online, aadhaar form filler, pan card form filler, fill pdf without adobe, free pdf form filler, fillable form pdf',
         h1: 'PDF Form Filler Online Free',
@@ -390,7 +390,7 @@ export const SEO_DATA = {
     },
 
     'crop-pdf': {
-        title: 'Crop PDF Margins Online Free – Trim White Borders from PDF | TECHTIS',
+        title: 'Crop PDF Margins Online Free - Trim White Borders from PDF | TECHTIS',
         metaDescription: 'Crop PDF margins online free. Trim excessive white borders, isolate content boxes, and adjust CropBox bounds with visual handles. 100% private in browser.',
         keywords: 'crop pdf, trim pdf margins, remove white space pdf, crop pdf online free, cut pdf borders, adjust pdf cropbox, client side crop pdf',
         h1: 'Crop PDF Margins Online Free',
@@ -422,7 +422,7 @@ export const SEO_DATA = {
     },
 
     'protect-pdf': {
-        title: 'Protect PDF Online Free – Encrypt & Password Protect PDF | TECHTIS',
+        title: 'Protect PDF Online Free - Encrypt & Password Protect PDF | TECHTIS',
         metaDescription: 'Protect PDF files online free. Encrypt your documents with client-side password protection and restrict unauthorized viewing or printing. 100% private.',
         keywords: 'protect pdf, password protect pdf, encrypt pdf online free, secure pdf document, lock pdf file, pdf encryption client side, free pdf locker',
         h1: 'Protect PDF Online Free',
@@ -454,7 +454,7 @@ export const SEO_DATA = {
     },
 
     'unlock-pdf': {
-        title: 'Unlock PDF Online Free – Remove Password & Permissions Lock | TECHTIS',
+        title: 'Unlock PDF Online Free - Remove Password & Permissions Lock | TECHTIS',
         metaDescription: 'Unlock PDF files online free. Remove known user passwords, owner restrictions, and printing blocks locally in your browser RAM. 100% private, zero uploads.',
         keywords: 'unlock pdf, remove pdf password, remove print restriction pdf, unlock protected pdf, decrypt pdf online free, remove owner password pdf, client side unlock pdf',
         h1: 'Unlock PDF Online Free',
@@ -486,7 +486,7 @@ export const SEO_DATA = {
     },
 
     'flatten-pdf': {
-        title: 'Flatten PDF Online Free – Lock Form Fields & Annotations | TECHTIS',
+        title: 'Flatten PDF Online Free - Lock Form Fields & Annotations | TECHTIS',
         metaDescription: 'Flatten PDF forms online free. Lock interactive form fields, checkboxes, and signatures into static vector graphics to prevent unauthorized changes.',
         keywords: 'flatten pdf, flatten pdf form fields, lock pdf annotations, secure form submissions, make pdf non editable, print ready pdf, client side pdf flattener',
         h1: 'Flatten PDF Online Free',
@@ -518,7 +518,7 @@ export const SEO_DATA = {
     },
 
     'metadata-editor': {
-        title: 'PDF Metadata Editor Online Free – Edit Title, Author & Tags | TECHTIS',
+        title: 'PDF Metadata Editor Online Free - Edit Title, Author & Tags | TECHTIS',
         metaDescription: 'Edit PDF metadata online free. View and change Title, Author, Subject, Keywords, Creator, and Producer tags. Sanitize private tracking info in browser RAM.',
         keywords: 'edit pdf metadata, change pdf author, sanitize pdf tags, pdf properties editor, remove metadata pdf, pdf creator editor, client side pdf metadata editor',
         h1: 'PDF Metadata Editor Online Free',
@@ -536,7 +536,7 @@ export const SEO_DATA = {
             { title: 'Zero Network Uploads', desc: 'Metadata modifications execute in local memory, safeguarding corporate confidentiality.' }
         ],
         content: `
-            <p>Every PDF document contains hidden metadata tags—including the author's real name, company username, local file paths, software producer versions, and exact modification timestamps. Sharing un-sanitized PDFs can inadvertently leak confidential internal information to clients, competitors, or the public.</p>
+            <p>Every PDF document contains hidden metadata tags - including the author's real name, company username, local file paths, software producer versions, and exact modification timestamps. Sharing un-sanitized PDFs can inadvertently leak confidential internal information to clients, competitors, or the public.</p>
             <p>TECHTIS PDF Metadata Editor lets you view, modify, or strip these embedded properties. You can sanitize documents before public distribution to protect employee privacy, or enrich academic papers and marketing whitepapers with relevant keywords and descriptive titles for improved search engine indexing.</p>
             <p>Because our metadata editor operates strictly in your browser RAM, your original files remain entirely private, ensuring compliance with strict data sanitation standards.</p>
         `,
@@ -550,7 +550,7 @@ export const SEO_DATA = {
     },
 
     'repair-pdf': {
-        title: 'Repair PDF Online Free – Fix Damaged & Corrupted PDF Files | TECHTIS',
+        title: 'Repair PDF Online Free - Fix Damaged & Corrupted PDF Files | TECHTIS',
         metaDescription: 'Repair damaged and corrupted PDF files online free. Reconstruct broken cross-reference (xref) tables, fix EOF markers, and recover unreadable pages.',
         keywords: 'repair pdf, fix corrupted pdf, recover broken pdf, rebuild xref table pdf, corrupted pdf recovery, unreadable pdf fix, free pdf repair online',
         h1: 'Repair PDF Online Free',
@@ -582,7 +582,7 @@ export const SEO_DATA = {
     },
 
     'pdf-to-jpg': {
-        title: 'PDF to JPG Online Free – Convert PDF Pages to High-Res Images | TECHTIS',
+        title: 'PDF to JPG Online Free - Convert PDF Pages to High-Res Images | TECHTIS',
         metaDescription: 'Convert PDF to JPG online free. Render PDF document pages into high-resolution JPG or PNG images with custom DPI settings. 100% client-side, zero uploads.',
         keywords: 'pdf to jpg, convert pdf to image, pdf to png, export pdf as pictures, high resolution pdf to jpg, client side pdf to jpg, free pdf to image converter',
         h1: 'PDF to JPG Online Free',
@@ -614,7 +614,7 @@ export const SEO_DATA = {
     },
 
     'jpg-to-pdf': {
-        title: 'JPG to PDF Online Free – Convert Images (PNG, JPG, WebP) to PDF | TECHTIS',
+        title: 'JPG to PDF Online Free - Convert Images (PNG, JPG, WebP) to PDF | TECHTIS',
         metaDescription: 'Convert JPG, PNG, and WebP images to PDF online free. Combine photos into a multi-page document with margin, page size, and orientation control. 100% private.',
         keywords: 'jpg to pdf, convert image to pdf, png to pdf, photo to pdf converter, combine pictures to pdf, images to pdf online free, webp to pdf, client side jpg to pdf',
         h1: 'JPG to PDF Online Free',
@@ -646,7 +646,7 @@ export const SEO_DATA = {
     },
 
     'grayscale-pdf': {
-        title: 'Grayscale PDF Online Free – Convert Color PDF to Black & White | TECHTIS',
+        title: 'Grayscale PDF Online Free - Convert Color PDF to Black & White | TECHTIS',
         metaDescription: 'Convert color PDF documents to grayscale (black and white) online free. Save expensive printer ink and reduce document size. 100% private in browser.',
         keywords: 'grayscale pdf, black and white pdf, convert pdf to bw, save printer ink pdf, monochrome pdf, convert color pdf to grayscale online free, client side grayscale',
         h1: 'Grayscale PDF Online Free',
@@ -678,7 +678,7 @@ export const SEO_DATA = {
     },
 
     'word-to-pdf': {
-        title: 'Word to PDF Online Free – Convert DOCX to PDF in Browser | TECHTIS',
+        title: 'Word to PDF Online Free - Convert DOCX to PDF in Browser | TECHTIS',
         metaDescription: 'Convert Word DOCX documents to PDF online free. Extracts structured text, headings, and formatting in browser RAM with zero server upload. 100% private.',
         keywords: 'word to pdf, docx to pdf, convert docx online free, ms word to pdf converter, word document to pdf, client side word to pdf, zero upload word to pdf',
         h1: 'Word to PDF Online Free',
@@ -710,7 +710,7 @@ export const SEO_DATA = {
     },
 
     'excel-to-pdf': {
-        title: 'Excel to PDF Online Free – Convert XLSX & Sheets to PDF | TECHTIS',
+        title: 'Excel to PDF Online Free - Convert XLSX & Sheets to PDF | TECHTIS',
         metaDescription: 'Convert Excel XLSX spreadsheets to PDF online free. Formats worksheets, data grids, and tables into printable PDF documents in browser memory. 100% private.',
         keywords: 'excel to pdf, xlsx to pdf, spreadsheet to pdf, convert excel table to pdf, sheets to pdf online free, client side excel to pdf, free xlsx converter',
         h1: 'Excel to PDF Online Free',
@@ -730,7 +730,7 @@ export const SEO_DATA = {
         content: `
             <p>Sharing raw Excel spreadsheets (.xlsx, .csv) can lead to accidental formula modifications, misaligned columns, or cell clipping when printed. Converting spreadsheets into polished PDF tables ensures that your financial statements, quarterly reports, and inventory lists are presented clearly and securely.</p>
             <p>TECHTIS Excel to PDF parses workbook cell hierarchies client-side, structuring rows and columns into clean, paginated PDF tables. Table headers, borders, and numerical alignments are preserved for professional presentation.</p>
-            <p>Financial models, client invoicing logs, and company budgets contain some of your organization's most sensitive data. With TECHTIS, you never have to risk uploading confidential spreadsheets to third-party cloud servers—everything runs locally in your browser memory.</p>
+            <p>Financial models, client invoicing logs, and company budgets contain some of your organization's most sensitive data. With TECHTIS, you never have to risk uploading confidential spreadsheets to third-party cloud servers - everything runs locally in your browser memory.</p>
         `,
         faqs: [
             { q: 'Can I convert CSV files as well as XLSX workbooks?', a: 'Yes! TECHTIS supports .xlsx, .xls, and .csv files.' },
@@ -742,7 +742,7 @@ export const SEO_DATA = {
     },
 
     'ppt-to-pdf': {
-        title: 'PowerPoint to PDF Online Free – Convert PPTX Slides to PDF Handouts | TECHTIS',
+        title: 'PowerPoint to PDF Online Free - Convert PPTX Slides to PDF Handouts | TECHTIS',
         metaDescription: 'Convert PowerPoint PPTX presentation slides into printable PDF handouts online free. Extracts slide content in browser RAM with zero uploads. 100% private.',
         keywords: 'ppt to pdf, pptx to pdf, powerpoint to pdf converter, slides to pdf online, presentation to pdf free, client side ppt to pdf, convert slides to pdf',
         h1: 'PowerPoint to PDF Online Free',
@@ -774,7 +774,7 @@ export const SEO_DATA = {
     },
 
     'markdown-to-pdf': {
-        title: 'Markdown to PDF Online Free – Convert MD Notes to Styled PDF | TECHTIS',
+        title: 'Markdown to PDF Online Free - Convert MD Notes to Styled PDF | TECHTIS',
         metaDescription: 'Convert Markdown (MD) notes and GitHub documentation to styled, print-ready PDF files online free. Supports code blocks, tables, and KaTeX math. 100% private.',
         keywords: 'markdown to pdf, md to pdf converter, github markdown to pdf, styled markdown document, code to pdf, convert markdown online free, client side md to pdf',
         h1: 'Markdown to PDF Online Free',
@@ -806,7 +806,7 @@ export const SEO_DATA = {
     },
 
     'text-to-pdf': {
-        title: 'Text to PDF Online Free – Convert TXT, Logs & Code to PDF | TECHTIS',
+        title: 'Text to PDF Online Free - Convert TXT, Logs & Code to PDF | TECHTIS',
         metaDescription: 'Convert plain text (TXT), logs, CSV, and code files to clean, formatted PDF documents online free. Supports custom fonts, margins, and paper sizes. 100% private.',
         keywords: 'text to pdf, txt to pdf, log to pdf, convert plain text to pdf document, code to pdf converter, free txt to pdf online, client side text to pdf',
         h1: 'Text to PDF Online Free',
@@ -838,7 +838,7 @@ export const SEO_DATA = {
     },
 
     'document-compare': {
-        title: 'Compare PDF Documents Online Free – Visual Text Diff Checker | TECHTIS',
+        title: 'Compare PDF Documents Online Free - Visual Text Diff Checker | TECHTIS',
         metaDescription: 'Compare two PDF documents online free. Side-by-side text diff checker highlights additions, deletions, and revisions in contracts and agreements. 100% private.',
         keywords: 'compare pdf, pdf diff tool, compare two pdf files, highlight pdf differences, contract revision checker, compare pdf online free, client side pdf diff',
         h1: 'Compare PDF Documents Online Free',
@@ -856,7 +856,7 @@ export const SEO_DATA = {
             { title: '100% Confidential Comparison', desc: 'Compare confidential merger terms, NDA revisions, and legal briefs with zero cloud exposure.' }
         ],
         content: `
-            <p>Reviewing legal contracts, vendor agreements, and policy documents after multiple rounds of revisions is stressful. Counterparties often make subtle modifications—altering liability clauses, shifting payment deadlines, or deleting key conditions—without tracking changes. TECHTIS Document Compare extracts text streams from two PDF versions and performs a side-by-side visual diff.</p>
+            <p>Reviewing legal contracts, vendor agreements, and policy documents after multiple rounds of revisions is stressful. Counterparties often make subtle modifications - altering liability clauses, shifting payment deadlines, or deleting key conditions - without tracking changes. TECHTIS Document Compare extracts text streams from two PDF versions and performs a side-by-side visual diff.</p>
             <p>Our diffing algorithm compares words and lines sequentially, highlighting inserted text in green and removed passages in red strikethrough. You can quickly pinpoint every single change between drafts without having to read dozens of pages line-by-line.</p>
             <p>Because legal agreements and merger proposals contain highly sensitive trade secrets, TECHTIS executes the entire text comparison locally in your browser RAM. Your confidential drafts are never uploaded to any cloud server.</p>
         `,
@@ -870,7 +870,7 @@ export const SEO_DATA = {
     },
 
     'ocr-pdf': {
-        title: 'OCR PDF Online Free – Convert Scanned PDF & Images to Searchable Text | TECHTIS',
+        title: 'OCR PDF Online Free - Convert Scanned PDF & Images to Searchable Text | TECHTIS',
         metaDescription: 'OCR PDF online free. Extract selectable, searchable text from scanned PDFs, photos, and book pages with high-accuracy character recognition. 100% private in browser.',
         keywords: 'ocr pdf, scan to text, searchable pdf converter, optical character recognition online free, extract text from scanned pdf, free ocr in browser, tesseract ocr pdf',
         h1: 'OCR PDF (Scan to Text) Online Free',
@@ -888,7 +888,7 @@ export const SEO_DATA = {
             { title: 'Copy-to-Clipboard & File Export', desc: 'Copy recognized paragraphs with one click or export structured plain text files.' }
         ],
         content: `
-            <p>Scanned documents and photos of printed papers are essentially static pictures of text—you cannot search for keywords, highlight sentences, or copy text into word processors. Retyping pages manually wastes hours of productive time. TECHTIS OCR PDF runs an Optical Character Recognition engine directly inside your web browser using WebAssembly.</p>
+            <p>Scanned documents and photos of printed papers are essentially static pictures of text - you cannot search for keywords, highlight sentences, or copy text into word processors. Retyping pages manually wastes hours of productive time. TECHTIS OCR PDF runs an Optical Character Recognition engine directly inside your web browser using WebAssembly.</p>
             <p>Our engine inspects pixel patterns, isolates lines of print, and reconstructs character streams with high precision. It handles multi-column layouts, tabular numbers, and diverse typography styles. Once recognized, you can copy text with one click or export it for editing.</p>
             <p>Unlike cloud OCR services that store your scans on remote databases, TECHTIS processes your scans locally on your computer's CPU, keeping medical records, personal identity scans, and financial receipts completely private.</p>
         `,
@@ -902,7 +902,7 @@ export const SEO_DATA = {
     },
 
     'ai-summarizer': {
-        title: 'AI PDF Summarizer Online Free – Instant Document Summary & Insights | TECHTIS',
+        title: 'AI PDF Summarizer Online Free - Instant Document Summary & Insights | TECHTIS',
         metaDescription: 'Summarize PDF documents online free with AI. Generate executive summaries, key takeaways, and action items in seconds using Edge AI. 100% private, zero cost.',
         keywords: 'ai pdf summarizer, summarize pdf online, document summarizer ai, key takeaways pdf, free ai document summary, llama 3 pdf summary, gemini pdf summarizer',
         h1: 'AI PDF Document Summarizer Online Free',
@@ -934,7 +934,7 @@ export const SEO_DATA = {
     },
 
     'ai-translator': {
-        title: 'AI PDF Translator Online Free – Translate PDF into 50+ Languages | TECHTIS',
+        title: 'AI PDF Translator Online Free - Translate PDF into 50+ Languages | TECHTIS',
         metaDescription: 'Translate PDF documents online free into 50+ languages with Edge AI. Preserves section boundaries and document flow without file uploads. 100% private.',
         keywords: 'translate pdf, ai pdf translator, translate pdf document online free, multilingual pdf translation, translate pdf english to spanish, free document translator ai',
         h1: 'AI PDF Translator Online Free',
@@ -966,7 +966,7 @@ export const SEO_DATA = {
     },
 
     'form-blank-detector': {
-        title: 'PDF Form Blank Detector Online Free – Spot Missing Signatures & Fields | TECHTIS',
+        title: 'PDF Form Blank Detector Online Free - Spot Missing Signatures & Fields | TECHTIS',
         metaDescription: 'Scan contracts and forms to locate unfilled blanks and missing signatures online free. Automated contract review tool spots empty lines. 100% private in browser.',
         keywords: 'form blank detector, find missing signatures pdf, contract review tool, spot blank fields pdf, uncompleted form checker, audit pdf contract free',
         h1: 'PDF Form Blank Detector Online Free',
@@ -985,7 +985,7 @@ export const SEO_DATA = {
         ],
         content: `
             <p>Submitting an incomplete legal contract, loan application, or tax declaration with a missing signature line or blank date field leads to embarrassing rejections, delayed closings, and legal vulnerability. Manually proofreading multi-page agreements to ensure every blank is filled is tedious and error-prone. TECHTIS Form Blank Detector audits your documents automatically.</p>
-            <p>Our parsing engine scans document structures for common completion markers—such as underline blanks, empty AcroForm inputs, unselected checkboxes, and unsigned signature lines. It provides an interactive audit checklist that highlights exactly where information is missing.</p>
+            <p>Our parsing engine scans document structures for common completion markers - such as underline blanks, empty AcroForm inputs, unselected checkboxes, and unsigned signature lines. It provides an interactive audit checklist that highlights exactly where information is missing.</p>
             <p>Because contract review involves your most confidential legal and financial documents, the entire audit executes securely in browser memory without sending files to third parties.</p>
         `,
         faqs: [
@@ -998,7 +998,7 @@ export const SEO_DATA = {
     },
 
     'scan-to-pdf': {
-        title: 'Scan to PDF Online Free – Capture Paper Docs with Webcam or Mobile | TECHTIS',
+        title: 'Scan to PDF Online Free - Capture Paper Docs with Webcam or Mobile | TECHTIS',
         metaDescription: 'Scan paper documents to PDF online free using your webcam or smartphone camera. Auto-perspective correction and contrast enhancement in browser WebGL.',
         keywords: 'scan to pdf, webcam document scanner, mobile scanner online, camera to pdf free, capture paper to pdf, photo scanner in browser, client side scanner',
         h1: 'Scan to PDF Online Free',
@@ -1031,7 +1031,7 @@ export const SEO_DATA = {
 ,
 
     'image-compressor': {
-        title: 'Image Compressor Online Free – Reduce JPG, PNG & WebP Size | TECHTIS',
+        title: 'Image Compressor Online Free - Reduce JPG, PNG & WebP Size | TECHTIS',
         metaDescription: 'Compress images online for free with TECHTIS. Reduce JPG, PNG, and WebP file sizes with customizable quality slider. 100% private in-browser compression.',
         keywords: 'compress image, image compressor, reduce image size, compress jpg online, compress png, webp compressor, image compression without quality loss, tinypng alternative',
         h1: 'Compress Images Online Free',
@@ -1063,7 +1063,7 @@ export const SEO_DATA = {
     },
 
     'image-resizer': {
-        title: 'Image Resizer Online Free – Resize Photos by Pixels, Percent & CM | TECHTIS',
+        title: 'Image Resizer Online Free - Resize Photos by Pixels, Percent & CM | TECHTIS',
         metaDescription: 'Resize image dimensions online for free. Change width and height in pixels, percentages, centimeters, or inches with aspect ratio lock. 100% in-browser privacy.',
         keywords: 'resize image, image resizer online, change photo dimensions, resize picture free, photo resizer cm inches, resize image without losing quality, iloveimg resizer alternative',
         h1: 'Resize Images Online Free',
@@ -1095,7 +1095,7 @@ export const SEO_DATA = {
     },
 
     'jpg-to-png': {
-        title: 'JPG to PNG Converter Online Free – Convert JPEG to Lossless PNG | TECHTIS',
+        title: 'JPG to PNG Converter Online Free - Convert JPEG to Lossless PNG | TECHTIS',
         metaDescription: 'Convert JPG to PNG online free in seconds. Transform lossy JPEG images into lossless PNG format with crystal-clear quality and 100% in-browser privacy.',
         keywords: 'jpg to png, convert jpg to png, jpeg to png converter free, convert photo to png online, lossless png converter, client side image converter',
         h1: 'Convert JPG to PNG Online Free',
@@ -1125,7 +1125,7 @@ export const SEO_DATA = {
     },
 
     'png-to-jpg': {
-        title: 'PNG to JPG Converter Online Free – Convert PNG to Lightweight JPEG | TECHTIS',
+        title: 'PNG to JPG Converter Online Free - Convert PNG to Lightweight JPEG | TECHTIS',
         metaDescription: 'Convert PNG to JPG online for free. Compress heavy PNG images into lightweight JPG format with customizable background color. 100% private in-browser tool.',
         keywords: 'png to jpg, convert png to jpg online, png to jpeg free, convert png to jpg with white background, reduce png size to jpg, transparent png to jpg',
         h1: 'Convert PNG to JPG Online Free',
@@ -1154,7 +1154,7 @@ export const SEO_DATA = {
     },
 
     'jpg-to-webp': {
-        title: 'JPG to WebP Converter Online Free – Convert Images to Next-Gen WebP | TECHTIS',
+        title: 'JPG to WebP Converter Online Free - Convert Images to Next-Gen WebP | TECHTIS',
         metaDescription: 'Convert JPG and PNG images to next-gen WebP online free. Reduce image size by 30%+ with superior visual quality. 100% client-side in-browser conversion.',
         keywords: 'jpg to webp, convert jpg to webp, png to webp, webp converter online free, convert photo to webp, next gen image format, faster website images',
         h1: 'Convert Images to WebP Online Free',
@@ -1183,7 +1183,7 @@ export const SEO_DATA = {
     },
 
     'image-cropper': {
-        title: 'Image Cropper Online Free – Crop & Rotate Photos with Aspect Ratios | TECHTIS',
+        title: 'Image Cropper Online Free - Crop & Rotate Photos with Aspect Ratios | TECHTIS',
         metaDescription: 'Crop and rotate photos online for free. Visual crop box with 1:1, 4:3, 16:9, and passport ratio presets, plus 90-degree rotation. 100% client-side privacy.',
         keywords: 'crop image, image cropper online, crop photo free, photo rotator online, rotate image 90 degrees, square photo cropper, passport photo crop, crop picture in browser',
         h1: 'Crop & Rotate Images Online Free',
@@ -1212,7 +1212,7 @@ export const SEO_DATA = {
     },
 
     'passport-photo-maker': {
-        title: 'Passport & ID Photo Maker Online Free – Official Presets & A4 Print Sheet | TECHTIS',
+        title: 'Passport & ID Photo Maker Online Free - Official Presets & A4 Print Sheet | TECHTIS',
         metaDescription: 'Create compliant passport and ID photos online free. Official presets for India (35x45mm), US (2x2 in), UK/Schengen, face framing guide, and multi-up A4 printable PDF tiling.',
         keywords: 'passport photo maker, free passport photo online, create passport size photo, india passport photo 35x45, us visa photo 2x2 inch, passport photo a4 print sheet, id photo maker free, biometric photo crop',
         h1: 'Passport & ID Photo Maker Online Free',
@@ -1252,7 +1252,7 @@ export const SEO_DATA = {
     },
 
     'id-card-ocr': {
-        title: 'Private Document OCR Online Free – Extract Aadhaar & PAN Card Data | TECHTIS',
+        title: 'Private Document OCR Online Free - Extract Aadhaar & PAN Card Data | TECHTIS',
         metaDescription: 'Extract text from Aadhaar, PAN and ID cards online free with 100% in-browser privacy. Client-side WebAssembly OCR, sensitive number masking, and instant clear-data controls.',
         keywords: 'aadhaar card ocr, pan card ocr online, extract id card text, client side ocr, private document ocr, in browser tesseract wasm, mask aadhaar number online, free id scanner',
         h1: 'Private Document OCR Online Free',
@@ -1286,10 +1286,10 @@ export const SEO_DATA = {
     },
 
     'fill-form': {
-        title: 'Fill Form Online – Universal OCR Form Assistant for PDF & Image | TECHTIS',
+        title: 'Fill Form Online - Universal OCR Form Assistant for PDF & Image | TECHTIS',
         metaDescription: 'Extract all data from PDFs, scanned documents, and ID photos with zero-upload local OCR. 1-click copy for Name, Email, Phone, DOB, IDs & Address with docked side-by-side form assistant.',
         keywords: 'fill form online, ocr form assistant, extract text to fill forms, pdf form data extractor, scan to fill form, image to form copy, side by side form filler, zero upload ocr, client side document parser',
-        h1: 'Fill Form – Universal OCR Form Assistant',
+        h1: 'Fill Form - Universal OCR Form Assistant',
         subtitle: 'Upload any PDF or ID image, automatically extract Name, Email, Phone, DOB, IDs, and Address, and dock into a side assistant to seamlessly fill any online application form.',
         badge: '100% In-Browser Dual OCR & Dock Mode',
         howTo: [
@@ -1320,7 +1320,7 @@ export const SEO_DATA = {
     }
 ,
     'qr-code-generator': {
-        "title": "QR Code Generator Online Free – Custom Color & High-Res Vector SVG / PNG | TECHTIS",
+        "title": "QR Code Generator Online Free - Custom Color & High-Res Vector SVG / PNG | TECHTIS",
         "metaDescription": "Generate custom QR codes online for free with TECHTIS. Custom foreground/background colors, SVG vector & PNG download. 100% in-browser privacy.",
         "keywords": "qr code generator, free qr code creator, custom qr code, qr code svg download, qr code png generator, wifi qr code, techtis qr code",
         "h1": "QR Code Generator Online Free",
@@ -1385,7 +1385,7 @@ export const SEO_DATA = {
         ]
 },
     'json-formatter': {
-        "title": "JSON Formatter & Validator Online Free – Beautify, Minify & Inspect | TECHTIS",
+        "title": "JSON Formatter & Validator Online Free - Beautify, Minify & Inspect | TECHTIS",
         "metaDescription": "Format, validate, beautify, and minify JSON data online free. Syntax error detection, indentation control, 100% in-browser privacy.",
         "keywords": "json formatter, json beautifier, json validator, minify json, format json online, clean json, json lint free, safe json formatter",
         "h1": "JSON Formatter & Validator Online Free",
@@ -1426,7 +1426,7 @@ export const SEO_DATA = {
                         "desc": "Processes multi-megabyte JSON arrays and objects seamlessly in browser RAM."
                 }
         ],
-        "content": "\n            <p>Working with nested API responses, server configuration files, and database dumps requires readable, well-formatted JSON. TECHTIS JSON Formatter & Validator transforms messy, unformatted, or minified JSON strings into cleanly indented, human-readable code in milliseconds.</p>\n            <p>If your JSON contains syntax mistakes—such as trailing commas, unescaped quotes, or mismatched braces—our parser catches the error instantly, highlighting the exact issue so you can fix it immediately without frustration.</p>\n            <p>Best of all, TECHTIS processes JSON entirely inside your browser JavaScript engine. This means your private user records, authentication tokens, and proprietary configurations remain 100% confidential and are never transmitted to third-party cloud servers.</p>\n        ",
+        "content": "\n            <p>Working with nested API responses, server configuration files, and database dumps requires readable, well-formatted JSON. TECHTIS JSON Formatter & Validator transforms messy, unformatted, or minified JSON strings into cleanly indented, human-readable code in milliseconds.</p>\n            <p>If your JSON contains syntax mistakes - such as trailing commas, unescaped quotes, or mismatched braces - our parser catches the error instantly, highlighting the exact issue so you can fix it immediately without frustration.</p>\n            <p>Best of all, TECHTIS processes JSON entirely inside your browser JavaScript engine. This means your private user records, authentication tokens, and proprietary configurations remain 100% confidential and are never transmitted to third-party cloud servers.</p>\n        ",
         "faqs": [
                 {
                         "q": "Is it safe to paste confidential API responses into TECHTIS?",
@@ -1450,7 +1450,7 @@ export const SEO_DATA = {
         ]
 },
     'base64-converter': {
-        "title": "Base64 Encoder / Decoder Online Free – Text & Binary Files | TECHTIS",
+        "title": "Base64 Encoder / Decoder Online Free - Text & Binary Files | TECHTIS",
         "metaDescription": "Encode and decode Base64 strings and binary files online free. Instant UTF-8 and Data URI generation. 100% private in-browser memory execution.",
         "keywords": "base64 encoder, base64 decoder, base64 image converter, base64 to text, string to base64, data uri generator, free base64 converter",
         "h1": "Base64 Encoder / Decoder Online Free",
@@ -1515,7 +1515,7 @@ export const SEO_DATA = {
         ]
 },
     'url-encoder-decoder': {
-        "title": "URL Encoder / Decoder Online Free – Percent-Encoding & Query Parser | TECHTIS",
+        "title": "URL Encoder / Decoder Online Free - Percent-Encoding & Query Parser | TECHTIS",
         "metaDescription": "Encode and decode URLs and URI query parameters online free. RFC 3986 compliance, parameter breakdown table, 100% in-browser privacy.",
         "keywords": "url encoder, url decoder, percent encoding, uri encode, decode url online, query string parser, rfc 3986 url encoder, free url decoder",
         "h1": "URL Encoder / Decoder Online Free",
@@ -1580,7 +1580,7 @@ export const SEO_DATA = {
         ]
 },
     'hash-generator': {
-        "title": "Cryptographic Hash Generator Online Free – MD5, SHA-1, SHA-256, SHA-512 | TECHTIS",
+        "title": "Cryptographic Hash Generator Online Free - MD5, SHA-1, SHA-256, SHA-512 | TECHTIS",
         "metaDescription": "Calculate MD5, SHA-1, SHA-256, and SHA-512 cryptographic hashes online free. WebCrypto native performance, 100% client-side privacy.",
         "keywords": "hash generator, md5 hash online, sha256 generator, sha512 calculator, sha1 checksum, cryptographic hash online, free checksum generator",
         "h1": "Cryptographic Hash Generator Online Free",
@@ -1645,7 +1645,7 @@ export const SEO_DATA = {
         ]
 },
     'password-generator': {
-        "title": "Strong Password Generator Online Free – Cryptographic CSPRNG & NIST Entropy | TECHTIS",
+        "title": "Strong Password Generator Online Free - Cryptographic CSPRNG & NIST Entropy | TECHTIS",
         "metaDescription": "Generate strong, unbreakable passwords online free. Cryptographically secure CSPRNG, customizable length & characters, NIST entropy scoring. 100% private.",
         "keywords": "password generator, strong password generator, random password creator, secure password generator, cryptographic password, nist password entropy, free password tool",
         "h1": "Strong Password Generator Online Free",
@@ -1655,7 +1655,7 @@ export const SEO_DATA = {
                 {
                         "step": 1,
                         "title": "Configure Options",
-                        "desc": "Choose length (4–64 characters) and toggle uppercase, lowercase, numbers, and symbols."
+                        "desc": "Choose length (4 - 64 characters) and toggle uppercase, lowercase, numbers, and symbols."
                 },
                 {
                         "step": 2,
@@ -1710,7 +1710,7 @@ export const SEO_DATA = {
         ]
 },
     'css-glassmorphism': {
-        "title": "CSS Glassmorphism Generator Online Free – Frosted Glass UI & Live CSS | TECHTIS",
+        "title": "CSS Glassmorphism Generator Online Free - Frosted Glass UI & Live CSS | TECHTIS",
         "metaDescription": "Design frosted glass UI elements with CSS backdrop-filter online free. Interactive sliders for blur, opacity, border, and shadows. Copy CSS with 1 click.",
         "keywords": "css glassmorphism generator, glassmorphism css, frosted glass generator, backdrop filter css, glass ui design, modern css generator, free glassmorphism",
         "h1": "CSS Glassmorphism Generator Online Free",
@@ -1775,7 +1775,7 @@ export const SEO_DATA = {
         ]
 },
     'css-box-shadow': {
-        "title": "CSS Box Shadow Generator Online Free – Multi-Layer Smooth Shadows | TECHTIS",
+        "title": "CSS Box Shadow Generator Online Free - Multi-Layer Smooth Shadows | TECHTIS",
         "metaDescription": "Create beautiful multi-layer CSS box shadows online free. Sliders for offset, blur, spread, opacity, inset mode, and live CSS code export.",
         "keywords": "css box shadow generator, box shadow css, smooth shadow generator, multi layer box shadow, drop shadow css, shadow generator online, free box shadow tool",
         "h1": "CSS Box Shadow Generator Online Free",
@@ -1824,7 +1824,7 @@ export const SEO_DATA = {
                 },
                 {
                         "q": "How do I create subtle, modern shadows like Stripe or Apple?",
-                        "a": "Use a larger blur radius (20–40px), minimal spread, a modest Y-offset (8–15px), and a very low opacity black (between 6% and 12%)."
+                        "a": "Use a larger blur radius (20 - 40px), minimal spread, a modest Y-offset (8 - 15px), and a very low opacity black (between 6% and 12%)."
                 },
                 {
                         "q": "Can I copy the CSS for use in any framework?",
@@ -1840,7 +1840,7 @@ export const SEO_DATA = {
         ]
 },
     'css-gradient': {
-        "title": "CSS Gradient Generator Online Free – Linear & Radial Gradients | TECHTIS",
+        "title": "CSS Gradient Generator Online Free - Linear & Radial Gradients | TECHTIS",
         "metaDescription": "Design beautiful linear and radial CSS gradients online free. Angle wheel, color stops, designer presets, and live CSS code export.",
         "keywords": "css gradient generator, linear gradient css, radial gradient generator, background gradient css, color gradient online, free css gradient tool, gradient presets",
         "h1": "CSS Gradient Generator Online Free",
@@ -1905,7 +1905,7 @@ export const SEO_DATA = {
         ]
 },
     'css-neumorphism': {
-        "title": "CSS Neumorphism Generator Online Free – Soft UI Flat, Convex & Pressed | TECHTIS",
+        "title": "CSS Neumorphism Generator Online Free - Soft UI Flat, Convex & Pressed | TECHTIS",
         "metaDescription": "Generate soft UI neumorphic CSS shadows online free. Flat, concave, convex, and pressed modes with light source angle and elevation sliders.",
         "keywords": "css neumorphism generator, soft ui generator, neumorphic css, flat convex concave pressed css, neumorphic design online, free neumorphism tool",
         "h1": "CSS Neumorphism Generator Online Free",
@@ -1970,7 +1970,7 @@ export const SEO_DATA = {
         ]
 },
     'color-converter': {
-        "title": "Color Converter & Palette Studio Online Free – HEX, RGB, HSL, CMYK | TECHTIS",
+        "title": "Color Converter & Palette Studio Online Free - HEX, RGB, HSL, CMYK | TECHTIS",
         "metaDescription": "Convert colors across HEX, RGB, HSL, and CMYK online free. WCAG accessibility contrast checker, tint and shade ladders, 100% in-browser.",
         "keywords": "color converter, hex to rgb, rgb to hex, hex to hsl, cmyk converter, wcag color contrast, color palette generator, free color converter",
         "h1": "Color Converter & Palette Studio Online Free",
@@ -2035,7 +2035,7 @@ export const SEO_DATA = {
         ]
 },
     'word-counter': {
-        "title": "Word & Character Counter Online Free – Reading Time & Keyword Density | TECHTIS",
+        "title": "Word & Character Counter Online Free - Reading Time & Keyword Density | TECHTIS",
         "metaDescription": "Count words, characters, sentences, paragraphs, and reading time online free. Real-time keyword density analysis, 100% private in-browser RAM execution.",
         "keywords": "word counter, character counter, letter count, sentence counter, paragraph counter, reading time calculator, keyword density tool, free word counter online",
         "h1": "Word & Character Counter Online Free",
@@ -2100,7 +2100,7 @@ export const SEO_DATA = {
         ]
 },
     'case-converter': {
-        "title": "Case Converter Online Free – UPPERCASE, lowercase, Title Case, camelCase | TECHTIS",
+        "title": "Case Converter Online Free - UPPERCASE, lowercase, Title Case, camelCase | TECHTIS",
         "metaDescription": "Convert text between UPPERCASE, lowercase, Title Case, Sentence case, camelCase, snake_case, and kebab-case online free. 100% private in browser.",
         "keywords": "case converter, uppercase converter, lowercase converter, title case converter, camelcase converter, snake case online, sentence case tool, free case converter",
         "h1": "Case Converter Online Free",
@@ -2165,7 +2165,7 @@ export const SEO_DATA = {
         ]
 },
     'lorem-ipsum-generator': {
-        "title": "Lorem Ipsum Generator Online Free – Placeholder Dummy Text | TECHTIS",
+        "title": "Lorem Ipsum Generator Online Free - Placeholder Dummy Text | TECHTIS",
         "metaDescription": "Generate classic Lorem Ipsum dummy text online free. Customize paragraphs, sentences, words, or HTML lists with 1-click clipboard copy.",
         "keywords": "lorem ipsum generator, dummy text generator, placeholder text, fake text generator, lorem ipsum online, filler text generator, free lorem ipsum",
         "h1": "Lorem Ipsum Generator Online Free",
@@ -2230,7 +2230,7 @@ export const SEO_DATA = {
         ]
 },
     'markdown-to-html': {
-        "title": "Markdown to HTML Converter Online Free – Live Split-Screen Editor | TECHTIS",
+        "title": "Markdown to HTML Converter Online Free - Live Split-Screen Editor | TECHTIS",
         "metaDescription": "Convert Markdown to clean HTML online free. Live split-screen preview, GitHub Flavored Markdown (GFM) support, 100% in-browser privacy.",
         "keywords": "markdown to html, markdown editor online, gfm to html, markdown live preview, convert md to html, free markdown converter, markdown viewer",
         "h1": "Markdown to HTML Converter Online Free",
@@ -2271,7 +2271,7 @@ export const SEO_DATA = {
                         "desc": "Your private documentation, notes, and drafts remain strictly in browser RAM."
                 }
         ],
-        "content": "\n            <p>Markdown is the universal markup language for software documentation, GitHub repositories, technical blogs, and note-taking apps. Converting Markdown into clean, semantic HTML code is essential for publishing content to CMS platforms, static websites, and email newsletters.</p>\n            <p>TECHTIS Markdown to HTML Converter features a responsive split-screen editor that provides instantaneous visual preview of your formatted document. Our parser handles headings (H1–H6), bold, italics, blockquotes, ordered/unordered lists, code blocks, links, images, and tables.</p>\n            <p>Because the conversion runs 100% in your browser's local JavaScript engine, your proprietary documentation, technical specifications, and book drafts remain completely secure on your computer.</p>\n        ",
+        "content": "\n            <p>Markdown is the universal markup language for software documentation, GitHub repositories, technical blogs, and note-taking apps. Converting Markdown into clean, semantic HTML code is essential for publishing content to CMS platforms, static websites, and email newsletters.</p>\n            <p>TECHTIS Markdown to HTML Converter features a responsive split-screen editor that provides instantaneous visual preview of your formatted document. Our parser handles headings (H1 - H6), bold, italics, blockquotes, ordered/unordered lists, code blocks, links, images, and tables.</p>\n            <p>Because the conversion runs 100% in your browser's local JavaScript engine, your proprietary documentation, technical specifications, and book drafts remain completely secure on your computer.</p>\n        ",
         "faqs": [
                 {
                         "q": "Does this converter support GitHub Flavored Markdown (GFM)?",
@@ -2295,7 +2295,7 @@ export const SEO_DATA = {
         ]
 },
     'svg-to-png': {
-        "title": "SVG to High-Res PNG Converter Online Free – 1x, 2x, 4x Retina Scale | TECHTIS",
+        "title": "SVG to High-Res PNG Converter Online Free - 1x, 2x, 4x Retina Scale | TECHTIS",
         "metaDescription": "Convert SVG vector files to crisp raster PNGs online free. Scale multipliers (1x, 2x, 3x, 4x), custom dimensions, transparent background, 100% in-browser.",
         "keywords": "svg to png, convert svg to png, high res svg converter, vector to png online, svg to transparent png, retina png export, free svg to png",
         "h1": "SVG to High-Res PNG Converter Online Free",
@@ -2360,7 +2360,7 @@ export const SEO_DATA = {
         ]
 },
     'image-to-svg': {
-        "title": "Image to SVG Vectorizer Online Free – Trace JPG & PNG to Vector Paths | TECHTIS",
+        "title": "Image to SVG Vectorizer Online Free - Trace JPG & PNG to Vector Paths | TECHTIS",
         "metaDescription": "Vectorize raster JPG & PNG images into scalable SVG vector paths online free. Edge detection threshold sliders, transparent vector output, 100% in-browser.",
         "keywords": "image to svg, convert jpg to svg, png to svg vectorizer, trace image to vector, raster to vector online, free vectorizer, image to vector path",
         "h1": "Image to SVG Vectorizer Online Free",
@@ -2425,7 +2425,7 @@ export const SEO_DATA = {
         ]
 },
     'webp-to-jpg': {
-        "title": "WebP to JPG / PNG Converter Online Free – Universal Image Format | TECHTIS",
+        "title": "WebP to JPG / PNG Converter Online Free - Universal Image Format | TECHTIS",
         "metaDescription": "Convert WebP images to universal JPG or lossless PNG online free. Quality compression slider, batch friendly, 100% private in-browser execution.",
         "keywords": "webp to jpg, convert webp to png, webp to jpeg online, free webp converter, save webp as jpg, webp image converter, batch webp to jpg",
         "h1": "WebP to JPG / PNG Converter Online Free",
@@ -2478,7 +2478,7 @@ export const SEO_DATA = {
                 },
                 {
                         "q": "Is there any quality loss during conversion?",
-                        "a": "Converting to PNG is 100% lossless. When converting to JPG, setting the quality slider to 95–100% produces virtually indistinguishable visual quality."
+                        "a": "Converting to PNG is 100% lossless. When converting to JPG, setting the quality slider to 95 - 100% produces virtually indistinguishable visual quality."
                 }
         ],
         "relatedTools": [
@@ -2490,7 +2490,7 @@ export const SEO_DATA = {
         ]
 },
     'social-media-resizer': {
-        "title": "Social Media Image Resizer Online Free – Instagram, YouTube, LinkedIn, X | TECHTIS",
+        "title": "Social Media Image Resizer Online Free - Instagram, YouTube, LinkedIn, X | TECHTIS",
         "metaDescription": "Resize and crop images to official dimensions for Instagram, YouTube, LinkedIn, Twitter/X & Facebook online free. Official 2026 presets, 100% in-browser.",
         "keywords": "social media image resizer, instagram photo resizer, youtube banner resizer, linkedin cover size, twitter header resizer, facebook cover photo, crop photo for instagram",
         "h1": "Social Media Image Resizer Online Free",

@@ -70,7 +70,7 @@ async function runBuild() {
 
         for (const tool of TOOLS) {
             const seo = SEO_DATA[tool.id] || {
-                title: `${tool.name} Online Free â€“ 100% Private Tool | TECHTIS`,
+                title: `${tool.name} Online Free - 100% Private Tool | TECHTIS`,
                 metaDescription: `${tool.name} online free: ${tool.tagline}. 100% private in-browser RAM execution, zero file uploads, unlimited free access worldwide.`,
                 keywords: `${tool.name.toLowerCase()}, free ${tool.name.toLowerCase()}, ${tool.name.toLowerCase()} online, fast ${tool.name.toLowerCase()}`,
                 h1: `${tool.name} Online Free`,
@@ -137,7 +137,7 @@ async function runBuild() {
                         'logo': {
                             '@type': 'ImageObject',
                             'url': `${BASE_URL}/assets/images/logo.png`,
-                            'caption': 'TECHTIS â€” 100% Private, Free Online PDF & Web Utilities'
+                            'caption': 'TECHTIS - 100% Private, Free Online PDF & Web Utilities'
                         },
                         'sameAs': [
                             'https://github.com/Dhirajsharma16/techtis-pdf'
@@ -347,7 +347,7 @@ async function runBuild() {
 
     <!-- Slim Navigation Header -->
     <header class="header-glass sticky top-0 z-40 px-3 sm:px-6 py-2 flex items-center justify-between gap-3 border-b border-slate-200">
-        <a href="../" class="flex items-center gap-2.5 shrink-0 group" id="brand-logo-btn" title="TechTis â€” Free Online PDF, Image &amp; Developer Tools">
+        <a href="../" class="flex items-center gap-2.5 shrink-0 group" id="brand-logo-btn" title="TechTis - Free Online PDF, Image &amp; Developer Tools">
             <img src="../assets/images/logo.png" alt="TechTis Logo" class="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform">
             <div>
                 <div class="leading-none">
