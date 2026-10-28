@@ -443,6 +443,29 @@ ${text.slice(0, 25000)}`;
             }
         }
 
+        // 3.5 Serverless Cloudflare Edge OCR (If GEMINI_API_KEY is configured in Cloudflare)
+        if (imageBase64) {
+            try {
+                const workerBase = settings.cloudflareWorkerUrl ? settings.cloudflareWorkerUrl.replace(/\/$/, '') : '';
+                const edgeOcrUrl = workerBase ? `${workerBase}/api/ai/ocr` : '/api/ai/ocr';
+                onProgress({ step: 'edge', message: 'Checking Cloudflare Edge AI Vision (Serverless)...' });
+                const edgeRes = await fetch(edgeOcrUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: imageBase64 })
+                });
+                if (edgeRes.ok) {
+                    const edgeData = await edgeRes.json();
+                    if (edgeData && edgeData.text && edgeData.text.trim()) {
+                        onProgress({ step: 'done', message: 'Cloudflare Edge AI OCR completed successfully!' });
+                        return edgeData.text.trim();
+                    }
+                }
+            } catch (edgeErr) {
+                console.warn('Edge OCR route not available, falling back to local WASM:', edgeErr);
+            }
+        }
+
         // 4. In-Browser WASM Tesseract.js (100% Offline, Client-Side)
         const ocrTarget = targetCanvas || file;
         if (window.Tesseract && (targetCanvas || !isPdf)) {

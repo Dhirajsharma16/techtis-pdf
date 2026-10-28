@@ -269,6 +269,64 @@ export default {
             }
 
             // ==========================================
+            // 5b. CLOUDFLARE EDGE - SERVERLESS GEMINI VISION OCR (99%+ Precision)
+            // ==========================================
+            if (path === '/api/ai/ocr' && request.method === 'POST') {
+                const body = await request.json().catch(() => ({}));
+                const imageBase64 = body.image || '';
+
+                if (!imageBase64) {
+                    return jsonResponse({ error: 'Image data is required.' }, 400);
+                }
+
+                // Check daily IP quota
+                const ocrQuota = await checkAndIncrementQuota(env, clientIp, 30);
+                if (!ocrQuota.allowed) {
+                    return jsonResponse({
+                        error: 'Daily free AI OCR limit reached for this IP. Please add your personal key in Settings.',
+                        rateLimited: true
+                    }, 429);
+                }
+
+                if (env.GEMINI_API_KEY) {
+                    const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+                    const mime = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+                    const geminiModels = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-2.5-flash'];
+                    for (const model of geminiModels) {
+                        try {
+                            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
+                            const gemRes = await fetch(geminiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [{
+                                        parts: [
+                                            { text: 'Transcribe all text from this document image with 100% precision. Return ONLY the plain transcribed text, preserving paragraphs, numbers, and headings accurately.' },
+                                            { inline_data: { mime_type: mime, data: cleanData } }
+                                        ]
+                                    }]
+                                })
+                            });
+                            if (gemRes.ok) {
+                                const gemData = await gemRes.json();
+                                const text = gemData?.candidates?.[0]?.content?.parts?.[0]?.text;
+                                if (text && text.trim()) {
+                                    return jsonResponse({
+                                        text: text.trim(),
+                                        engine: `Google Gemini Vision (${model}) via Cloudflare Edge`
+                                    });
+                                }
+                            }
+                        } catch (err) {
+                            console.warn('Gemini edge OCR error:', err);
+                        }
+                    }
+                }
+
+                return jsonResponse({ error: 'GEMINI_API_KEY not configured on Cloudflare Worker.' }, 501);
+            }
+
+            // ==========================================
             // 6. CLOUDFLARE D1 DATABASE - TELEMETRY & STATS
             // ==========================================
             if (path === '/api/stats/log' && request.method === 'POST') {
@@ -346,6 +404,7 @@ export default {
                     'POST /api/ai/translate',
                     'POST /api/ai/detect-blanks',
                     'POST /api/ocr',
+                    'POST /api/ai/ocr',
                     'POST /api/stats/log',
                     'GET  /api/stats/global',
                     'POST /api/feedback'
