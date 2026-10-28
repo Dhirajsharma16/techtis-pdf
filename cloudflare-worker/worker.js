@@ -323,7 +323,27 @@ export default {
                     }
                 }
 
-                return jsonResponse({ error: 'GEMINI_API_KEY not configured on Cloudflare Worker.' }, 501);
+                // 2. Cloudflare Workers AI Free Tier (Llama 3.2 Vision - 10,000 Free Neurons/Day)
+                if (env.AI) {
+                    try {
+                        const cleanData = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+                        const binaryData = Uint8Array.from(atob(cleanData), c => c.charCodeAt(0));
+                        const cfVisionRes = await env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct', {
+                            image: [...binaryData],
+                            prompt: 'Transcribe all text from this document image accurately with exact words, numbers, and layout. Return only the extracted text with no conversational filler.'
+                        });
+                        if (cfVisionRes && (cfVisionRes.response || cfVisionRes.description)) {
+                            return jsonResponse({
+                                text: (cfVisionRes.response || cfVisionRes.description).trim(),
+                                engine: 'Cloudflare Workers AI (Llama 3.2 11B Vision - 100% Free Tier)'
+                            });
+                        }
+                    } catch (cfErr) {
+                        console.warn('Cloudflare Workers AI Vision error:', cfErr);
+                    }
+                }
+
+                return jsonResponse({ error: 'No AI engine active. Configure GEMINI_API_KEY or Cloudflare Workers AI [ai] binding.' }, 501);
             }
 
             // ==========================================

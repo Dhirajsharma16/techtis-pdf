@@ -9,6 +9,11 @@
     "command": "node scripts/build-dist.js"
   },
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "main": "cloudflare-worker/worker.js",
+  "ai": {
+    "binding": "AI"
   }
 }
