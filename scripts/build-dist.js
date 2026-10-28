@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -8,6 +9,10 @@ const rootDir = path.resolve(__dirname, '..');
 const distDir = path.join(rootDir, 'dist');
 
 console.log('[Build Dist] Starting production distribution build for TECHTIS...');
+
+// 0. Regenerate SEO Pages across all 60 tools
+console.log('[Build Dist] Generating dedicated SEO static pages...');
+execSync(`node "${path.join(__dirname, 'build-seo.js')}"`, { stdio: 'inherit' });
 
 // 1. Ensure dist directory exists
 if (fs.existsSync(distDir)) {

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Automated Static Site Generator for TECHTIS (techtis.in)
  * Compiles all 60 dedicated tool landing pages for maximum SEO performance,
  * generates sitemap.xml, updates robots.txt, links catalog items,
@@ -443,6 +443,31 @@ for (const tool of TOOLS) {
                 </div>
             </section>
 
+            <!-- Real-World Problem Solutions & Step-by-Step Use Cases -->
+            ${(seo.useCases && seo.useCases.length) ? `
+            <section class="space-y-3" id="use-cases">
+                <div class="text-center max-w-xl mx-auto space-y-0.5">
+                    <h2 class="text-base sm:text-lg font-extrabold text-slate-900">Step-by-Step Problem Solutions &amp; Real-World Use Cases</h2>
+                    <p class="text-xs text-slate-500">How everyday users, professionals, and students solve document challenges privately</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    ${seo.useCases.map(uc => `
+                    <div class="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-2 hover:border-red-300 transition">
+                        <div class="flex items-start gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                                <i data-lucide="${uc.icon || 'check-circle'}" class="w-3.5 h-3.5"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <h3 class="font-bold text-slate-900 text-xs sm:text-sm leading-snug">${escapeHtml(uc.title)}</h3>
+                                <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">${escapeHtml(uc.solution)}</p>
+                            </div>
+                        </div>
+                    </div>
+                    `).join('\n')}
+                </div>
+            </section>
+            ` : ''}
+
             <!-- Technical Specifications Section -->
             <section class="space-y-3" id="tech-specs">
                 <div class="text-center max-w-xl mx-auto space-y-0.5">
@@ -505,6 +530,19 @@ for (const tool of TOOLS) {
                     ${faqAccordionHtml}
                 </div>
             </section>
+
+            <!-- Popular Search Queries & Target Topics -->
+            ${(seo.longTailKeywords && seo.longTailKeywords.length) ? `
+            <section class="space-y-3 pt-2" id="popular-topics">
+                <div class="text-center max-w-xl mx-auto space-y-0.5">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Popular Search Queries Resolved by This Free Tool</h3>
+                    <p class="text-[11px] text-slate-500">Every query is processed 100% inside your browser with zero server uploads</p>
+                </div>
+                <div class="flex flex-wrap gap-1.5 justify-center max-w-4xl mx-auto">
+                    ${seo.longTailKeywords.map(k => `<span class="px-2.5 py-1 bg-white hover:bg-red-50 hover:text-red-600 text-slate-600 rounded-lg text-[11px] font-medium transition cursor-default border border-slate-200 shadow-2xs">${escapeHtml(k)}</span>`).join('\n                    ')}
+                </div>
+            </section>
+            ` : ''}
 
             <!-- Related Tools -->
             <section class="space-y-3" id="related-tools">

@@ -1,4 +1,4 @@
-﻿# TECHTIS (techtis.in) Robots Configuration
+# TECHTIS (techtis.in) Robots Configuration
 User-agent: *
 Allow: /
 
