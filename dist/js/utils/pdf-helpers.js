@@ -5,6 +5,116 @@
 
 import { StorageManager } from './storage.js';
 
+// Robust dynamic loaders that guarantee libraries are loaded before use in any context
+export async function ensurePdfLib() {
+    if (typeof window !== 'undefined' && window.PDFLib) return window.PDFLib;
+    return new Promise((resolve, reject) => {
+        const isSubdir = typeof document !== 'undefined' && document.body && document.body.dataset && document.body.dataset.toolId;
+        const prefix = isSubdir ? '../' : '';
+        const scriptId = 'vendor-pdf-lib-script';
+
+        let script = document.getElementById(scriptId) || document.querySelector('script[src*="pdf-lib.min.js"]');
+        if (!script) {
+            script = document.createElement('script');
+            script.id = scriptId;
+            script.src = `${prefix}vendor/pdf-lib.min.js`;
+            document.head.appendChild(script);
+        }
+
+        let elapsed = 0;
+        const check = setInterval(() => {
+            elapsed += 50;
+            if (typeof window !== 'undefined' && window.PDFLib) {
+                clearInterval(check);
+                resolve(window.PDFLib);
+            } else if (elapsed >= 10000) {
+                clearInterval(check);
+                console.warn('Local pdf-lib load timed out. Loading fallback CDN...');
+                const cdn = document.createElement('script');
+                cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';
+                cdn.onload = () => resolve(window.PDFLib);
+                cdn.onerror = () => reject(new Error('pdf-lib engine is not loaded. Please check your network connection.'));
+                document.head.appendChild(cdn);
+            }
+        }, 50);
+    });
+}
+
+export async function ensurePdfJs() {
+    if (typeof window !== 'undefined' && window.pdfjsLib) return window.pdfjsLib;
+    return new Promise((resolve, reject) => {
+        const isSubdir = typeof document !== 'undefined' && document.body && document.body.dataset && document.body.dataset.toolId;
+        const prefix = isSubdir ? '../' : '';
+        const scriptId = 'vendor-pdfjs-script';
+
+        let script = document.getElementById(scriptId) || document.querySelector('script[src*="pdf.min.js"]');
+        if (!script) {
+            script = document.createElement('script');
+            script.id = scriptId;
+            script.src = `${prefix}vendor/pdf.min.js`;
+            document.head.appendChild(script);
+        }
+
+        let elapsed = 0;
+        const check = setInterval(() => {
+            elapsed += 50;
+            if (typeof window !== 'undefined' && window.pdfjsLib) {
+                clearInterval(check);
+                try {
+                    const workerRelative = isSubdir ? '../vendor/pdf.worker.min.js' : 'vendor/pdf.worker.min.js';
+                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(workerRelative, window.location.href).href;
+                } catch (e) {
+                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                }
+                resolve(window.pdfjsLib);
+            } else if (elapsed >= 10000) {
+                clearInterval(check);
+                const cdn = document.createElement('script');
+                cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+                cdn.onload = () => {
+                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                    resolve(window.pdfjsLib);
+                };
+                cdn.onerror = () => reject(new Error('PDF.js rendering engine is not ready.'));
+                document.head.appendChild(cdn);
+            }
+        }, 50);
+    });
+}
+
+export async function ensureJsZip() {
+    if (typeof window !== 'undefined' && window.JSZip) return window.JSZip;
+    return new Promise((resolve, reject) => {
+        const isSubdir = typeof document !== 'undefined' && document.body && document.body.dataset && document.body.dataset.toolId;
+        const prefix = isSubdir ? '../' : '';
+        const scriptId = 'vendor-jszip-script';
+
+        let script = document.getElementById(scriptId) || document.querySelector('script[src*="jszip.min.js"]');
+        if (!script) {
+            script = document.createElement('script');
+            script.id = scriptId;
+            script.src = `${prefix}vendor/jszip.min.js`;
+            document.head.appendChild(script);
+        }
+
+        let elapsed = 0;
+        const check = setInterval(() => {
+            elapsed += 50;
+            if (typeof window !== 'undefined' && window.JSZip) {
+                clearInterval(check);
+                resolve(window.JSZip);
+            } else if (elapsed >= 10000) {
+                clearInterval(check);
+                const cdn = document.createElement('script');
+                cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                cdn.onload = () => resolve(window.JSZip);
+                cdn.onerror = () => reject(new Error('JSZip library required.'));
+                document.head.appendChild(cdn);
+            }
+        }, 50);
+    });
+}
+
 // Initialize PDF.js worker with fallback (resolves path properly in root and subdirectories)
 if (typeof window !== 'undefined' && window.pdfjsLib) {
     try {
@@ -17,6 +127,10 @@ if (typeof window !== 'undefined' && window.pdfjsLib) {
 }
 
 export const PdfHelpers = {
+    ensurePdfLib,
+    ensurePdfJs,
+    ensureJsZip,
+
     /**
      * Read File to ArrayBuffer
      */
@@ -86,9 +200,15 @@ export const PdfHelpers = {
      */
     async getPdfPageCount(arrayBuffer) {
         try {
+            if (!window.PDFLib) {
+                await ensurePdfLib().catch(() => {});
+            }
             if (window.PDFLib) {
                 const pdfDoc = await window.PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
                 return pdfDoc.getPageCount();
+            }
+            if (!window.pdfjsLib) {
+                await ensurePdfJs().catch(() => {});
             }
             if (window.pdfjsLib) {
                 const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer.slice(0) });
@@ -107,6 +227,9 @@ export const PdfHelpers = {
      */
     async renderPageThumbnail(arrayBuffer, pageNumber = 1, targetWidth = 180) {
         try {
+            if (!window.pdfjsLib) {
+                await ensurePdfJs();
+            }
             if (!window.pdfjsLib) {
                 return null;
             }
@@ -141,6 +264,9 @@ export const PdfHelpers = {
      * Bundle multiple PDF Uint8Array files into a ZIP archive and trigger download
      */
     async downloadAsZip(files, zipFilename = 'split-documents.zip') {
+        if (!window.JSZip) {
+            await ensureJsZip();
+        }
         if (!window.JSZip) {
             throw new Error('JSZip library not available');
         }

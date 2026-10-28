@@ -4,7 +4,7 @@
  * Zero Server Cost | Zero Network Footprint
  */
 
-import { PdfHelpers } from '../utils/pdf-helpers.js';
+import { PdfHelpers, ensurePdfLib } from '../utils/pdf-helpers.js';
 import { StorageManager } from '../utils/storage.js';
 
 export const SplitTool = {
@@ -26,6 +26,7 @@ export const SplitTool = {
      * Inspect PDF and return total pages and basic metadata
      */
     async inspect(file) {
+        await ensurePdfLib();
         const buffer = await PdfHelpers.fileToArrayBuffer(file);
         const { PDFDocument } = window.PDFLib;
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
@@ -51,7 +52,7 @@ export const SplitTool = {
     async execute(file, options = {}, onProgress = () => {}) {
         const startTime = performance.now();
         if (!file) throw new Error('Please select a PDF file to split.');
-        if (!window.PDFLib) throw new Error('pdf-lib is not available.');
+        await ensurePdfLib();
 
         const { PDFDocument } = window.PDFLib;
         const baseName = file.name.replace(/\.[^/.]+$/, '');

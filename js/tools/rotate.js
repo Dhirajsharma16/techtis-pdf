@@ -3,7 +3,7 @@
  * In-Browser Page Rotation using pdf-lib.js
  */
 
-import { PdfHelpers } from '../utils/pdf-helpers.js';
+import { PdfHelpers, ensurePdfLib } from '../utils/pdf-helpers.js';
 import { StorageManager } from '../utils/storage.js';
 
 export const RotateTool = {
@@ -26,6 +26,7 @@ export const RotateTool = {
         const degrees = parseInt(options.rotationDegrees || 90, 10);
 
         onProgress({ step: 'init', percent: 20, message: 'Loading PDF in browser memory...' });
+        await ensurePdfLib();
         const buffer = await PdfHelpers.fileToArrayBuffer(file);
         const { PDFDocument, degrees: libDegrees } = window.PDFLib;
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });

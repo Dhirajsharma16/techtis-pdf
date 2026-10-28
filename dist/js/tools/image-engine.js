@@ -4,6 +4,8 @@
  * Zero server uploads, zero network latency, strict user privacy.
  */
 
+import { ensurePdfLib, ensurePdfJs } from '../utils/pdf-helpers.js';
+
 export const ImageEngine = {
     /**
      * Load an image file into an HTMLImageElement using FileReader
@@ -54,9 +56,7 @@ export const ImageEngine = {
      * Render a PDF page onto an HTML5 Canvas using PDF.js
      */
     async renderPdfToCanvas(file, pageNum = 1, scale = 1.75) {
-        if (!window.pdfjsLib) {
-            throw new Error('PDF.js engine is not loaded in browser.');
-        }
+        await ensurePdfJs();
         let arrayBuffer;
         if (file instanceof ArrayBuffer) {
             arrayBuffer = file.slice(0);
@@ -307,9 +307,7 @@ export const ImageEngine = {
         const cols = Math.floor((printableWidth + gapX) / (photoWidthPoints + gapX));
         const rows = Math.ceil(quantity / cols);
 
-        if (!window.PDFLib) {
-            throw new Error('PDF-Lib engine not available in browser memory.');
-        }
+        await ensurePdfLib();
 
         const pdfDoc = await window.PDFLib.PDFDocument.create();
         const page = pdfDoc.addPage([A4_WIDTH_POINTS, A4_HEIGHT_POINTS]);

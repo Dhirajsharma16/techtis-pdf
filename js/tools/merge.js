@@ -4,7 +4,7 @@
  * Zero Server Cost | Zero Network Footprint | Sub-100ms Per-Page Processing
  */
 
-import { PdfHelpers } from '../utils/pdf-helpers.js';
+import { PdfHelpers, ensurePdfLib } from '../utils/pdf-helpers.js';
 import { StorageManager } from '../utils/storage.js';
 
 export const MergeTool = {
@@ -27,9 +27,7 @@ export const MergeTool = {
             throw new Error('Please select at least 2 PDF files to merge.');
         }
 
-        if (!window.PDFLib) {
-            throw new Error('pdf-lib engine is not loaded. Please verify vendor scripts.');
-        }
+        await ensurePdfLib();
 
         const { PDFDocument } = window.PDFLib;
         const totalFiles = files.length;

@@ -4,7 +4,7 @@
  * Zero Server Overhead | Zero File Uploads | Sub-100ms In-Memory Processing
  */
 
-import { PdfHelpers } from '../utils/pdf-helpers.js';
+import { PdfHelpers, ensurePdfLib, ensurePdfJs, ensureJsZip } from '../utils/pdf-helpers.js';
 import { StorageManager } from '../utils/storage.js';
 
 export const AllToolsEngine = {
@@ -18,7 +18,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const initialCount = pdfDoc.getPageCount();
 
@@ -58,7 +58,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const srcDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const newDoc = await PDFDocument.create();
         const totalPages = srcDoc.getPageCount();
@@ -99,7 +99,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const srcDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const newDoc = await PDFDocument.create();
         const totalPages = srcDoc.getPageCount();
@@ -142,7 +142,7 @@ export const AllToolsEngine = {
         const angle = parseInt(options.angle || 45, 10);
         const colorHex = options.color || '#ef4444';
 
-        const { PDFDocument, StandardFonts, rgb, degrees } = window.PDFLib;
+        const { PDFDocument, StandardFonts, rgb, degrees } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
         const pages = pdfDoc.getPages();
@@ -198,7 +198,7 @@ export const AllToolsEngine = {
         const fontSize = parseInt(options.fontSize || 10, 10);
         const margin = parseInt(options.margin || 25, 10);
 
-        const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+        const { PDFDocument, StandardFonts, rgb } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const pages = pdfDoc.getPages();
@@ -271,7 +271,7 @@ export const AllToolsEngine = {
         const { signatureDataUrl, pageNumber = 1, xPercent = 60, yPercent = 15, scale = 1.0 } = options;
         if (!signatureDataUrl) throw new Error('No signature data provided.');
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const pages = pdfDoc.getPages();
         const pageIdx = Math.max(0, Math.min(pageNumber - 1, pages.length - 1));
@@ -323,7 +323,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        if (!window.pdfjsLib) throw new Error('PDF.js rendering engine is not ready.');
+        await ensurePdfJs();
         const loadingTask = window.pdfjsLib.getDocument({ data: buffer.slice(0) });
         const pdf = await loadingTask.promise;
         const totalPages = pdf.numPages;
@@ -379,7 +379,7 @@ export const AllToolsEngine = {
         const startTime = performance.now();
         if (!imageFiles || imageFiles.length === 0) throw new Error('Please select at least 1 image.');
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.create();
 
         for (let i = 0; i < imageFiles.length; i++) {
@@ -427,7 +427,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
 
         // Strip metadata and compress object streams
@@ -468,12 +468,12 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        if (!window.pdfjsLib) throw new Error('PDF.js engine is not ready.');
+        await ensurePdfJs();
         const loadingTask = window.pdfjsLib.getDocument({ data: buffer.slice(0) });
         const pdf = await loadingTask.promise;
         const totalPages = pdf.numPages;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const grayDoc = await PDFDocument.create();
 
         for (let i = 1; i <= totalPages; i++) {
@@ -535,7 +535,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
 
         if (metadata.title !== undefined) pdfDoc.setTitle(metadata.title);
@@ -572,7 +572,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
 
         return {
@@ -590,7 +590,7 @@ export const AllToolsEngine = {
      */
     async textToPdf(text, options = {}) {
         const startTime = performance.now();
-        const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+        const { PDFDocument, StandardFonts, rgb } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.create();
         const font = await pdfDoc.embedFont(options.font === 'monospace' ? StandardFonts.Courier : StandardFonts.Helvetica);
 
@@ -647,7 +647,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         
         try {
@@ -680,7 +680,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         
         try {
@@ -712,7 +712,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
+        const { PDFDocument, rgb, StandardFonts } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -805,7 +805,7 @@ export const AllToolsEngine = {
             factorY = Math.max(0.01, Math.min(0.4, (pY > 1 ? pY / 100 : pY)));
         }
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const pages = pdfDoc.getPages();
 
@@ -840,7 +840,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const srcDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const cleanDoc = await PDFDocument.create();
 
@@ -868,7 +868,7 @@ export const AllToolsEngine = {
      * Document Compare: Client-Side text diff between Doc A and Doc B
      */
     async compareDocuments(fileOrBufferA, fileOrBufferB) {
-        if (!window.pdfjsLib) throw new Error('PDF.js text extractor not available.');
+        await ensurePdfJs();
 
         const extractLines = async (fOrB) => {
             const buf = fOrB instanceof File ? await PdfHelpers.fileToArrayBuffer(fOrB) : fOrB;
@@ -908,7 +908,7 @@ export const AllToolsEngine = {
      */
     async markdownToPdf(mdText) {
         const startTime = performance.now();
-        const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+        const { PDFDocument, StandardFonts, rgb } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.create();
 
         const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -1000,7 +1000,7 @@ export const AllToolsEngine = {
      * Unzips DOCX XML structure via JSZip and renders paragraphs into PDF
      */
     async wordToPdf(docxFile) {
-        if (!window.JSZip) throw new Error('JSZip library required for DOCX parsing.');
+        await ensureJsZip();
         const startTime = performance.now();
         const arrayBuf = await PdfHelpers.fileToArrayBuffer(docxFile);
         const zip = await window.JSZip.loadAsync(arrayBuf);
@@ -1167,7 +1167,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
+        const { PDFDocument, rgb, StandardFonts } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const pages = pdfDoc.getPages();
@@ -1221,7 +1221,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument } = window.PDFLib;
+        const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, {
             ignoreEncryption: true,
             password: password || undefined
@@ -1251,7 +1251,7 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
+        const { PDFDocument, rgb, StandardFonts } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
 
         pdfDoc.setTitle('PROTECTED: ' + (pdfDoc.getTitle() || 'Document'));
@@ -1298,7 +1298,7 @@ export const AllToolsEngine = {
      * PowerPoint (.pptx) to PDF Converter
      */
     async pptToPdf(file) {
-        if (!window.JSZip) throw new Error('JSZip library required for PPTX parsing.');
+        await ensureJsZip();
         const startTime = performance.now();
         const arrayBuf = await PdfHelpers.fileToArrayBuffer(file);
         const zip = await window.JSZip.loadAsync(arrayBuf);
@@ -1320,7 +1320,7 @@ export const AllToolsEngine = {
             throw new Error('No presentation slides found in this .pptx file.');
         }
 
-        const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
+        const { PDFDocument, rgb, StandardFonts } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.create();
         const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
         const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);

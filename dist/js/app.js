@@ -6,7 +6,7 @@
 
 import { TOOLS, TOOL_CATEGORIES, FUNCTIONAL_CATEGORIES } from './tools/registry.js';
 import { StorageManager } from './utils/storage.js';
-import { PdfHelpers } from './utils/pdf-helpers.js';
+import { PdfHelpers, ensurePdfLib, ensurePdfJs, ensureJsZip } from './utils/pdf-helpers.js';
 import { MergeTool } from './tools/merge.js';
 import { SplitTool } from './tools/split.js';
 import { RotateTool } from './tools/rotate.js';
@@ -23,6 +23,10 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+}
+
+if (typeof window !== 'undefined') {
+    window.PdfHelpers = PdfHelpers;
 }
 
 class App {
@@ -632,6 +636,12 @@ class App {
     openToolWorkspace(toolId, options = {}) {
         const tool = TOOLS.find(t => t.id === toolId);
         if (!tool) return;
+
+        // Eagerly prefetch and ensure vendor engines are loaded for this tool
+        ensurePdfLib().catch(() => {});
+        if (['split-pdf', 'pdf-to-jpg', 'organize-pages', 'extract-pages', 'remove-pages', 'ocr-pdf', 'ai-summarizer'].includes(toolId)) {
+            ensurePdfJs().catch(() => {});
+        }
 
         this.currentTool = tool;
         this.uploadedFiles = [];
@@ -3214,6 +3224,7 @@ class App {
                 this.showToast('Generating filled PDF...', 'info');
 
                 const arrayBuffer = await PdfHelpers.fileToArrayBuffer(this.uploadedFiles[0]);
+                await ensurePdfLib();
                 const pdfDoc = await window.PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
                 const pages = pdfDoc.getPages();
 
@@ -3272,6 +3283,7 @@ class App {
         try {
             this.showToast('Loading PDF form in browser RAM...', 'info');
             const arrayBuffer = await PdfHelpers.fileToArrayBuffer(file);
+            await ensurePdfJs();
             const copy = arrayBuffer.slice(0);
             const loadingTask = window.pdfjsLib.getDocument({ data: copy });
             this.fillerPdfDoc = await loadingTask.promise;
@@ -4172,6 +4184,7 @@ This document was compiled directly in your browser using zero-cost serverless P
             const size = parseInt(document.getElementById('editpdf-size')?.value, 10) || 16;
             const colorName = document.getElementById('editpdf-color')?.value || 'red';
 
+            await ensurePdfLib();
             const { rgb } = window.PDFLib;
             let color = rgb(0.85, 0.15, 0.15);
             if (colorName === 'blue') color = rgb(0.15, 0.35, 0.85);
