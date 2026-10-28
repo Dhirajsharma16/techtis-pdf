@@ -1,3 +1,4 @@
+import { LocalMLEngine } from '../edge/ml-engine.js';
 /**
  * Complete Client-Side PDF Tools Engine
  * 100% In-Browser Execution via pdf-lib.js, PDF.js, and JSZip.
@@ -1150,6 +1151,27 @@ export const AllToolsEngine = {
                             label: `Page ${i}: Blank date prompt detected`,
                             severity: 'info'
                         });
+                    }
+
+                    // In-Browser Morphological CV Detector (Detects physical empty lines)
+                    if (i <= 3 && typeof document !== 'undefined') {
+                        try {
+                            const viewport = page.getViewport({ scale: 1.0 });
+                            const canvas = document.createElement('canvas');
+                            canvas.width = viewport.width;
+                            canvas.height = viewport.height;
+                            const ctx = canvas.getContext('2d');
+                            await page.render({ canvasContext: ctx, viewport }).promise;
+                            const cvBlanks = LocalMLEngine.detectCanvasFormBlanks(canvas);
+                            cvBlanks.forEach(b => {
+                                findings.push({
+                                    type: 'Visual Blank Box / Line',
+                                    label: `Page ${i}: Detected blank input field / line (${Math.round(b.bounds.width)}px)`,
+                                    severity: 'important',
+                                    bounds: b.bounds
+                                });
+                            });
+                        } catch (cvErr) {}
                     }
                 }
             } catch(e) {}

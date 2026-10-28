@@ -1,3 +1,4 @@
+import { LocalMLEngine } from '../edge/ml-engine.js';
 /**
  * Client-Side Image Processing Engine for TECHTIS (techtis.in)
  * High-performance, 100% in-browser Canvas & WebAssembly image tools.
@@ -521,8 +522,11 @@ export const ImageEngine = {
         const lines = cleanText.split('\n').map(l => l.trim()).filter(Boolean);
         const upper = cleanText.toUpperCase();
 
-        // 1. Detect Document / Card Type
-        let docType = 'General Document';
+        // 1. Detect Document / Card Type using In-Browser Neural ML Classifier
+        const mlPrediction = LocalMLEngine.classifyDocument(cleanText);
+        let docType = (mlPrediction && mlPrediction.primaryClass && mlPrediction.primaryClass !== 'General Document' && mlPrediction.confidence >= 0.3)
+            ? mlPrediction.primaryClass
+            : 'General Document';
         if (upper.includes('AADHAAR') || upper.includes('UIDAI') || upper.includes('MERA AADHAAR') || /\b\d{4}\s\d{4}\s\d{4}\b/.test(cleanText)) {
             docType = 'Aadhaar Card';
         } else if (upper.includes('INCOME TAX') || upper.includes('PERMANENT ACCOUNT NUMBER') || upper.includes('PAN CARD') || /\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b/.test(cleanText)) {
