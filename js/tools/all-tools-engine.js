@@ -869,11 +869,35 @@ export const AllToolsEngine = {
             const trimTop = boxHeight * topRatio;
             const trimBottom = boxHeight * bottomRatio;
 
+            // Handle visual orientation vs PDF internal axes for rotated pages
+            const rotation = ((page.getRotation ? page.getRotation().angle : 0) % 360 + 360) % 360;
+            let effLeft = trimLeft;
+            let effRight = trimRight;
+            let effTop = trimTop;
+            let effBottom = trimBottom;
+
+            if (rotation === 90) {
+                effLeft = trimBottom;
+                effRight = trimTop;
+                effTop = trimLeft;
+                effBottom = trimRight;
+            } else if (rotation === 180) {
+                effLeft = trimRight;
+                effRight = trimLeft;
+                effTop = trimBottom;
+                effBottom = trimTop;
+            } else if (rotation === 270) {
+                effLeft = trimTop;
+                effRight = trimBottom;
+                effTop = trimRight;
+                effBottom = trimLeft;
+            }
+
             // In PDF specifications, Y starts at the bottom-left corner!
-            const newX = originX + trimLeft;
-            const newY = originY + trimBottom;
-            const newW = Math.max(5, boxWidth - trimLeft - trimRight);
-            const newH = Math.max(5, boxHeight - trimTop - trimBottom);
+            const newX = originX + effLeft;
+            const newY = originY + effBottom;
+            const newW = Math.max(5, boxWidth - effLeft - effRight);
+            const newH = Math.max(5, boxHeight - effTop - effBottom);
 
             page.setCropBox(newX, newY, newW, newH);
         });

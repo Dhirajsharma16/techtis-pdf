@@ -639,7 +639,7 @@ class App {
 
         // Eagerly prefetch and ensure vendor engines are loaded for this tool
         ensurePdfLib().catch(() => {});
-        if (['split-pdf', 'pdf-to-jpg', 'organize-pages', 'extract-pages', 'remove-pages', 'ocr-pdf', 'ai-summarizer'].includes(toolId)) {
+        if (['split-pdf', 'pdf-to-jpg', 'organize-pages', 'extract-pages', 'remove-pages', 'ocr-pdf', 'ai-summarizer', 'crop-pdf'].includes(toolId)) {
             ensurePdfJs().catch(() => {});
         }
 
@@ -3477,10 +3477,16 @@ class App {
 
     // ================= 20. CROP PDF (FREE-HAND SELECTION & SAVE) =================
     renderCropWorkspace(container) {
+        // Clean up any existing window listeners from previous visits
+        if (this._pdfCropCleanup) {
+            this._pdfCropCleanup();
+            this._pdfCropCleanup = null;
+        }
+
         container.innerHTML = `
             <div class="space-y-6">
                 <!-- Dropzone -->
-                <div id="crop-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer relative group">
+                <div id="crop-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer relative group border-2 border-dashed border-slate-300 hover:border-teal-500 hover:bg-teal-50/30 transition">
                     <input type="file" id="crop-file-input" accept=".pdf" class="hidden">
                     <div class="space-y-3 pointer-events-none max-w-md mx-auto">
                         <div class="w-16 h-16 mx-auto rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center group-hover:scale-105 transition shadow-sm">
@@ -3500,11 +3506,11 @@ class App {
                 <div id="crop-editor" class="hidden space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         <!-- Stage Column (Canvas + Free-Hand Tools) -->
-                        <div class="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[440px] max-h-[640px] overflow-hidden bg-slate-900/5 relative select-none">
+                        <div class="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[460px] max-h-[680px] overflow-hidden bg-slate-900/5 relative select-none">
                             <!-- Top Toolbar -->
                             <div class="w-full flex flex-wrap items-center justify-between gap-2 px-2 pb-3 border-b border-slate-200/60 mb-2">
                                 <!-- Tool Mode Selector -->
-                                <div class="flex items-center gap-1.5 text-xs">
+                                <div class="flex items-center gap-1.5 text-xs flex-wrap">
                                     <button type="button" id="btn-crop-mode-box" class="px-3 py-1.5 bg-teal-600 text-white rounded-lg font-bold flex items-center gap-1.5 shadow-xs transition cursor-pointer" title="Click and drag anywhere to select crop area">
                                         <i data-lucide="scan" class="w-3.5 h-3.5"></i>
                                         <span>Free-Hand Box</span>
@@ -3519,6 +3525,10 @@ class App {
                                     <button type="button" id="btn-crop-clear-sel" class="px-2.5 py-1.5 text-red-600 hover:bg-red-50 rounded-lg font-semibold transition text-xs cursor-pointer" title="Clear selection">
                                         Clear
                                     </button>
+                                    <button type="button" id="btn-crop-change-file" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold transition text-xs cursor-pointer flex items-center gap-1" title="Choose a different PDF file">
+                                        <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
+                                        <span>Change PDF</span>
+                                    </button>
                                 </div>
 
                                 <!-- Page Navigator -->
@@ -3529,70 +3539,72 @@ class App {
                                 </div>
                             </div>
 
-                            <!-- Stage Container with Canvases & Interactive Box -->
-                            <div id="pdf-crop-stage-container" class="relative max-h-[480px] max-w-full flex items-center justify-center select-none cursor-crosshair">
-                                <!-- Base Document Canvas -->
-                                <canvas id="pdf-crop-canvas" class="max-h-[480px] w-auto max-w-full rounded-lg shadow-sm border border-slate-200 block bg-white"></canvas>
+                            <!-- Stage Container with Pixel-Perfect Wrapper -->
+                            <div id="pdf-crop-stage-container" class="w-full flex-1 flex items-center justify-center overflow-auto p-4 cursor-crosshair relative" style="touch-action: none;">
+                                <div id="pdf-crop-wrapper" class="relative inline-block select-none shadow-xl rounded-lg border border-slate-300 bg-white" style="touch-action: none;">
+                                    <!-- Base Document Canvas -->
+                                    <canvas id="pdf-crop-canvas" class="block bg-white"></canvas>
 
-                                <!-- Transparent Drawing Canvas for Freehand Lasso -->
-                                <canvas id="pdf-lasso-canvas" class="absolute inset-0 max-h-[480px] w-auto max-w-full pointer-events-none"></canvas>
+                                    <!-- Transparent Drawing Canvas for Freehand Lasso -->
+                                    <canvas id="pdf-lasso-canvas" class="absolute inset-0 pointer-events-none"></canvas>
 
-                                <!-- 4 Dark Shades (Dims out cropped-away margins) -->
-                                <div id="crop-shade-top" class="absolute bg-slate-900/45 pointer-events-none"></div>
-                                <div id="crop-shade-bottom" class="absolute bg-slate-900/45 pointer-events-none"></div>
-                                <div id="crop-shade-left" class="absolute bg-slate-900/45 pointer-events-none"></div>
-                                <div id="crop-shade-right" class="absolute bg-slate-900/45 pointer-events-none"></div>
+                                    <!-- 4 Dark Shades (Dims out cropped-away margins) -->
+                                    <div id="crop-shade-top" class="absolute bg-slate-900/50 pointer-events-none"></div>
+                                    <div id="crop-shade-bottom" class="absolute bg-slate-900/50 pointer-events-none"></div>
+                                    <div id="crop-shade-left" class="absolute bg-slate-900/50 pointer-events-none"></div>
+                                    <div id="crop-shade-right" class="absolute bg-slate-900/50 pointer-events-none"></div>
 
-                                <!-- Initial Prompt Badge -->
-                                <div id="crop-initial-prompt" class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200">
-                                    <div class="px-4 py-2 bg-slate-900/85 backdrop-blur-xs text-white text-xs font-semibold rounded-full shadow-lg border border-white/20 flex items-center gap-2">
-                                        <i data-lucide="mouse-pointer" class="w-4 h-4 text-teal-400"></i>
-                                        <span>Click &amp; drag anywhere on the document to select crop area</span>
-                                    </div>
-                                </div>
-
-                                <!-- Interactive Free-Hand Crop Box -->
-                                <div id="pdf-interactive-crop-box" class="absolute border-2 border-teal-500 bg-teal-500/10 shadow-md hidden select-none">
-                                    <!-- Rule of Thirds Grid -->
-                                    <div class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3">
-                                        <div class="border-r border-b border-teal-500/30"></div>
-                                        <div class="border-r border-b border-teal-500/30"></div>
-                                        <div class="border-b border-teal-500/30"></div>
-                                        <div class="border-r border-b border-teal-500/30"></div>
-                                        <div class="border-r border-b border-teal-500/30"></div>
-                                        <div class="border-b border-teal-500/30"></div>
-                                        <div class="border-r border-b border-teal-500/30"></div>
-                                        <div class="border-r border-b border-teal-500/30"></div>
-                                        <div></div>
+                                    <!-- Initial Prompt Badge -->
+                                    <div id="crop-initial-prompt" class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200">
+                                        <div class="px-4 py-2 bg-slate-900/85 backdrop-blur-xs text-white text-xs font-semibold rounded-full shadow-lg border border-white/20 flex items-center gap-2">
+                                            <i data-lucide="mouse-pointer" class="w-4 h-4 text-teal-400"></i>
+                                            <span>Click &amp; drag anywhere on the document to select crop area</span>
+                                        </div>
                                     </div>
 
-                                    <!-- 8 Handles (Corners + Edge Handles for Single-Side Cropping) -->
-                                    <div class="crop-handle absolute -top-2.5 -left-2.5 w-5 h-5 bg-teal-600 border-2 border-white rounded-full cursor-nwse-resize shadow-md" data-dir="nw" title="Resize Corner"></div>
-                                    <div class="crop-handle absolute -top-2.5 -right-2.5 w-5 h-5 bg-teal-600 border-2 border-white rounded-full cursor-nesw-resize shadow-md" data-dir="ne" title="Resize Corner"></div>
-                                    <div class="crop-handle absolute -bottom-2.5 -left-2.5 w-5 h-5 bg-teal-600 border-2 border-white rounded-full cursor-nesw-resize shadow-md" data-dir="sw" title="Resize Corner"></div>
-                                    <div class="crop-handle absolute -bottom-2.5 -right-2.5 w-5 h-5 bg-teal-600 border-2 border-white rounded-full cursor-nwse-resize shadow-md" data-dir="se" title="Resize Corner"></div>
-                                    
-                                    <!-- Edge Handles for 1-Side Cropping -->
-                                    <div class="crop-handle absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-4 bg-teal-600 border border-white rounded-xs cursor-ns-resize shadow-sm flex items-center justify-center text-[9px] text-white font-black leading-none select-none" data-dir="n" title="Crop Top Edge Only">━</div>
-                                    <div class="crop-handle absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-4 bg-teal-600 border border-white rounded-xs cursor-ns-resize shadow-sm flex items-center justify-center text-[9px] text-white font-bold leading-none select-none" data-dir="s" title="Crop Bottom Edge Only">━</div>
-                                    <div class="crop-handle absolute top-1/2 -left-2 -translate-y-1/2 w-4 h-8 bg-teal-600 border border-white rounded-xs cursor-ew-resize shadow-sm flex items-center justify-center text-[9px] text-white font-bold leading-none select-none" data-dir="w" title="Crop Left Edge Only">┃</div>
-                                    <div class="crop-handle absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-8 bg-teal-600 border border-white rounded-xs cursor-ew-resize shadow-sm flex items-center justify-center text-[9px] text-white font-bold leading-none select-none" data-dir="e" title="Crop Right Edge Only">┃</div>
+                                    <!-- Interactive Free-Hand Crop Box -->
+                                    <div id="pdf-interactive-crop-box" class="absolute border-2 border-teal-500 bg-teal-500/10 shadow-md hidden select-none" style="cursor: move;">
+                                        <!-- Rule of Thirds Grid -->
+                                        <div class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3">
+                                            <div class="border-r border-b border-teal-500/30"></div>
+                                            <div class="border-r border-b border-teal-500/30"></div>
+                                            <div class="border-b border-teal-500/30"></div>
+                                            <div class="border-r border-b border-teal-500/30"></div>
+                                            <div class="border-r border-b border-teal-500/30"></div>
+                                            <div class="border-b border-teal-500/30"></div>
+                                            <div class="border-r border-b border-teal-500/30"></div>
+                                            <div class="border-r border-b border-teal-500/30"></div>
+                                            <div></div>
+                                        </div>
 
-                                    <!-- Center Move Handle Anchor -->
-                                    <div class="crop-move-handle absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2.5 py-1 bg-slate-900/80 hover:bg-slate-900 text-white rounded-md text-[10px] font-semibold cursor-move shadow-md flex items-center gap-1 select-none pointer-events-auto" title="Click and drag to move selection">
-                                        <i data-lucide="move" class="w-3 h-3 text-teal-400"></i>
-                                        <span>Drag to Move</span>
-                                    </div>
+                                        <!-- 8 Handles (Corners + Edge Handles for Single-Side Cropping) -->
+                                        <div class="crop-handle absolute -top-2.5 -left-2.5 w-5 h-5 bg-teal-600 border-2 border-white rounded-full cursor-nwse-resize shadow-md z-10" data-dir="nw" title="Resize Corner"></div>
+                                        <div class="crop-handle absolute -top-2.5 -right-2.5 w-5 h-5 bg-teal-600 border-2 border-white rounded-full cursor-nesw-resize shadow-md z-10" data-dir="ne" title="Resize Corner"></div>
+                                        <div class="crop-handle absolute -bottom-2.5 -left-2.5 w-5 h-5 bg-teal-600 border-2 border-white rounded-full cursor-nesw-resize shadow-md z-10" data-dir="sw" title="Resize Corner"></div>
+                                        <div class="crop-handle absolute -bottom-2.5 -right-2.5 w-5 h-5 bg-teal-600 border-2 border-white rounded-full cursor-nwse-resize shadow-md z-10" data-dir="se" title="Resize Corner"></div>
+                                        
+                                        <!-- Middle Edge Handles for 1-Side Cropping -->
+                                        <div class="crop-handle absolute -top-2.5 left-1/2 -translate-x-1/2 w-9 h-5 bg-teal-600 border border-white rounded-xs cursor-ns-resize shadow-sm flex items-center justify-center text-[10px] text-white font-black leading-none select-none z-10" data-dir="n" title="Crop Top Edge Only">━</div>
+                                        <div class="crop-handle absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-9 h-5 bg-teal-600 border border-white rounded-xs cursor-ns-resize shadow-sm flex items-center justify-center text-[10px] text-white font-bold leading-none select-none z-10" data-dir="s" title="Crop Bottom Edge Only">━</div>
+                                        <div class="crop-handle absolute top-1/2 -left-2.5 -translate-y-1/2 w-5 h-9 bg-teal-600 border border-white rounded-xs cursor-ew-resize shadow-sm flex items-center justify-center text-[10px] text-white font-bold leading-none select-none z-10" data-dir="w" title="Crop Left Edge Only">┃</div>
+                                        <div class="crop-handle absolute top-1/2 -right-2.5 -translate-y-1/2 w-5 h-9 bg-teal-600 border border-white rounded-xs cursor-ew-resize shadow-sm flex items-center justify-center text-[10px] text-white font-bold leading-none select-none z-10" data-dir="e" title="Crop Right Edge Only">┃</div>
 
-                                    <!-- Floating Dimension Badge -->
-                                    <div id="pdf-crop-dim-badge" class="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-xs text-white text-[10px] font-mono px-2.5 py-0.5 rounded-full whitespace-nowrap pointer-events-none shadow-sm">
-                                        Custom Selection
+                                        <!-- Center Move Handle Anchor -->
+                                        <div class="crop-move-handle absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2.5 py-1 bg-slate-900/85 hover:bg-slate-900 text-white rounded-md text-[10px] font-semibold cursor-move shadow-md flex items-center gap-1 select-none pointer-events-auto" title="Click and drag to move selection">
+                                            <i data-lucide="move" class="w-3 h-3 text-teal-400"></i>
+                                            <span>Drag to Move</span>
+                                        </div>
+
+                                        <!-- Floating Dimension Badge -->
+                                        <div id="pdf-crop-dim-badge" class="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-xs text-white text-[10px] font-mono px-2.5 py-0.5 rounded-full whitespace-nowrap pointer-events-none shadow-sm z-20">
+                                            Custom Selection
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <p class="text-[11px] text-slate-500 mt-2 pointer-events-none text-center">
-                                💡 <strong>Free-hand:</strong> Click &amp; drag with your cursor to select any region freely. Grab the middle handles (━ / ┃) to crop only one side.
+                                💡 <strong>Free-hand:</strong> Click &amp; drag with your cursor on the document to draw a crop box, or grab any of the middle handles (━ / ┃) to crop one side.
                             </p>
                         </div>
 
@@ -3608,7 +3620,7 @@ class App {
                                         </span>
                                         <span id="crop-status-pill" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-200 text-teal-800">Ready</span>
                                     </div>
-                                    <p id="crop-selection-summary" class="text-xs text-teal-700">Full page selected. Drag on document to crop.</p>
+                                    <p id="crop-selection-summary" class="text-xs text-teal-700">Click &amp; drag on document to select crop area.</p>
                                 </div>
 
                                 <!-- Single-Side Quick Trims -->
@@ -3663,13 +3675,38 @@ class App {
         const self = this;
         const dropzone = document.getElementById('crop-dropzone');
         const fileInput = document.getElementById('crop-file-input');
+
         dropzone?.addEventListener('click', () => fileInput?.click());
+        document.getElementById('btn-crop-change-file')?.addEventListener('click', () => fileInput?.click());
+
         fileInput?.addEventListener('change', (e) => {
             if (e.target?.files?.length) self.handleCropFile(e.target.files[0]);
         });
 
+        // Drag & drop support on dropzone
+        ['dragenter', 'dragover'].forEach(n => {
+            dropzone?.addEventListener(n, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.add('border-teal-500', 'bg-teal-50/50');
+            });
+        });
+        ['dragleave', 'drop'].forEach(n => {
+            dropzone?.addEventListener(n, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.remove('border-teal-500', 'bg-teal-50/50');
+            });
+        });
+        dropzone?.addEventListener('drop', (e) => {
+            const files = e.dataTransfer?.files;
+            if (files && files.length) {
+                self.handleCropFile(files[0]);
+            }
+        });
+
         // Stage & Box Elements
-        const stageContainer = document.getElementById('pdf-crop-stage-container');
+        const stageWrapper = document.getElementById('pdf-crop-wrapper');
         const stageCanvas = document.getElementById('pdf-crop-canvas');
         const lassoCanvas = document.getElementById('pdf-lasso-canvas');
         const lassoCtx = lassoCanvas?.getContext('2d');
@@ -3691,7 +3728,7 @@ class App {
             activeMode = 'box';
             btnModeBox.className = 'px-3 py-1.5 bg-teal-600 text-white rounded-lg font-bold flex items-center gap-1.5 shadow-xs transition cursor-pointer';
             btnModeLasso.className = 'px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold flex items-center gap-1.5 transition cursor-pointer';
-            self.showToast('Free-Hand Box Mode: Click and drag on page to box an area', 'info');
+            self.showToast('Free-Hand Box Mode: Click & drag anywhere on page to draw crop box', 'info');
         });
 
         btnModeLasso?.addEventListener('click', () => {
@@ -3752,7 +3789,7 @@ class App {
             // Update Dimension / Margin Badge & Summary
             if (topPct === 0 && bottomPct === 0 && leftPct === 0 && rightPct === 0) {
                 dimBadge.textContent = 'Full Page (No crop)';
-                if (summaryText) summaryText.textContent = 'Entire page selected. Drag with mouse to crop.';
+                if (summaryText) summaryText.textContent = 'Entire page selected. Drag handles or click & drag on document to crop.';
             } else {
                 const parts = [];
                 if (topPct > 0) parts.push(`Top: ${topPct}%`);
@@ -3831,15 +3868,23 @@ class App {
             self.showToast('Cropped 15% from Right only', 'success');
         });
 
-        // Mouse & Touch Coordinates Helper
+        // Mouse & Touch Coordinates Helper (Relative to 1:1 wrapper with retina/zoom scale correction)
         function getCanvasPointer(e) {
-            const rect = stageCanvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const targetEl = stageWrapper || stageCanvas;
+            const rect = targetEl.getBoundingClientRect();
+            const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientX : e.clientX);
+            const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientY : e.clientY);
+            const scaleX = rect.width ? (stageCanvas.width / rect.width) : 1;
+            const scaleY = rect.height ? (stageCanvas.height / rect.height) : 1;
             return {
-                x: Math.max(0, Math.min(stageCanvas.width, clientX - rect.left)),
-                y: Math.max(0, Math.min(stageCanvas.height, clientY - rect.top))
+                x: Math.max(0, Math.min(stageCanvas.width, (clientX - rect.left) * scaleX)),
+                y: Math.max(0, Math.min(stageCanvas.height, (clientY - rect.top) * scaleY))
             };
+        }
+
+        function isPointInsideBox(pt) {
+            return pt.x >= box.x && pt.x <= (box.x + box.w) &&
+                   pt.y >= box.y && pt.y <= (box.y + box.h);
         }
 
         // Pointer Down: Start Free-Hand Draw, Move or Resize
@@ -3854,6 +3899,8 @@ class App {
                 // Resize Handle Dragged (Corner or Single Side)
                 isResizing = true;
                 resizeDir = target.dataset.dir;
+                hasCustomSelection = true;
+                initialPrompt?.classList.add('hidden');
                 e.preventDefault();
                 e.stopPropagation();
             } else if (target && (target.classList.contains('crop-move-handle') || target.closest('.crop-move-handle'))) {
@@ -3865,6 +3912,10 @@ class App {
                 // Free-Hand Lasso Draw Mode
                 isDrawingLasso = true;
                 lassoPoints = [pt];
+                e.preventDefault();
+            } else if (hasCustomSelection && isPointInsideBox(pt)) {
+                // Drag inside an existing selection moves the box
+                isDragging = true;
                 e.preventDefault();
             } else {
                 // Free-Hand Box Draw Mode: Click & Drag anywhere on document draws new selection!
@@ -3880,6 +3931,8 @@ class App {
         // Pointer Move: Active Dragging / Drawing
         function onPointerMove(e) {
             if (!isDragging && !isResizing && !isDrawing && !isDrawingLasso) return;
+            if (e.cancelable) e.preventDefault();
+
             const pt = getCanvasPointer(e);
             const dx = pt.x - startPointer.x;
             const dy = pt.y - startPointer.y;
@@ -3966,7 +4019,19 @@ class App {
                     updateBoxUI();
                     self.showToast('Lasso area selected! Click Save to crop.', 'success');
                 }
+            } else if (isDrawing) {
+                // If user merely tapped/clicked without dragging, restore previous state or full page
+                if (box.w < 20 || box.h < 20) {
+                    if (initialBox && initialBox.w >= 20 && initialBox.h >= 20) {
+                        box = { ...initialBox };
+                    } else {
+                        box = { x: 0, y: 0, w: stageCanvas.width, h: stageCanvas.height };
+                        hasCustomSelection = false;
+                        initialPrompt?.classList.remove('hidden');
+                    }
+                }
             }
+
             isDragging = false;
             isResizing = false;
             isDrawing = false;
@@ -3974,17 +4039,26 @@ class App {
             updateBoxUI();
         }
 
-        stageContainer?.addEventListener('mousedown', onPointerDown);
-        stageContainer?.addEventListener('touchstart', onPointerDown, { passive: false });
+        stageWrapper?.addEventListener('mousedown', onPointerDown);
+        stageWrapper?.addEventListener('touchstart', onPointerDown, { passive: false });
         window.addEventListener('mousemove', onPointerMove);
         window.addEventListener('touchmove', onPointerMove, { passive: false });
         window.addEventListener('mouseup', onPointerUp);
         window.addEventListener('touchend', onPointerUp);
 
+        // Store cleanup hook
+        this._pdfCropCleanup = () => {
+            window.removeEventListener('mousemove', onPointerMove);
+            window.removeEventListener('touchmove', onPointerMove);
+            window.removeEventListener('mouseup', onPointerUp);
+            window.removeEventListener('touchend', onPointerUp);
+        };
+
         // Save reference for page rendering
         this._pdfCropWorkspace = {
             stageCanvas,
             lassoCanvas,
+            stageWrapper,
             updateBoxUI,
             resetBox: () => {
                 box = { x: 0, y: 0, w: stageCanvas.width, h: stageCanvas.height };
@@ -3996,7 +4070,10 @@ class App {
 
         // SAVE BUTTON ACTION (Click to Save Cropped PDF)
         document.getElementById('btn-save-crop')?.addEventListener('click', async () => {
-            if (!this.uploadedFiles.length) return;
+            if (!this.uploadedFiles.length) {
+                this.showToast('Please upload a PDF file first.', 'warning');
+                return;
+            }
             const file = this.uploadedFiles[0];
 
             const cw = stageCanvas.width;
@@ -4013,7 +4090,16 @@ class App {
             const isAllPages = !scopeRadio || scopeRadio.value === 'all';
             const targetPage = isAllPages ? 'all' : (this._pdfCropCurrentPage || 1);
 
+            const saveBtn = document.getElementById('btn-save-crop');
+            const originalBtnHtml = saveBtn ? saveBtn.innerHTML : '';
+
             try {
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Saving Cropped PDF...</span>';
+                    this.refreshLucideIcons();
+                }
+
                 this.showToast('Saving cropped PDF in browser RAM...', 'info');
                 const result = await AllToolsEngine.cropPdf(file, {
                     top: topPct,
@@ -4029,6 +4115,12 @@ class App {
                 this.showToast(`Cropped PDF saved successfully (${result.affectedCount || 1} page(s))!`, 'success');
             } catch (err) {
                 this.showToast(err.message, 'error');
+            } finally {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalBtnHtml;
+                    this.refreshLucideIcons();
+                }
             }
         });
 
@@ -4048,12 +4140,11 @@ class App {
     async renderPdfCropStage(file, pageNum = 1) {
         const stageCanvas = document.getElementById('pdf-crop-canvas');
         const lassoCanvas = document.getElementById('pdf-lasso-canvas');
+        const stageWrapper = document.getElementById('pdf-crop-wrapper');
         if (!stageCanvas) return;
 
         try {
-            if (!window.pdfjsLib) {
-                await PdfHelpers.ensurePdfJs();
-            }
+            await ensurePdfJs();
 
             const buffer = await PdfHelpers.fileToArrayBuffer(file);
             const loadingTask = window.pdfjsLib.getDocument({ data: buffer.slice(0) });
@@ -4088,16 +4179,28 @@ class App {
             const scale = Math.min(maxW / unscaledViewport.width, maxH / unscaledViewport.height, 1.5);
             const viewport = page.getViewport({ scale });
 
-            stageCanvas.width = Math.round(viewport.width);
-            stageCanvas.height = Math.round(viewport.height);
+            const displayW = Math.round(viewport.width);
+            const displayH = Math.round(viewport.height);
+
+            stageCanvas.width = displayW;
+            stageCanvas.height = displayH;
+            stageCanvas.style.width = displayW + 'px';
+            stageCanvas.style.height = displayH + 'px';
 
             if (lassoCanvas) {
-                lassoCanvas.width = stageCanvas.width;
-                lassoCanvas.height = stageCanvas.height;
+                lassoCanvas.width = displayW;
+                lassoCanvas.height = displayH;
+                lassoCanvas.style.width = displayW + 'px';
+                lassoCanvas.style.height = displayH + 'px';
+            }
+
+            if (stageWrapper) {
+                stageWrapper.style.width = displayW + 'px';
+                stageWrapper.style.height = displayH + 'px';
             }
 
             const ctx = stageCanvas.getContext('2d');
-            ctx.clearRect(0, 0, stageCanvas.width, stageCanvas.height);
+            ctx.clearRect(0, 0, displayW, displayH);
 
             await page.render({
                 canvasContext: ctx,
@@ -4109,7 +4212,35 @@ class App {
             }
             this.refreshLucideIcons();
         } catch (e) {
-            console.warn('PDF crop stage render error:', e);
+            console.warn('PDF crop stage render error, attempting thumbnail fallback:', e);
+            try {
+                const buffer = await PdfHelpers.fileToArrayBuffer(file);
+                const thumbDataUrl = await PdfHelpers.renderPageThumbnail(buffer, pageNum, 500);
+                if (thumbDataUrl) {
+                    const img = new Image();
+                    img.onload = () => {
+                        const displayW = img.naturalWidth || 500;
+                        const displayH = img.naturalHeight || 700;
+                        stageCanvas.width = displayW;
+                        stageCanvas.height = displayH;
+                        stageCanvas.style.width = displayW + 'px';
+                        stageCanvas.style.height = displayH + 'px';
+                        if (stageWrapper) {
+                            stageWrapper.style.width = displayW + 'px';
+                            stageWrapper.style.height = displayH + 'px';
+                        }
+                        const ctx = stageCanvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        if (this._pdfCropWorkspace && this._pdfCropWorkspace.resetBox) {
+                            this._pdfCropWorkspace.resetBox();
+                        }
+                    };
+                    img.src = thumbDataUrl;
+                    return;
+                }
+            } catch (fallbackErr) {
+                console.error('Thumbnail fallback also failed:', fallbackErr);
+            }
             this.showToast('Failed to render PDF page for cropping.', 'error');
         }
     }

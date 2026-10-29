@@ -41,10 +41,34 @@ export async function ensurePdfLib() {
 }
 
 export async function ensurePdfJs() {
-    if (typeof window !== 'undefined' && window.pdfjsLib) return window.pdfjsLib;
+    const isSubdir = typeof document !== 'undefined' && document.body && document.body.dataset && document.body.dataset.toolId;
+    const prefix = isSubdir ? '../' : '';
+
+    function configureWorker(lib) {
+        if (!lib) return;
+        if (!lib.GlobalWorkerOptions) lib.GlobalWorkerOptions = {};
+        if (!lib.GlobalWorkerOptions.workerSrc) {
+            try {
+                const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
+                    ? window.location.origin
+                    : '';
+                if (origin) {
+                    lib.GlobalWorkerOptions.workerSrc = origin + '/vendor/pdf.worker.min.js';
+                } else {
+                    const workerRelative = isSubdir ? '../vendor/pdf.worker.min.js' : 'vendor/pdf.worker.min.js';
+                    lib.GlobalWorkerOptions.workerSrc = new URL(workerRelative, window.location.href).href;
+                }
+            } catch (e) {
+                lib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+        }
+    }
+
+    if (typeof window !== 'undefined' && window.pdfjsLib) {
+        configureWorker(window.pdfjsLib);
+        return window.pdfjsLib;
+    }
     return new Promise((resolve, reject) => {
-        const isSubdir = typeof document !== 'undefined' && document.body && document.body.dataset && document.body.dataset.toolId;
-        const prefix = isSubdir ? '../' : '';
         const scriptId = 'vendor-pdfjs-script';
 
         let script = document.getElementById(scriptId) || document.querySelector('script[src*="pdf.min.js"]');
@@ -60,19 +84,14 @@ export async function ensurePdfJs() {
             elapsed += 50;
             if (typeof window !== 'undefined' && window.pdfjsLib) {
                 clearInterval(check);
-                try {
-                    const workerRelative = isSubdir ? '../vendor/pdf.worker.min.js' : 'vendor/pdf.worker.min.js';
-                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(workerRelative, window.location.href).href;
-                } catch (e) {
-                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-                }
+                configureWorker(window.pdfjsLib);
                 resolve(window.pdfjsLib);
             } else if (elapsed >= 10000) {
                 clearInterval(check);
                 const cdn = document.createElement('script');
                 cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
                 cdn.onload = () => {
-                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                    configureWorker(window.pdfjsLib);
                     resolve(window.pdfjsLib);
                 };
                 cdn.onerror = () => reject(new Error('PDF.js rendering engine is not ready.'));
