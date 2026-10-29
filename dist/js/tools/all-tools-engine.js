@@ -784,7 +784,10 @@ export const AllToolsEngine = {
     },
 
     /**
-     * Crop PDF Margins
+     * Crop PDF Margins (Free-Hand, Single-Side & Precision Margins)
+     * Supports independent Top, Bottom, Left, Right margins and single-page or all-pages scope.
+     * @param {File|ArrayBuffer} fileOrBuffer
+     * @param {number|object} marginOrOptions - e.g. 10 or { top: 15, bottom: 0, left: 0, right: 0, targetPage: 'all' }
      */
     async cropPdf(fileOrBuffer, marginOrOptions = 10) {
         const startTime = performance.now();
@@ -792,29 +795,87 @@ export const AllToolsEngine = {
             ? await PdfHelpers.fileToArrayBuffer(fileOrBuffer)
             : fileOrBuffer;
 
-        let factorX = 0.1;
-        let factorY = 0.1;
+        let leftRatio = 0;
+        let rightRatio = 0;
+        let topRatio = 0;
+        let bottomRatio = 0;
+        let targetPage = 'all';
 
         if (typeof marginOrOptions === 'number') {
-            const f = Math.max(0.01, Math.min(0.4, marginOrOptions / 100));
-            factorX = f;
-            factorY = f;
+            const f = Math.max(0, Math.min(0.45, marginOrOptions > 1 ? marginOrOptions / 100 : marginOrOptions));
+            leftRatio = f;
+            rightRatio = f;
+            topRatio = f;
+            bottomRatio = f;
         } else if (typeof marginOrOptions === 'object' && marginOrOptions !== null) {
-            const pX = marginOrOptions.left || marginOrOptions.right || marginOrOptions.percent || 10;
-            const pY = marginOrOptions.top || marginOrOptions.bottom || marginOrOptions.percent || 10;
-            factorX = Math.max(0.01, Math.min(0.4, (pX > 1 ? pX / 100 : pX)));
-            factorY = Math.max(0.01, Math.min(0.4, (pY > 1 ? pY / 100 : pY)));
+            const toRatio = (val) => {
+                if (val === undefined || val === null) return 0;
+                const num = parseFloat(val) || 0;
+                if (num <= 0) return 0;
+                return Math.max(0, Math.min(0.9, num > 1 ? num / 100 : num));
+            };
+
+            if (marginOrOptions.percent !== undefined && marginOrOptions.left === undefined && marginOrOptions.top === undefined) {
+                const f = toRatio(marginOrOptions.percent);
+                leftRatio = f;
+                rightRatio = f;
+                topRatio = f;
+                bottomRatio = f;
+            } else {
+                leftRatio = toRatio(marginOrOptions.left);
+                rightRatio = toRatio(marginOrOptions.right);
+                topRatio = toRatio(marginOrOptions.top);
+                bottomRatio = toRatio(marginOrOptions.bottom);
+            }
+
+            if (marginOrOptions.targetPage !== undefined) {
+                targetPage = marginOrOptions.targetPage;
+            }
+        }
+
+        // Clamp so visible area cannot invert (at least 5% width & height must remain)
+        if (leftRatio + rightRatio > 0.95) {
+            const scale = 0.95 / (leftRatio + rightRatio);
+            leftRatio *= scale;
+            rightRatio *= scale;
+        }
+        if (topRatio + bottomRatio > 0.95) {
+            const scale = 0.95 / (topRatio + bottomRatio);
+            topRatio *= scale;
+            bottomRatio *= scale;
         }
 
         const { PDFDocument } = await ensurePdfLib();
         const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true });
         const pages = pdfDoc.getPages();
+        let affectedCount = 0;
 
-        pages.forEach(page => {
+        pages.forEach((page, idx) => {
+            const pageNum = idx + 1;
+            if (targetPage !== 'all' && parseInt(targetPage, 10) !== pageNum) {
+                return;
+            }
+            affectedCount++;
+
             const { width, height } = page.getSize();
-            const trimX = width * factorX;
-            const trimY = height * factorY;
-            page.setCropBox(trimX, trimY, width - (2 * trimX), height - (2 * trimY));
+            const mediaBox = page.getMediaBox ? page.getMediaBox() : { x: 0, y: 0, width, height };
+            const originX = mediaBox.x || 0;
+            const originY = mediaBox.y || 0;
+            const boxWidth = mediaBox.width || width;
+            const boxHeight = mediaBox.height || height;
+
+            const trimLeft = boxWidth * leftRatio;
+            const trimRight = boxWidth * rightRatio;
+            const trimTop = boxHeight * topRatio;
+            const trimBottom = boxHeight * bottomRatio;
+
+            // In PDF specifications, Y starts at the bottom-left corner!
+            const newX = originX + trimLeft;
+            const newY = originY + trimBottom;
+            const newW = Math.max(5, boxWidth - trimLeft - trimRight);
+            const newH = Math.max(5, boxHeight - trimTop - trimBottom);
+
+            page.setCropBox(newX, newY, newW, newH);
         });
 
         const pdfBytes = await pdfDoc.save();
@@ -826,10 +887,10 @@ export const AllToolsEngine = {
             inputTotalSize: buffer.byteLength,
             outputSize: pdfBytes.byteLength,
             durationMs,
-            summary: `Trimmed ${Math.round(factorX * 100)}% margins across ${pages.length} pages`
+            summary: `Cropped ${affectedCount} page(s) (Top:${Math.round(topRatio*100)}% Bottom:${Math.round(bottomRatio*100)}% Left:${Math.round(leftRatio*100)}% Right:${Math.round(rightRatio*100)}%)`
         });
 
-        return { pdfBytes, durationMs, pageCount: pages.length };
+        return { pdfBytes, durationMs, pageCount: pages.length, affectedCount };
     },
 
     /**

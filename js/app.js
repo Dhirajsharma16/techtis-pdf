@@ -3475,79 +3475,567 @@ class App {
         }
     }
 
-    // ================= 20. CROP PDF =================
+    // ================= 20. CROP PDF (FREE-HAND & SINGLE-SIDE TOOLS) =================
     renderCropWorkspace(container) {
         container.innerHTML = `
             <div class="space-y-6">
-                <div id="crop-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer">
+                <!-- Dropzone -->
+                <div id="crop-dropzone" class="dropzone p-8 sm:p-12 rounded-3xl text-center cursor-pointer relative group">
                     <input type="file" id="crop-file-input" accept=".pdf" class="hidden">
-                    <div class="space-y-3 pointer-events-none">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center">
-                            <i data-lucide="crop" class="w-7 h-7"></i>
+                    <div class="space-y-3 pointer-events-none max-w-md mx-auto">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center group-hover:scale-105 transition shadow-sm">
+                            <i data-lucide="crop" class="w-8 h-8"></i>
                         </div>
-                        <h4 class="text-base font-bold text-slate-800">Select PDF to Crop Margins</h4>
-                        <p class="text-xs text-slate-500">Trim excessive whitespace borders from document pages with live visual preview.</p>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800">Select PDF to Crop Margins</h4>
+                        <p class="text-xs text-slate-500">Free-hand visual cropping, single-side trims, and precision margin adjustments in 100% private browser RAM.</p>
+                        <div class="pt-2">
+                            <button type="button" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-md transition pointer-events-auto">
+                                Select PDF File
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div id="crop-editor" class="hidden space-y-4">
+                <!-- Active Interactive Editor -->
+                <div id="crop-editor" class="hidden space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <!-- Preview Column -->
-                        <div class="lg:col-span-6 bg-slate-100 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[340px] relative overflow-hidden">
-                            <div class="relative inline-block">
-                                <img id="crop-preview-img" src="" alt="Crop Preview" class="max-h-[360px] w-auto max-w-full object-contain rounded-lg shadow-sm border border-slate-200 block">
-                                <div id="crop-preview-box" class="absolute border-2 border-dashed border-teal-500 bg-teal-500/10 pointer-events-none transition-all duration-150" style="inset: 10%;"></div>
+                        <!-- Visual Stage Column -->
+                        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[420px] max-h-[600px] overflow-hidden bg-slate-900/5 relative select-none">
+                            <!-- Page Navigation Header -->
+                            <div class="w-full flex items-center justify-between px-2 pb-3 border-b border-slate-200/60 mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span id="crop-filename-badge" class="text-xs font-bold text-slate-800 truncate max-w-[200px]">document.pdf</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 font-semibold border border-teal-200">Interactive Canvas</span>
+                                </div>
+                                <div id="crop-page-nav" class="flex items-center gap-1.5 text-xs">
+                                    <button type="button" id="btn-crop-prev-page" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-semibold disabled:opacity-40 transition" disabled>&larr;</button>
+                                    <span id="crop-page-indicator" class="font-mono text-slate-600 text-xs px-1">Page 1 / 1</span>
+                                    <button type="button" id="btn-crop-next-page" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-semibold disabled:opacity-40 transition" disabled>&rarr;</button>
+                                </div>
                             </div>
-                            <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded font-mono">
-                                In-Browser Margin Preview
+
+                            <!-- Stage Container with Canvas & Handles -->
+                            <div id="pdf-crop-stage-container" class="relative max-h-[460px] max-w-full flex items-center justify-center select-none cursor-crosshair">
+                                <canvas id="pdf-crop-canvas" class="max-h-[460px] w-auto max-w-full rounded-lg shadow-sm border border-slate-200 block bg-white"></canvas>
+
+                                <!-- 4 Dark Shades over cropped regions -->
+                                <div id="crop-shade-top" class="absolute bg-slate-900/40 pointer-events-none"></div>
+                                <div id="crop-shade-bottom" class="absolute bg-slate-900/40 pointer-events-none"></div>
+                                <div id="crop-shade-left" class="absolute bg-slate-900/40 pointer-events-none"></div>
+                                <div id="crop-shade-right" class="absolute bg-slate-900/40 pointer-events-none"></div>
+
+                                <!-- Free-Hand Interactive Crop Box -->
+                                <div id="pdf-interactive-crop-box" class="absolute border-2 border-teal-500 bg-teal-500/10 cursor-move shadow-md hidden select-none">
+                                    <!-- 3x3 Grid Overlay -->
+                                    <div class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3">
+                                        <div class="border-r border-b border-teal-500/30"></div>
+                                        <div class="border-r border-b border-teal-500/30"></div>
+                                        <div class="border-b border-teal-500/30"></div>
+                                        <div class="border-r border-b border-teal-500/30"></div>
+                                        <div class="border-r border-b border-teal-500/30"></div>
+                                        <div class="border-b border-teal-500/30"></div>
+                                        <div class="border-r border-b border-teal-500/30"></div>
+                                        <div class="border-r border-b border-teal-500/30"></div>
+                                        <div></div>
+                                    </div>
+
+                                    <!-- 8 Handles (Corners + Edge Handles for Single-Side Cropping) -->
+                                    <div class="crop-handle absolute -top-2 -left-2 w-4 h-4 bg-teal-600 border-2 border-white rounded-full cursor-nwse-resize shadow-sm" data-dir="nw" title="Crop Top & Left"></div>
+                                    <div class="crop-handle absolute -top-2 -right-2 w-4 h-4 bg-teal-600 border-2 border-white rounded-full cursor-nesw-resize shadow-sm" data-dir="ne" title="Crop Top & Right"></div>
+                                    <div class="crop-handle absolute -bottom-2 -left-2 w-4 h-4 bg-teal-600 border-2 border-white rounded-full cursor-nesw-resize shadow-sm" data-dir="sw" title="Crop Bottom & Left"></div>
+                                    <div class="crop-handle absolute -bottom-2 -right-2 w-4 h-4 bg-teal-600 border-2 border-white rounded-full cursor-nwse-resize shadow-sm" data-dir="se" title="Crop Bottom & Right"></div>
+                                    
+                                    <!-- Edge handles for SINGLE-SIDE CROPPING -->
+                                    <div class="crop-handle absolute -top-1.5 left-1/2 -translate-x-1/2 w-7 h-3 bg-teal-600 border border-white rounded-xs cursor-ns-resize shadow-2xs flex items-center justify-center text-[8px] text-white font-bold leading-none select-none" data-dir="n" title="Crop Top Edge Only">━</div>
+                                    <div class="crop-handle absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-7 h-3 bg-teal-600 border border-white rounded-xs cursor-ns-resize shadow-2xs flex items-center justify-center text-[8px] text-white font-bold leading-none select-none" data-dir="s" title="Crop Bottom Edge Only">━</div>
+                                    <div class="crop-handle absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-7 bg-teal-600 border border-white rounded-xs cursor-ew-resize shadow-2xs flex items-center justify-center text-[8px] text-white font-bold leading-none select-none" data-dir="w" title="Crop Left Edge Only">┃</div>
+                                    <div class="crop-handle absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-7 bg-teal-600 border border-white rounded-xs cursor-ew-resize shadow-2xs flex items-center justify-center text-[8px] text-white font-bold leading-none select-none" data-dir="e" title="Crop Right Edge Only">┃</div>
+
+                                    <!-- Dimension & Percent Pill -->
+                                    <div id="pdf-crop-dim-badge" class="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-xs text-white text-[10px] font-mono px-2.5 py-0.5 rounded-full whitespace-nowrap pointer-events-none shadow-sm">
+                                        Full Page (0% crop)
+                                    </div>
+                                </div>
                             </div>
+
+                            <p class="text-[11px] text-slate-500 mt-2 pointer-events-none text-center">
+                                💡 <strong>Free-hand:</strong> Drag any of the 4 middle handles (━ / ┃) to crop <strong>only one side</strong>, drag corners, or draw anywhere on page!
+                            </p>
                         </div>
 
-                        <!-- Controls Column -->
-                        <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm flex flex-col justify-center">
-                            <h4 id="crop-filename" class="text-sm font-bold text-slate-800">document.pdf</h4>
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <label class="text-xs font-semibold text-slate-700">Margin Trim Percentage</label>
-                                    <span id="crop-val-label" class="text-xs font-bold text-teal-600">10%</span>
+                        <!-- Precision Controls Column -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-xs">
+                                <!-- Quick Presets -->
+                                <div>
+                                    <label class="text-xs font-bold text-slate-800 block mb-1.5">Quick Crop Presets</label>
+                                    <div class="grid grid-cols-3 gap-1.5 text-xs">
+                                        <button type="button" id="btn-crop-preset-top" class="px-2 py-1.5 border border-slate-200 hover:bg-teal-50 hover:text-teal-700 hover:border-teal-200 rounded-lg font-semibold text-slate-700 transition text-center" title="Trim 15% from top header only">
+                                            Top Only
+                                        </button>
+                                        <button type="button" id="btn-crop-preset-bottom" class="px-2 py-1.5 border border-slate-200 hover:bg-teal-50 hover:text-teal-700 hover:border-teal-200 rounded-lg font-semibold text-slate-700 transition text-center" title="Trim 15% from bottom footer only">
+                                            Bottom Only
+                                        </button>
+                                        <button type="button" id="btn-crop-preset-sides" class="px-2 py-1.5 border border-slate-200 hover:bg-teal-50 hover:text-teal-700 hover:border-teal-200 rounded-lg font-semibold text-slate-700 transition text-center" title="Trim 10% from left & right sides only">
+                                            Sides Only
+                                        </button>
+                                        <button type="button" id="btn-crop-preset-left" class="px-2 py-1.5 border border-slate-200 hover:bg-teal-50 hover:text-teal-700 hover:border-teal-200 rounded-lg font-semibold text-slate-700 transition text-center" title="Trim left margin only">
+                                            Left Only
+                                        </button>
+                                        <button type="button" id="btn-crop-preset-right" class="px-2 py-1.5 border border-slate-200 hover:bg-teal-50 hover:text-teal-700 hover:border-teal-200 rounded-lg font-semibold text-slate-700 transition text-center" title="Trim right margin only">
+                                            Right Only
+                                        </button>
+                                        <button type="button" id="btn-crop-preset-reset" class="px-2 py-1.5 border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg font-bold transition text-center">
+                                            Reset (0%)
+                                        </button>
+                                    </div>
                                 </div>
-                                <input type="range" id="crop-slider" min="2" max="30" value="10" class="w-full accent-teal-600">
-                                <p class="text-[11px] text-slate-400">Trims outer margins equally on left, top, right, and bottom borders across all pages.</p>
+
+                                <!-- Individual 4-Side Precision Controls -->
+                                <div class="space-y-3 pt-2 border-t border-slate-100">
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-xs font-bold text-slate-800">Precision Side Margins</label>
+                                        <span class="text-[10px] text-slate-400">Trim amount (% of page)</span>
+                                    </div>
+
+                                    <!-- Top Margin -->
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between text-xs">
+                                            <span class="font-semibold text-slate-700 flex items-center gap-1">
+                                                <i data-lucide="arrow-up" class="w-3 h-3 text-teal-600"></i> Top Margin
+                                            </span>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" id="crop-num-top" min="0" max="80" value="0" class="w-12 px-1.5 py-0.5 text-xs text-right border border-slate-300 rounded font-mono font-bold text-teal-700 focus:outline-teal-500">
+                                                <span class="text-xs text-slate-500">%</span>
+                                            </div>
+                                        </div>
+                                        <input type="range" id="crop-range-top" min="0" max="80" value="0" class="w-full accent-teal-600 h-1.5 bg-slate-200 rounded-lg">
+                                    </div>
+
+                                    <!-- Bottom Margin -->
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between text-xs">
+                                            <span class="font-semibold text-slate-700 flex items-center gap-1">
+                                                <i data-lucide="arrow-down" class="w-3 h-3 text-teal-600"></i> Bottom Margin
+                                            </span>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" id="crop-num-bottom" min="0" max="80" value="0" class="w-12 px-1.5 py-0.5 text-xs text-right border border-slate-300 rounded font-mono font-bold text-teal-700 focus:outline-teal-500">
+                                                <span class="text-xs text-slate-500">%</span>
+                                            </div>
+                                        </div>
+                                        <input type="range" id="crop-range-bottom" min="0" max="80" value="0" class="w-full accent-teal-600 h-1.5 bg-slate-200 rounded-lg">
+                                    </div>
+
+                                    <!-- Left Margin -->
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between text-xs">
+                                            <span class="font-semibold text-slate-700 flex items-center gap-1">
+                                                <i data-lucide="arrow-left" class="w-3 h-3 text-teal-600"></i> Left Margin
+                                            </span>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" id="crop-num-left" min="0" max="80" value="0" class="w-12 px-1.5 py-0.5 text-xs text-right border border-slate-300 rounded font-mono font-bold text-teal-700 focus:outline-teal-500">
+                                                <span class="text-xs text-slate-500">%</span>
+                                            </div>
+                                        </div>
+                                        <input type="range" id="crop-range-left" min="0" max="80" value="0" class="w-full accent-teal-600 h-1.5 bg-slate-200 rounded-lg">
+                                    </div>
+
+                                    <!-- Right Margin -->
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between text-xs">
+                                            <span class="font-semibold text-slate-700 flex items-center gap-1">
+                                                <i data-lucide="arrow-right" class="w-3 h-3 text-teal-600"></i> Right Margin
+                                            </span>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" id="crop-num-right" min="0" max="80" value="0" class="w-12 px-1.5 py-0.5 text-xs text-right border border-slate-300 rounded font-mono font-bold text-teal-700 focus:outline-teal-500">
+                                                <span class="text-xs text-slate-500">%</span>
+                                            </div>
+                                        </div>
+                                        <input type="range" id="crop-range-right" min="0" max="80" value="0" class="w-full accent-teal-600 h-1.5 bg-slate-200 rounded-lg">
+                                    </div>
+                                </div>
+
+                                <!-- Page Scope Selector -->
+                                <div class="space-y-1.5 pt-2 border-t border-slate-100">
+                                    <label class="text-xs font-bold text-slate-800 block">Apply Crop To</label>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <label class="flex items-center gap-2 p-2 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 has-checked:border-teal-600 has-checked:bg-teal-50">
+                                            <input type="radio" name="crop-scope" id="crop-scope-all" value="all" checked class="accent-teal-600">
+                                            <span class="font-semibold text-slate-700">All Pages</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 p-2 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 has-checked:border-teal-600 has-checked:bg-teal-50">
+                                            <input type="radio" name="crop-scope" id="crop-scope-current" value="current" class="accent-teal-600">
+                                            <span class="font-semibold text-slate-700">Current Page Only</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Action Button -->
+                                <button id="btn-execute-crop" class="w-full px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
+                                    <i data-lucide="crop" class="w-4 h-4"></i>
+                                    <span>Crop PDF &amp; Download</span>
+                                </button>
                             </div>
-                            <button id="btn-execute-crop" class="w-full px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
-                                <i data-lucide="crop" class="w-4 h-4"></i>
-                                <span>Trim Margins &amp; Download PDF</span>
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         `;
 
+        const self = this;
         const dropzone = document.getElementById('crop-dropzone');
         const fileInput = document.getElementById('crop-file-input');
         dropzone?.addEventListener('click', () => fileInput?.click());
         fileInput?.addEventListener('change', (e) => {
-            if (e.target?.files?.length) this.handleCropFile(e.target.files[0]);
+            if (e.target?.files?.length) self.handleCropFile(e.target.files[0]);
         });
 
-        const slider = document.getElementById('crop-slider');
-        const box = document.getElementById('crop-preview-box');
-        slider?.addEventListener('input', (e) => {
-            const val = e.target.value;
-            document.getElementById('crop-val-label').textContent = `${val}%`;
-            if (box) box.style.inset = `${val}%`;
+        // Stage & Box Elements
+        const stageContainer = document.getElementById('pdf-crop-stage-container');
+        const stageCanvas = document.getElementById('pdf-crop-canvas');
+        const cropBoxEl = document.getElementById('pdf-interactive-crop-box');
+        const dimBadge = document.getElementById('pdf-crop-dim-badge');
+        const shadeTop = document.getElementById('crop-shade-top');
+        const shadeBottom = document.getElementById('crop-shade-bottom');
+        const shadeLeft = document.getElementById('crop-shade-left');
+        const shadeRight = document.getElementById('crop-shade-right');
+
+        // Inputs
+        const rangeTop = document.getElementById('crop-range-top');
+        const numTop = document.getElementById('crop-num-top');
+        const rangeBottom = document.getElementById('crop-range-bottom');
+        const numBottom = document.getElementById('crop-num-bottom');
+        const rangeLeft = document.getElementById('crop-range-left');
+        const numLeft = document.getElementById('crop-num-left');
+        const rangeRight = document.getElementById('crop-range-right');
+        const numRight = document.getElementById('crop-num-right');
+
+        // State
+        let box = { x: 0, y: 0, w: 0, h: 0 };
+        let isDragging = false;
+        let isResizing = false;
+        let isDrawing = false;
+        let resizeDir = '';
+        let startPointer = { x: 0, y: 0 };
+        let initialBox = { x: 0, y: 0, w: 0, h: 0 };
+
+        function clampBoxToBounds() {
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+            if (!cw || !ch) return;
+            box.w = Math.max(20, Math.min(cw, box.w));
+            box.h = Math.max(20, Math.min(ch, box.h));
+            box.x = Math.max(0, Math.min(cw - box.w, box.x));
+            box.y = Math.max(0, Math.min(ch - box.h, box.y));
+        }
+
+        function updateBoxUI(source = 'box') {
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+            if (!cw || !ch) return;
+
+            clampBoxToBounds();
+
+            // Position Crop Box
+            cropBoxEl.style.left = `${box.x}px`;
+            cropBoxEl.style.top = `${box.y}px`;
+            cropBoxEl.style.width = `${box.w}px`;
+            cropBoxEl.style.height = `${box.h}px`;
+            cropBoxEl.classList.remove('hidden');
+
+            // Position 4 Dark Shades
+            shadeTop.style.cssText = `top: 0px; left: 0px; width: ${cw}px; height: ${box.y}px;`;
+            shadeBottom.style.cssText = `top: ${box.y + box.h}px; left: 0px; width: ${cw}px; height: ${ch - (box.y + box.h)}px;`;
+            shadeLeft.style.cssText = `top: ${box.y}px; left: 0px; width: ${box.x}px; height: ${box.h}px;`;
+            shadeRight.style.cssText = `top: ${box.y}px; left: ${box.x + box.w}px; width: ${cw - (box.x + box.w)}px; height: ${box.h}px;`;
+
+            // Calculate Margins Percentage
+            const topPct = Math.round((box.y / ch) * 100);
+            const bottomPct = Math.round(((ch - (box.y + box.h)) / ch) * 100);
+            const leftPct = Math.round((box.x / cw) * 100);
+            const rightPct = Math.round(((cw - (box.x + box.w)) / cw) * 100);
+
+            // Sync Sliders & Numeric Inputs
+            if (source !== 'inputs') {
+                if (rangeTop) rangeTop.value = topPct;
+                if (numTop) numTop.value = topPct;
+                if (rangeBottom) rangeBottom.value = bottomPct;
+                if (numBottom) numBottom.value = bottomPct;
+                if (rangeLeft) rangeLeft.value = leftPct;
+                if (numLeft) numLeft.value = leftPct;
+                if (rangeRight) rangeRight.value = rightPct;
+                if (numRight) numRight.value = rightPct;
+            }
+
+            // Update Dimension / Margin Badge
+            if (topPct === 0 && bottomPct === 0 && leftPct === 0 && rightPct === 0) {
+                dimBadge.textContent = 'Full Page (0% crop)';
+            } else {
+                const parts = [];
+                if (topPct > 0) parts.push(`Top: ${topPct}%`);
+                if (bottomPct > 0) parts.push(`Bottom: ${bottomPct}%`);
+                if (leftPct > 0) parts.push(`Left: ${leftPct}%`);
+                if (rightPct > 0) parts.push(`Right: ${rightPct}%`);
+                dimBadge.textContent = parts.join(' • ');
+            }
+        }
+
+        function setBoxFromPercentages(topP, bottomP, leftP, rightP) {
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+            if (!cw || !ch) return;
+
+            const t = Math.max(0, Math.min(80, topP));
+            const b = Math.max(0, Math.min(80, bottomP));
+            const l = Math.max(0, Math.min(80, leftP));
+            const r = Math.max(0, Math.min(80, rightP));
+
+            const y = Math.round((t / 100) * ch);
+            const h = Math.round(ch - y - (b / 100) * ch);
+            const x = Math.round((l / 100) * cw);
+            const w = Math.round(cw - x - (r / 100) * cw);
+
+            box = { x, y, w: Math.max(20, w), h: Math.max(20, h) };
+            updateBoxUI('inputs');
+        }
+
+        // Connect Input Event Handlers
+        function onMarginInputChange() {
+            const t = parseInt(numTop?.value || 0, 10);
+            const b = parseInt(numBottom?.value || 0, 10);
+            const l = parseInt(numLeft?.value || 0, 10);
+            const r = parseInt(numRight?.value || 0, 10);
+
+            if (rangeTop) rangeTop.value = t;
+            if (rangeBottom) rangeBottom.value = b;
+            if (rangeLeft) rangeLeft.value = l;
+            if (rangeRight) rangeRight.value = r;
+
+            setBoxFromPercentages(t, b, l, r);
+        }
+
+        function onMarginRangeChange() {
+            const t = parseInt(rangeTop?.value || 0, 10);
+            const b = parseInt(rangeBottom?.value || 0, 10);
+            const l = parseInt(rangeLeft?.value || 0, 10);
+            const r = parseInt(rangeRight?.value || 0, 10);
+
+            if (numTop) numTop.value = t;
+            if (numBottom) numBottom.value = b;
+            if (numLeft) numLeft.value = l;
+            if (numRight) numRight.value = r;
+
+            setBoxFromPercentages(t, b, l, r);
+        }
+
+        [rangeTop, rangeBottom, rangeLeft, rangeRight].forEach(el => el?.addEventListener('input', onMarginRangeChange));
+        [numTop, numBottom, numLeft, numRight].forEach(el => el?.addEventListener('change', onMarginInputChange));
+
+        // Connect Preset Buttons
+        document.getElementById('btn-crop-preset-top')?.addEventListener('click', () => {
+            if (numTop) numTop.value = 15;
+            if (numBottom) numBottom.value = 0;
+            if (numLeft) numLeft.value = 0;
+            if (numRight) numRight.value = 0;
+            onMarginInputChange();
+            self.showToast('Crop set to Top Margin (15%)', 'info');
         });
 
+        document.getElementById('btn-crop-preset-bottom')?.addEventListener('click', () => {
+            if (numTop) numTop.value = 0;
+            if (numBottom) numBottom.value = 15;
+            if (numLeft) numLeft.value = 0;
+            if (numRight) numRight.value = 0;
+            onMarginInputChange();
+            self.showToast('Crop set to Bottom Margin (15%)', 'info');
+        });
+
+        document.getElementById('btn-crop-preset-left')?.addEventListener('click', () => {
+            if (numTop) numTop.value = 0;
+            if (numBottom) numBottom.value = 0;
+            if (numLeft) numLeft.value = 15;
+            if (numRight) numRight.value = 0;
+            onMarginInputChange();
+            self.showToast('Crop set to Left Margin (15%)', 'info');
+        });
+
+        document.getElementById('btn-crop-preset-right')?.addEventListener('click', () => {
+            if (numTop) numTop.value = 0;
+            if (numBottom) numBottom.value = 0;
+            if (numLeft) numLeft.value = 0;
+            if (numRight) numRight.value = 15;
+            onMarginInputChange();
+            self.showToast('Crop set to Right Margin (15%)', 'info');
+        });
+
+        document.getElementById('btn-crop-preset-sides')?.addEventListener('click', () => {
+            if (numTop) numTop.value = 0;
+            if (numBottom) numBottom.value = 0;
+            if (numLeft) numLeft.value = 10;
+            if (numRight) numRight.value = 10;
+            onMarginInputChange();
+            self.showToast('Crop set to Side Margins (10%)', 'info');
+        });
+
+        document.getElementById('btn-crop-preset-reset')?.addEventListener('click', () => {
+            if (numTop) numTop.value = 0;
+            if (numBottom) numBottom.value = 0;
+            if (numLeft) numLeft.value = 0;
+            if (numRight) numRight.value = 0;
+            onMarginInputChange();
+            self.showToast('Margins reset to Full Page', 'info');
+        });
+
+        // Mouse / Touch Interaction for Free-Hand Dragging & Resizing
+        function getCanvasPointer(e) {
+            const rect = stageCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: Math.max(0, Math.min(stageCanvas.width, clientX - rect.left)),
+                y: Math.max(0, Math.min(stageCanvas.height, clientY - rect.top))
+            };
+        }
+
+        function onPointerDown(e) {
+            const pt = getCanvasPointer(e);
+            startPointer = pt;
+            initialBox = { ...box };
+
+            const target = e.target;
+            if (target && target.classList.contains('crop-handle')) {
+                // Resize Handle Dragged (Top, Bottom, Left, Right or Corners)
+                isResizing = true;
+                resizeDir = target.dataset.dir;
+                e.preventDefault();
+                e.stopPropagation();
+            } else if (target === cropBoxEl || cropBoxEl.contains(target)) {
+                // Move whole selection box
+                isDragging = true;
+                e.preventDefault();
+                e.stopPropagation();
+            } else {
+                // Click and drag on canvas: Draw new free-hand crop box!
+                isDrawing = true;
+                box = { x: pt.x, y: pt.y, w: 10, h: 10 };
+                updateBoxUI();
+                e.preventDefault();
+            }
+        }
+
+        function onPointerMove(e) {
+            if (!isDragging && !isResizing && !isDrawing) return;
+            const pt = getCanvasPointer(e);
+            const dx = pt.x - startPointer.x;
+            const dy = pt.y - startPointer.y;
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+
+            if (isDragging) {
+                box.x = Math.max(0, Math.min(cw - box.w, initialBox.x + dx));
+                box.y = Math.max(0, Math.min(ch - box.h, initialBox.y + dy));
+                updateBoxUI();
+            } else if (isDrawing) {
+                const left = Math.min(startPointer.x, pt.x);
+                const top = Math.min(startPointer.y, pt.y);
+                const w = Math.abs(pt.x - startPointer.x);
+                const h = Math.abs(pt.y - startPointer.y);
+                box = { x: left, y: top, w: Math.max(20, w), h: Math.max(20, h) };
+                updateBoxUI();
+            } else if (isResizing) {
+                let { x, y, w, h } = initialBox;
+
+                // Single-side or corner handle adjustments
+                if (resizeDir === 'e') {
+                    // Right edge ONLY
+                    w = Math.max(20, Math.min(cw - x, initialBox.w + dx));
+                } else if (resizeDir === 'w') {
+                    // Left edge ONLY
+                    const newW = Math.max(20, Math.min(initialBox.x + initialBox.w, initialBox.w - dx));
+                    x = initialBox.x + (initialBox.w - newW);
+                    w = newW;
+                } else if (resizeDir === 's') {
+                    // Bottom edge ONLY
+                    h = Math.max(20, Math.min(ch - y, initialBox.h + dy));
+                } else if (resizeDir === 'n') {
+                    // Top edge ONLY
+                    const newH = Math.max(20, Math.min(initialBox.y + initialBox.h, initialBox.h - dy));
+                    y = initialBox.y + (initialBox.h - newH);
+                    h = newH;
+                } else {
+                    // Corner handles
+                    if (resizeDir.includes('e')) w = Math.max(20, Math.min(cw - x, initialBox.w + dx));
+                    if (resizeDir.includes('s')) h = Math.max(20, Math.min(ch - y, initialBox.h + dy));
+                    if (resizeDir.includes('w')) {
+                        const newW = Math.max(20, Math.min(initialBox.x + initialBox.w, initialBox.w - dx));
+                        x = initialBox.x + (initialBox.w - newW);
+                        w = newW;
+                    }
+                    if (resizeDir.includes('n')) {
+                        const newH = Math.max(20, Math.min(initialBox.y + initialBox.h, initialBox.h - dy));
+                        y = initialBox.y + (initialBox.h - newH);
+                        h = newH;
+                    }
+                }
+
+                box = { x, y, w, h };
+                updateBoxUI();
+            }
+        }
+
+        function onPointerUp() {
+            isDragging = false;
+            isResizing = false;
+            isDrawing = false;
+            clampBoxToBounds();
+            updateBoxUI();
+        }
+
+        stageContainer?.addEventListener('mousedown', onPointerDown);
+        stageContainer?.addEventListener('touchstart', onPointerDown, { passive: false });
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('touchmove', onPointerMove, { passive: false });
+        window.addEventListener('mouseup', onPointerUp);
+        window.addEventListener('touchend', onPointerUp);
+
+        // Save reference for page rendering
+        this._pdfCropWorkspace = {
+            stageCanvas,
+            updateBoxUI,
+            resetBox: () => {
+                box = { x: 0, y: 0, w: stageCanvas.width, h: stageCanvas.height };
+                updateBoxUI();
+            }
+        };
+
+        // Execute Crop Action Button
         document.getElementById('btn-execute-crop')?.addEventListener('click', async () => {
             if (!this.uploadedFiles.length) return;
-            const pct = parseInt(document.getElementById('crop-slider')?.value || 10, 10);
+            const file = this.uploadedFiles[0];
+
+            const top = parseInt(numTop?.value || 0, 10);
+            const bottom = parseInt(numBottom?.value || 0, 10);
+            const left = parseInt(numLeft?.value || 0, 10);
+            const right = parseInt(numRight?.value || 0, 10);
+
+            const scopeRadio = document.querySelector('input[name="crop-scope"]:checked');
+            const isAllPages = !scopeRadio || scopeRadio.value === 'all';
+            const targetPage = isAllPages ? 'all' : (this._pdfCropCurrentPage || 1);
+
             try {
-                this.showToast('Trimming margins in browser RAM...', 'info');
-                const result = await AllToolsEngine.cropPdf(this.uploadedFiles[0], pct);
-                PdfHelpers.downloadBytes(result.pdfBytes, `cropped_${Date.now()}.pdf`, 'application/pdf');
+                this.showToast('Cropping document in browser RAM...', 'info');
+                const result = await AllToolsEngine.cropPdf(file, {
+                    top,
+                    bottom,
+                    left,
+                    right,
+                    targetPage
+                });
+
+                const baseName = file.name.replace(/\.pdf$/i, '');
+                PdfHelpers.downloadBytes(result.pdfBytes, `${baseName}_cropped.pdf`, 'application/pdf');
                 this.updateHistoryCounter();
-                this.showToast('Margins cropped and downloaded!', 'success');
+                this.showToast(`Document cropped successfully (${result.affectedCount || 1} page(s))!`, 'success');
             } catch (err) {
                 this.showToast(err.message, 'error');
             }
@@ -3556,13 +4044,78 @@ class App {
         this.refreshLucideIcons();
     }
 
-    handleCropFile(file) {
+    async handleCropFile(file) {
         if (!file) return;
         this.uploadedFiles = [file];
+
         document.getElementById('crop-dropzone')?.classList.add('hidden');
         document.getElementById('crop-editor')?.classList.remove('hidden');
-        document.getElementById('crop-filename').textContent = file.name;
-        this.renderPagePreviewIntoImg(file, document.getElementById('crop-preview-img'), 1);
+        const filenameBadge = document.getElementById('crop-filename-badge');
+        if (filenameBadge) filenameBadge.textContent = file.name;
+
+        await this.renderPdfCropStage(file, 1);
+    }
+
+    async renderPdfCropStage(file, pageNum = 1) {
+        const stageCanvas = document.getElementById('pdf-crop-canvas');
+        if (!stageCanvas) return;
+
+        try {
+            if (!window.pdfjsLib) {
+                await PdfHelpers.ensurePdfJs();
+            }
+
+            const buffer = await PdfHelpers.fileToArrayBuffer(file);
+            const loadingTask = window.pdfjsLib.getDocument({ data: buffer.slice(0) });
+            const pdf = await loadingTask.promise;
+
+            this._pdfCropPdfDoc = pdf;
+            this._pdfCropTotalPages = pdf.numPages;
+            this._pdfCropCurrentPage = Math.min(Math.max(1, pageNum), pdf.numPages);
+
+            // Update Page Nav
+            const pageIndicator = document.getElementById('crop-page-indicator');
+            const prevBtn = document.getElementById('btn-crop-prev-page');
+            const nextBtn = document.getElementById('btn-crop-next-page');
+
+            if (pageIndicator) pageIndicator.textContent = `Page ${this._pdfCropCurrentPage} / ${pdf.numPages}`;
+            if (prevBtn) {
+                prevBtn.disabled = (this._pdfCropCurrentPage <= 1);
+                prevBtn.onclick = () => this.renderPdfCropStage(file, this._pdfCropCurrentPage - 1);
+            }
+            if (nextBtn) {
+                nextBtn.disabled = (this._pdfCropCurrentPage >= pdf.numPages);
+                nextBtn.onclick = () => this.renderPdfCropStage(file, this._pdfCropCurrentPage + 1);
+            }
+
+            // Render current page
+            const page = await pdf.getPage(this._pdfCropCurrentPage);
+            const unscaledViewport = page.getViewport({ scale: 1.0 });
+
+            // Fit cleanly in max 440px height and 540px width
+            const maxW = 540;
+            const maxH = 440;
+            const scale = Math.min(maxW / unscaledViewport.width, maxH / unscaledViewport.height, 1.5);
+            const viewport = page.getViewport({ scale });
+
+            stageCanvas.width = Math.round(viewport.width);
+            stageCanvas.height = Math.round(viewport.height);
+
+            const ctx = stageCanvas.getContext('2d');
+            ctx.clearRect(0, 0, stageCanvas.width, stageCanvas.height);
+
+            await page.render({
+                canvasContext: ctx,
+                viewport: viewport
+            }).promise;
+
+            if (this._pdfCropWorkspace && this._pdfCropWorkspace.resetBox) {
+                this._pdfCropWorkspace.resetBox();
+            }
+        } catch (e) {
+            console.warn('PDF crop stage render error:', e);
+            this.showToast('Failed to render PDF page for cropping.', 'error');
+        }
     }
 
     // ================= 21. REPAIR PDF =================
