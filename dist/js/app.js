@@ -3642,6 +3642,32 @@ class App {
                                     </div>
                                 </div>
 
+                                <!-- Precision 4-Side Margin Percentages (Synchronized with Free-Hand Selection) -->
+                                <div class="space-y-1.5 pt-2 border-t border-slate-100">
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-xs font-bold text-slate-800">Crop Margin % (Visual Sync)</label>
+                                        <span class="text-[10px] text-teal-600 font-mono">Real-time</span>
+                                    </div>
+                                    <div class="grid grid-cols-4 gap-1.5 text-center">
+                                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-1.5">
+                                            <span class="text-[9px] font-bold text-slate-500 block uppercase mb-0.5">Top</span>
+                                            <input type="number" id="crop-input-top" min="0" max="85" value="0" class="w-full text-center bg-white border border-slate-200 rounded py-1 text-xs font-bold text-teal-800 focus:outline-teal-500">
+                                        </div>
+                                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-1.5">
+                                            <span class="text-[9px] font-bold text-slate-500 block uppercase mb-0.5">Bottom</span>
+                                            <input type="number" id="crop-input-bottom" min="0" max="85" value="0" class="w-full text-center bg-white border border-slate-200 rounded py-1 text-xs font-bold text-teal-800 focus:outline-teal-500">
+                                        </div>
+                                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-1.5">
+                                            <span class="text-[9px] font-bold text-slate-500 block uppercase mb-0.5">Left</span>
+                                            <input type="number" id="crop-input-left" min="0" max="85" value="0" class="w-full text-center bg-white border border-slate-200 rounded py-1 text-xs font-bold text-teal-800 focus:outline-teal-500">
+                                        </div>
+                                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-1.5">
+                                            <span class="text-[9px] font-bold text-slate-500 block uppercase mb-0.5">Right</span>
+                                            <input type="number" id="crop-input-right" min="0" max="85" value="0" class="w-full text-center bg-white border border-slate-200 rounded py-1 text-xs font-bold text-teal-800 focus:outline-teal-500">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Page Scope Selector -->
                                 <div class="space-y-1.5 pt-2 border-t border-slate-100">
                                     <label class="text-xs font-bold text-slate-800 block">Apply To</label>
@@ -3786,6 +3812,17 @@ class App {
             const leftPct = Math.round((box.x / cw) * 100);
             const rightPct = Math.round(((cw - (box.x + box.w)) / cw) * 100);
 
+            // Update Precision Margin Number Inputs
+            const inTop = document.getElementById('crop-input-top');
+            const inBottom = document.getElementById('crop-input-bottom');
+            const inLeft = document.getElementById('crop-input-left');
+            const inRight = document.getElementById('crop-input-right');
+
+            if (inTop && document.activeElement !== inTop) inTop.value = topPct;
+            if (inBottom && document.activeElement !== inBottom) inBottom.value = bottomPct;
+            if (inLeft && document.activeElement !== inLeft) inLeft.value = leftPct;
+            if (inRight && document.activeElement !== inRight) inRight.value = rightPct;
+
             // Update Dimension / Margin Badge & Summary
             if (topPct === 0 && bottomPct === 0 && leftPct === 0 && rightPct === 0) {
                 dimBadge.textContent = 'Full Page (No crop)';
@@ -3821,6 +3858,32 @@ class App {
             initialPrompt?.classList.remove('hidden');
             if (summaryText) summaryText.textContent = 'No selection. Click & drag on page to select crop area.';
             self.showToast('Selection cleared. Click & drag on document to draw a crop box.', 'info');
+        });
+
+        // Two-way sync for Precision Margin Inputs
+        const onMarginInputChange = () => {
+            const cw = stageCanvas.width;
+            const ch = stageCanvas.height;
+            if (!cw || !ch) return;
+
+            const t = Math.max(0, Math.min(85, parseFloat(document.getElementById('crop-input-top')?.value) || 0)) / 100;
+            const b = Math.max(0, Math.min(85, parseFloat(document.getElementById('crop-input-bottom')?.value) || 0)) / 100;
+            const l = Math.max(0, Math.min(85, parseFloat(document.getElementById('crop-input-left')?.value) || 0)) / 100;
+            const r = Math.max(0, Math.min(85, parseFloat(document.getElementById('crop-input-right')?.value) || 0)) / 100;
+
+            const x = Math.round(cw * l);
+            const y = Math.round(ch * t);
+            const w = Math.max(15, Math.round(cw * (1 - l - r)));
+            const h = Math.max(15, Math.round(ch * (1 - t - b)));
+
+            box = { x, y, w, h };
+            hasCustomSelection = (t > 0 || b > 0 || l > 0 || r > 0);
+            if (hasCustomSelection) initialPrompt?.classList.add('hidden');
+            updateBoxUI();
+        };
+
+        ['crop-input-top', 'crop-input-bottom', 'crop-input-left', 'crop-input-right'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', onMarginInputChange);
         });
 
         // Single-Side Preset Trims

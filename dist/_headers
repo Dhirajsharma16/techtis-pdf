@@ -4,10 +4,10 @@
   Access-Control-Allow-Origin: *
 
 /css/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Cache-Control: public, max-age=86400, stale-while-revalidate=86400
 
 /js/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Cache-Control: public, max-age=0, must-revalidate
 
 /assets/*
   Cache-Control: public, max-age=2592000, immutable
