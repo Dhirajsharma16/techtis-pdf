@@ -140,7 +140,7 @@ const aboutHtml = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - 100% Private Document Platform | TECHTIS</title>
+    <title>About Us - Free Online PDF | Image Tools | TECHTIS</title>
     <meta name="description" content="About TECHTIS (techtis.in): our mission is providing 60 free, private, client-side PDF and image tools powered by WebAssembly with zero file uploads.">
     <link rel="canonical" href="https://techtis.in/about.html">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -152,7 +152,7 @@ ${commonHeadIcons}
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://techtis.in/about.html">
     <meta property="og:site_name" content="TECHTIS">
-    <meta property="og:title" content="About TECHTIS - 100% Private Client-Side Document Suite">
+    <meta property="og:title" content="About TECHTIS - Free Online PDF | Image Tools">
     <meta property="og:description" content="Learn how TECHTIS provides 60 private, in-browser PDF, Image, Dev, and CSS tools with zero cloud uploads.">
 
     <!-- Schema.org Structured Data (Organization, AboutPage, BreadcrumbList) -->

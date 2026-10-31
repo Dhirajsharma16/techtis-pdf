@@ -94,9 +94,8 @@ for (const tool of TOOLS) {
     const categoryObj = FUNCTIONAL_CATEGORIES.find(c => c.id === tool.functionalCategory) || { name: 'Tools', id: 'all' };
     const toolUrl = `${BASE_URL}/${tool.id}/`;
 
-    // Ensure Title is strictly <= 60 characters for Bing & Google Search perfection
-    let cleanTitle = `${tool.name} Online Free - 100% Private | TECHTIS`;
-    if (cleanTitle.length > 60) cleanTitle = `${tool.name} Online Free | TECHTIS`;
+    // Ensure Title is strictly <= 60 characters and clean without "100% Private"
+    let cleanTitle = `${tool.name} Online Free | TECHTIS`;
     if (cleanTitle.length > 60) cleanTitle = `${tool.name} | TECHTIS`;
 
     // Ensure Meta Description is strictly between 120 and 158 characters
