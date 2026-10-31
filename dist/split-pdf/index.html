@@ -252,8 +252,8 @@
     <meta property="og:image" content="https://techtis.in/favicon-512x512.png">
     <meta name="twitter:image" content="https://techtis.in/favicon-512x512.png">
     <!-- Precompiled High-Performance CSS (Zero JavaScript Compilation Delay) -->
-    <link rel="stylesheet" href="../css/tailwind.min.css?v=2.2.3">
-    <link rel="stylesheet" href="../css/styles.css?v=2.2.3">
+    <link rel="stylesheet" href="../css/tailwind.min.css?v=2.3.0">
+    <link rel="stylesheet" href="../css/styles.css?v=2.3.0">
 
     <!-- Performance Resource Hints -->
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
@@ -293,6 +293,15 @@
         </nav>
 
         <div class="flex items-center gap-2">
+            <!-- PWA Install Button -->
+            <button id="btn-pwa-install" class="hidden items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-[#002244] to-[#ea1d2c] hover:opacity-95 shadow-2xs transition cursor-pointer">
+                <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">Install App</span>
+            </button>
+            <div id="network-status-badge" class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="network-status-text">100% In-Browser</span>
+            </div>
             <a href="../" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 bg-white hover:border-red-400 hover:text-red-600 shadow-2xs transition">
                 <i data-lucide="grid" class="w-3.5 h-3.5"></i>
                 <span>All 60 Free Tools</span>
@@ -945,10 +954,100 @@
         </div>
     </footer>
 
+    <!-- ================= FULLSCREEN DRAG-AND-DROP OVERLAY ================= -->
+    <div id="drag-drop-overlay" class="fixed inset-0 z-50 hidden bg-[#002244]/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-white text-center pointer-events-none transition-opacity duration-200 opacity-0">
+        <div class="max-w-md w-full border-2 border-dashed border-white/60 rounded-3xl p-8 sm:p-12 flex flex-col items-center justify-center gap-4 bg-white/10 shadow-2xl">
+            <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white">
+                <i data-lucide="upload-cloud" class="w-8 h-8 animate-bounce"></i>
+            </div>
+            <div>
+                <h3 class="text-xl sm:text-2xl font-black tracking-tight">Drop your file anywhere</h3>
+                <p class="text-sm text-white/80 mt-1">Instant client-side processing in your browser RAM</p>
+            </div>
+            <div class="text-[11px] font-medium px-3 py-1 bg-white/20 rounded-full border border-white/30 text-white/90">
+                PDF &bull; Images (JPG, PNG, WebP) &bull; Documents
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= POST-DOWNLOAD VIRAL SHARE & BOOKMARK MODAL ================= -->
+    <div id="modal-download-success" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full flex flex-col shadow-2xl border border-slate-100 overflow-hidden transform transition-all">
+            <!-- Header with Celebration Gradient -->
+            <div class="px-6 pt-6 pb-4 bg-gradient-to-br from-slate-50 via-emerald-50/40 to-slate-50 border-b border-slate-100 flex items-start justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
+                        <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-900">Document Ready! 🎉</h3>
+                        <p class="text-[11px] text-slate-500 font-medium">Saved 100% locally &bull; 0 server bytes transferred</p>
+                    </div>
+                </div>
+                <button id="btn-close-download-modal" class="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition" aria-label="Close dialog">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <!-- File Name Pill -->
+                <div class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs text-slate-700">
+                    <i data-lucide="file-check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                    <span id="download-modal-filename" class="font-mono truncate text-slate-800 font-medium">document.pdf</span>
+                </div>
+
+                <!-- Viral Share Callout -->
+                <div class="space-y-2">
+                    <div class="text-xs font-bold text-slate-800 flex items-center justify-between">
+                        <span>Loved the speed &amp; privacy? Share TECHTIS:</span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <!-- WhatsApp -->
+                        <a id="share-whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100/70 text-emerald-700 transition group text-center cursor-pointer">
+                            <i data-lucide="message-circle" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[10px] font-bold">WhatsApp</span>
+                        </a>
+                        <!-- Twitter / X -->
+                        <a id="share-twitter-btn" href="#" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 transition group text-center cursor-pointer">
+                            <i data-lucide="twitter" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[10px] font-bold">X / Twitter</span>
+                        </a>
+                        <!-- Telegram -->
+                        <a id="share-telegram-btn" href="#" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl border border-blue-200 bg-blue-50/50 hover:bg-blue-100/70 text-blue-600 transition group text-center cursor-pointer">
+                            <i data-lucide="send" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[10px] font-bold">Telegram</span>
+                        </a>
+                        <!-- Copy Link -->
+                        <button id="share-copy-btn" class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition group text-center cursor-pointer">
+                            <i data-lucide="copy" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                            <span id="share-copy-text" class="text-[10px] font-bold">Copy Link</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bookmark Quick Tip -->
+                <div class="flex items-center gap-3 p-3 bg-amber-50/70 border border-amber-200/80 rounded-2xl text-[11px] text-amber-900">
+                    <span class="text-base shrink-0">⭐</span>
+                    <div class="leading-snug">
+                        <strong>Bookmark TECHTIS:</strong> Press <kbd class="px-1.5 py-0.5 font-mono text-[10px] bg-white border border-amber-300 rounded shadow-2xs font-bold">Ctrl + D</kbd> (or <kbd class="px-1.5 py-0.5 font-mono text-[10px] bg-white border border-amber-300 rounded shadow-2xs font-bold">⌘ + D</kbd>) for instant 1-click access next time!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[10px] text-slate-400 font-medium">Free forever &bull; No registration</span>
+                <button id="btn-close-download-footer" class="px-4 py-1.5 text-xs font-bold bg-[#002244] text-white rounded-xl hover:bg-[#003366] transition shadow-xs cursor-pointer">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notifications Container -->
     <div id="toast-container"></div>
 
     <!-- Application Orchestrator Script -->
-    <script type="module" src="../js/app.js?v=2.2.1"></script>
+    <script type="module" src="../js/app.js?v=2.3.0"></script>
 </body>
 </html>

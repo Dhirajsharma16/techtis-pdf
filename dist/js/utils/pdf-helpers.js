@@ -191,6 +191,7 @@ export const PdfHelpers = {
                 summary: `Downloaded ${filename}`
             });
             window.dispatchEvent(new CustomEvent('techtis:history-updated'));
+            window.dispatchEvent(new CustomEvent('techtis:download-completed', { detail: { filename, mimeType, meta } }));
         } catch (_) {}
     },
 

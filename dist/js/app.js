@@ -56,6 +56,10 @@ class App {
         this.bindHubEvents();
         this.renderCatalog();
         this.updateHistoryCounter();
+        this.initPwaAndServiceWorker();
+        this.initNetworkStatus();
+        this.initPostDownloadModal();
+        this.initWindowDragDrop();
         if (this.isDedicatedPage) {
             this.refreshLucideIcons();
         }
@@ -5251,6 +5255,263 @@ This document was compiled directly in your browser using zero-cost serverless P
     closeAllModals() {
         this.closeHistoryModal();
         this.closeSettingsModal();
+        this.closeDownloadSuccessModal();
+    }
+
+    // ================= PWA & SERVICE WORKER ENGINE =================
+    initPwaAndServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swPath = this.isDedicatedPage ? '../sw.js' : '/sw.js';
+                navigator.serviceWorker.register(swPath, { scope: '/' })
+                    .then((reg) => {
+                        console.log('[TECHTIS PWA] Offline Service Worker active, scope:', reg.scope);
+                    })
+                    .catch((err) => {
+                        console.warn('[TECHTIS PWA] Service Worker registration note:', err);
+                    });
+            });
+        }
+
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('btn-pwa-install');
+            if (installBtn) {
+                installBtn.classList.remove('hidden');
+                installBtn.classList.add('inline-flex');
+                installBtn.onclick = async () => {
+                    installBtn.classList.add('hidden');
+                    installBtn.classList.remove('inline-flex');
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        if (outcome === 'accepted') {
+                            this.showToast('TECHTIS added to your apps! Offline execution ready.', 'success');
+                        }
+                        deferredPrompt = null;
+                    }
+                };
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            const installBtn = document.getElementById('btn-pwa-install');
+            if (installBtn) {
+                installBtn.classList.add('hidden');
+                installBtn.classList.remove('inline-flex');
+            }
+            this.showToast('TECHTIS installed successfully! Available offline on your device.', 'success');
+        });
+    }
+
+    // ================= NETWORK STATUS (ONLINE / OFFLINE) =================
+    initNetworkStatus() {
+        const updateNetwork = () => {
+            const isOnline = navigator.onLine;
+            const badge = document.getElementById('network-status-badge');
+            const text = document.getElementById('network-status-text');
+            if (!badge) return;
+
+            if (isOnline) {
+                badge.className = 'hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 transition-colors';
+                if (text) text.textContent = '100% In-Browser';
+                const dot = badge.querySelector('.rounded-full');
+                if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+            } else {
+                badge.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-300 transition-colors';
+                if (text) text.textContent = 'Offline Ready (No Internet Required)';
+                const dot = badge.querySelector('.rounded-full');
+                if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-500';
+            }
+        };
+
+        window.addEventListener('online', () => {
+            updateNetwork();
+            this.showToast('Internet connection restored. Back online!', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            updateNetwork();
+            this.showToast('Offline Mode: All 60 tools continue to execute 100% in your browser RAM.', 'success');
+        });
+
+        updateNetwork();
+    }
+
+    // ================= POST-DOWNLOAD VIRAL SHARE & BOOKMARK MODAL =================
+    initPostDownloadModal() {
+        // Listen to custom download event from PdfHelpers
+        window.addEventListener('techtis:download-completed', (e) => {
+            const filename = e.detail?.filename || 'document.pdf';
+            setTimeout(() => this.showDownloadSuccessModal(filename), 300);
+        });
+
+        // Intercept standard anchor downloads
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[download]');
+            if (link) {
+                const filename = link.getAttribute('download') || 'downloaded_file';
+                setTimeout(() => this.showDownloadSuccessModal(filename), 400);
+            }
+        });
+
+        // Bind modal close buttons
+        document.getElementById('btn-close-download-modal')?.addEventListener('click', () => this.closeDownloadSuccessModal());
+        document.getElementById('btn-close-download-footer')?.addEventListener('click', () => this.closeDownloadSuccessModal());
+
+        // Backdrop click
+        const modal = document.getElementById('modal-download-success');
+        modal?.addEventListener('click', (e) => {
+            if (e.target === modal) this.closeDownloadSuccessModal();
+        });
+
+        // Copy link button
+        const copyBtn = document.getElementById('share-copy-btn');
+        copyBtn?.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText('https://techtis.in');
+                const copyText = document.getElementById('share-copy-text');
+                if (copyText) {
+                    const original = copyText.textContent;
+                    copyText.textContent = 'Copied! ✓';
+                    setTimeout(() => { copyText.textContent = original; }, 2000);
+                }
+                this.showToast('Link copied to clipboard!', 'success');
+            } catch (_) {
+                this.showToast('Share link: https://techtis.in', 'info');
+            }
+        });
+    }
+
+    showDownloadSuccessModal(filename) {
+        const modal = document.getElementById('modal-download-success');
+        if (!modal) return;
+
+        const nameEl = document.getElementById('download-modal-filename');
+        if (nameEl) nameEl.textContent = filename || 'document.pdf';
+
+        const shareUrl = 'https://techtis.in';
+        const shareMsg = `I just processed documents with 100% private in-browser tools on TECHTIS (zero cloud uploads!). Check it out: ${shareUrl}`;
+
+        const whatsappBtn = document.getElementById('share-whatsapp-btn');
+        if (whatsappBtn) {
+            whatsappBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareMsg)}`;
+        }
+
+        const twitterBtn = document.getElementById('share-twitter-btn');
+        if (twitterBtn) {
+            twitterBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent('100% in-browser PDF and Image suite with zero server uploads: TECHTIS')}&url=${encodeURIComponent(shareUrl)}`;
+        }
+
+        const telegramBtn = document.getElementById('share-telegram-btn');
+        if (telegramBtn) {
+            telegramBtn.href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareMsg)}`;
+        }
+
+        modal.classList.remove('hidden');
+        this.refreshLucideIcons();
+    }
+
+    closeDownloadSuccessModal() {
+        const modal = document.getElementById('modal-download-success');
+        modal?.classList.add('hidden');
+    }
+
+    // ================= FULLSCREEN WINDOW DRAG-AND-DROP OVERLAY =================
+    initWindowDragDrop() {
+        const overlay = document.getElementById('drag-drop-overlay');
+        if (!overlay) return;
+
+        let dragCounter = 0;
+
+        window.addEventListener('dragenter', (e) => {
+            if (e.dataTransfer && e.dataTransfer.types && Array.from(e.dataTransfer.types).includes('Files')) {
+                e.preventDefault();
+                dragCounter++;
+                if (dragCounter === 1) {
+                    overlay.classList.remove('hidden');
+                    requestAnimationFrame(() => {
+                        overlay.classList.remove('opacity-0');
+                        overlay.classList.add('opacity-100');
+                    });
+                    this.refreshLucideIcons();
+                }
+            }
+        });
+
+        window.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dragCounter--;
+            if (dragCounter <= 0) {
+                dragCounter = 0;
+                overlay.classList.remove('opacity-100');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    if (dragCounter === 0) overlay.classList.add('hidden');
+                }, 200);
+            }
+        });
+
+        window.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        window.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragCounter = 0;
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 200);
+
+            const files = Array.from(e.dataTransfer?.files || []);
+            if (files.length === 0) return;
+
+            this.handleWindowFileDrop(files);
+        });
+    }
+
+    handleWindowFileDrop(files) {
+        // If a file input is visible in current active workspace, pass files to it
+        const fileInput = document.querySelector('#workspace-view input[type="file"]') || 
+                          document.querySelector('#tool-container input[type="file"]') ||
+                          document.querySelector('input[type="file"]');
+
+        if (fileInput) {
+            try {
+                const dataTransfer = new DataTransfer();
+                files.forEach(f => dataTransfer.items.add(f));
+                fileInput.files = dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                this.showToast(`Loaded ${files.length} file(s) into active tool!`, 'success');
+                return;
+            } catch (err) {
+                console.warn('DataTransfer assignment fallback:', err);
+            }
+        }
+
+        // Otherwise smart-route based on file extension
+        const firstFile = files[0];
+        const ext = (firstFile.name.split('.').pop() || '').toLowerCase();
+
+        if (ext === 'pdf') {
+            if (this.isDedicatedPage) {
+                this.showToast(`Dropped: ${firstFile.name}. Click upload box to process.`, 'info');
+            } else {
+                this.openToolWorkspace('merge-pdf');
+                this.showToast(`PDF detected: ${firstFile.name}`, 'info');
+            }
+        } else if (['jpg', 'jpeg', 'png', 'webp', 'svg'].includes(ext)) {
+            if (this.isDedicatedPage) {
+                this.showToast(`Dropped: ${firstFile.name}. Click upload box to process.`, 'info');
+            } else {
+                this.openToolWorkspace('image-compressor');
+                this.showToast(`Image detected: ${firstFile.name}`, 'info');
+            }
+        } else {
+            this.showToast(`Received ${firstFile.name}`, 'info');
+        }
     }
 
     // ================= TOAST NOTIFICATIONS =================

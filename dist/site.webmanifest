@@ -1,7 +1,7 @@
 {
-  "name": "TECHTIS - 100% Private, Free PDF & Document Tools",
+  "name": "TECHTIS - Free Online PDF | Image Tools",
   "short_name": "TECHTIS",
-  "description": "Free, 100% private in-browser PDF manipulation and document suite. Merge, split, compress, convert, OCR, and edit without server uploads.",
+  "description": "Free online in-browser PDF manipulation and document suite. Merge, split, compress, convert, OCR, and edit without server uploads.",
   "icons": [
     {
       "src": "/favicon-192x192.png",

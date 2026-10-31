@@ -61,6 +61,7 @@ const rootFiles = [
     'favicon-16x16.png',
     'apple-touch-icon.png',
     'site.webmanifest',
+    'sw.js',
     '_headers'
 ];
 

@@ -55,3 +55,9 @@
 
 /site.webmanifest
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+# Service Worker (PWA Offline In-Browser WebAssembly Engine)
+/sw.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=0, must-revalidate
+  Service-Worker-Allowed: /

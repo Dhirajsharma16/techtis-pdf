@@ -144,8 +144,8 @@ const aboutHtml = `<!DOCTYPE html>
     <meta name="description" content="About TECHTIS (techtis.in): our mission is providing 60 free, private, client-side PDF and image tools powered by WebAssembly with zero file uploads.">
     <link rel="canonical" href="https://techtis.in/about.html">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="stylesheet" href="css/tailwind.min.css?v=2.2.3">
-    <link rel="stylesheet" href="css/styles.css?v=2.2.3">
+    <link rel="stylesheet" href="css/tailwind.min.css?v=2.3.0">
+    <link rel="stylesheet" href="css/styles.css?v=2.3.0">
     <script defer src="vendor/lucide.min.js"></script>
 ${commonHeadIcons}
     <!-- Open Graph Metadata -->
@@ -381,8 +381,8 @@ const privacyHtml = `<!DOCTYPE html>
     <meta name="description" content="TECHTIS Privacy Policy. Learn how our client-side WebAssembly architecture ensures zero file uploads, zero data retention, and total document privacy.">
     <link rel="canonical" href="https://techtis.in/privacy.html">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="stylesheet" href="css/tailwind.min.css?v=2.2.3">
-    <link rel="stylesheet" href="css/styles.css?v=2.2.3">
+    <link rel="stylesheet" href="css/tailwind.min.css?v=2.3.0">
+    <link rel="stylesheet" href="css/styles.css?v=2.3.0">
     <script defer src="vendor/lucide.min.js"></script>
 ${commonHeadIcons}
     <!-- Open Graph Metadata -->
@@ -578,8 +578,8 @@ const termsHtml = `<!DOCTYPE html>
     <meta name="description" content="TECHTIS Terms of Service. Review user guidelines, client-side processing policies, passport photo compliance warnings, and OCR accuracy disclaimers.">
     <link rel="canonical" href="https://techtis.in/terms.html">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="stylesheet" href="css/tailwind.min.css?v=2.2.3">
-    <link rel="stylesheet" href="css/styles.css?v=2.2.3">
+    <link rel="stylesheet" href="css/tailwind.min.css?v=2.3.0">
+    <link rel="stylesheet" href="css/styles.css?v=2.3.0">
     <script defer src="vendor/lucide.min.js"></script>
 ${commonHeadIcons}
     <!-- Open Graph Metadata -->
@@ -731,8 +731,8 @@ const contactHtml = `<!DOCTYPE html>
     <meta name="description" content="Contact TECHTIS (techtis.in). Reach out for user support, bug reporting, feature suggestions, or business inquiries regarding our 60 free private tools.">
     <link rel="canonical" href="https://techtis.in/contact.html">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="stylesheet" href="css/tailwind.min.css?v=2.2.3">
-    <link rel="stylesheet" href="css/styles.css?v=2.2.3">
+    <link rel="stylesheet" href="css/tailwind.min.css?v=2.3.0">
+    <link rel="stylesheet" href="css/styles.css?v=2.3.0">
     <script defer src="vendor/lucide.min.js"></script>
 ${commonHeadIcons}
     <!-- Open Graph Metadata -->
