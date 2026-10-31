@@ -191,7 +191,8 @@ export class PassportStudio {
             
             gapX: 4, // mm between photos
             gapY: 5, // mm between photos
-            autoCenter: true,
+            marginT: 2, // 2mm top margin from top edge of A4 paper (Studio & CSC standard)
+            autoCenter: false, // Don't vertically center - start from top 2mm
             showCutLines: true,
             hasBorder: true,
             borderColor: '#334155', // crisp dark photo outline
@@ -596,6 +597,28 @@ export class PassportStudio {
                                     </label>
                                 </div>
                             </div>
+
+                            <!-- Sheet Margins & Spacing (Top 2mm Studio Standard) -->
+                            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 text-xs">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[11px] font-bold text-slate-700">Top Margin:</span>
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" id="ps-btn-dec-margin" class="w-5 h-5 rounded bg-white border border-slate-300 font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs text-[10px]">-</button>
+                                        <input type="number" id="ps-input-margin-top" min="0" max="80" step="1" value="2" class="w-12 px-1 py-0.5 text-xs text-center border border-slate-200 rounded bg-white font-bold text-red-600 font-mono">
+                                        <span class="text-[11px] font-semibold text-slate-500">mm</span>
+                                        <button type="button" id="ps-btn-inc-margin" class="w-5 h-5 rounded bg-white border border-slate-300 font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs text-[10px]">+</button>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400 font-medium">(2mm top margin for paper reuse)</span>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[11px] font-bold text-slate-700">Photo Gap:</span>
+                                    <div class="flex items-center gap-1">
+                                        <input type="number" id="ps-input-gap" min="0" max="25" step="1" value="4" class="w-12 px-1 py-0.5 text-xs text-center border border-slate-200 rounded bg-white font-bold text-slate-700 font-mono">
+                                        <span class="text-[11px] font-semibold text-slate-500">mm</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- REALISTIC A4 PAPER PREVIEW STAGE (Matches User's Uploaded Image!) -->
@@ -912,6 +935,37 @@ export class PassportStudio {
             this.renderSheetPreview();
         });
 
+        // Top Margin controls (Studio standard 2mm)
+        const marginInput = document.getElementById('ps-input-margin-top');
+        marginInput?.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            this.state.marginT = !isNaN(val) && val >= 0 ? val : 2;
+            this.renderSheetPreview();
+        });
+        document.getElementById('ps-btn-dec-margin')?.addEventListener('click', () => {
+            const current = (this.state.marginT !== undefined ? this.state.marginT : 2);
+            if (current > 0) {
+                this.state.marginT = Math.max(0, current - 1);
+                if (marginInput) marginInput.value = this.state.marginT;
+                this.renderSheetPreview();
+            }
+        });
+        document.getElementById('ps-btn-inc-margin')?.addEventListener('click', () => {
+            const current = (this.state.marginT !== undefined ? this.state.marginT : 2);
+            this.state.marginT = Math.min(80, current + 1);
+            if (marginInput) marginInput.value = this.state.marginT;
+            this.renderSheetPreview();
+        });
+
+        // Photo Gap control
+        const gapInput = document.getElementById('ps-input-gap');
+        gapInput?.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            this.state.gapX = !isNaN(val) && val >= 0 ? val : 4;
+            this.state.gapY = !isNaN(val) && val >= 0 ? val : 4;
+            this.renderSheetPreview();
+        });
+
         // Framing canvas events (Pan, Zoom, Drag)
         const cropCanvas = document.getElementById('ps-crop-canvas');
         const zoomRange = document.getElementById('ps-zoom-range');
@@ -1059,6 +1113,13 @@ export class PassportStudio {
             this.initDefaultSamplePhoto();
             this.state.cols = 3;
             this.state.rows = 4;
+            this.state.marginT = 2;
+            this.state.gapX = 4;
+            this.state.gapY = 5;
+            const mIn = document.getElementById('ps-input-margin-top');
+            if (mIn) mIn.value = 2;
+            const gIn = document.getElementById('ps-input-gap');
+            if (gIn) gIn.value = 4;
             updateGridUI();
             this.renderCropCanvas();
             this.renderSheetPreview();
@@ -1347,9 +1408,13 @@ export class PassportStudio {
         const gridW = (cols * photo.widthMm) + ((cols - 1) * gapX);
         const gridH = (rows * photo.heightMm) + ((rows - 1) * gapY);
 
-        // Center alignment on the sheet
-        const marginL = Math.max(5, (paper.widthMm - gridW) / 2);
-        const marginT = Math.max(8, (paper.heightMm - gridH) / 2);
+        // Top margin: 2mm (Studio & Cyber Cafe standard - starts 2mm from top edge, not centered)
+        const marginT = (this.state.marginT !== undefined && this.state.marginT !== null && !isNaN(this.state.marginT))
+            ? Math.max(0, Number(this.state.marginT))
+            : 2;
+
+        // Horizontally centered across the page width
+        const marginL = Math.max(2, (paper.widthMm - gridW) / 2);
 
         const totalSlots = cols * rows;
 
@@ -1432,8 +1497,8 @@ export class PassportStudio {
             for (let c = 1; c < m.cols; c++) {
                 const lineX = startXPx + (c * (photoWPx + gapXPx)) - (gapXPx / 2);
                 ctx.beginPath();
-                ctx.moveTo(lineX, startYPx - 8);
-                ctx.lineTo(lineX, startYPx + m.gridH * mmToPx + 8);
+                ctx.moveTo(lineX, Math.max(0, startYPx - 3));
+                ctx.lineTo(lineX, startYPx + (m.gridH * mmToPx) + 3);
                 ctx.stroke();
             }
 
@@ -1441,10 +1506,17 @@ export class PassportStudio {
             for (let r = 1; r < m.rows; r++) {
                 const lineY = startYPx + (r * (photoHPx + gapYPx)) - (gapYPx / 2);
                 ctx.beginPath();
-                ctx.moveTo(startXPx - 8, lineY);
-                ctx.lineTo(startXPx + m.gridW * mmToPx + 8, lineY);
+                ctx.moveTo(startXPx - 6, lineY);
+                ctx.lineTo(startXPx + (m.gridW * mmToPx) + 6, lineY);
                 ctx.stroke();
             }
+
+            // Horizontal strip cutting line right below the last row (allows cutting the printed strip off the paper)
+            const bottomCutLineY = startYPx + (m.gridH * mmToPx) + (gapYPx / 2);
+            ctx.beginPath();
+            ctx.moveTo(startXPx - 6, bottomCutLineY);
+            ctx.lineTo(startXPx + (m.gridW * mmToPx) + 6, bottomCutLineY);
+            ctx.stroke();
 
             ctx.restore();
         }
@@ -1452,7 +1524,7 @@ export class PassportStudio {
         // Update Caption & Summary
         const caption = document.getElementById('ps-sheet-caption');
         if (caption) {
-            caption.textContent = `A4 Sheet Preview &bull; ${m.cols} Cols × ${m.rows} Rows (${m.totalSlots} Photos) &bull; ${m.photo.widthMm} × ${m.photo.heightMm} mm`;
+            caption.innerHTML = `A4 Sheet Preview &bull; ${m.cols} Cols &times; ${m.rows} Rows (${m.totalSlots} Photos) &bull; Top: ${m.marginT}mm`;
         }
     }
 
@@ -1503,18 +1575,26 @@ export class PassportStudio {
             for (let c = 1; c < m.cols; c++) {
                 const lineX = startXPx + (c * (photoWPx + gapXPx)) - (gapXPx / 2);
                 ctx.beginPath();
-                ctx.moveTo(lineX, startYPx - (8 * mmToPx));
-                ctx.lineTo(lineX, startYPx + (m.gridH * mmToPx) + (8 * mmToPx));
+                ctx.moveTo(lineX, Math.max(0, startYPx - (3 * mmToPx)));
+                ctx.lineTo(lineX, startYPx + (m.gridH * mmToPx) + (3 * mmToPx));
                 ctx.stroke();
             }
 
             for (let r = 1; r < m.rows; r++) {
                 const lineY = startYPx + (r * (photoHPx + gapYPx)) - (gapYPx / 2);
                 ctx.beginPath();
-                ctx.moveTo(startXPx - (8 * mmToPx), lineY);
-                ctx.lineTo(startXPx + (m.gridW * mmToPx) + (8 * mmToPx), lineY);
+                ctx.moveTo(startXPx - (6 * mmToPx), lineY);
+                ctx.lineTo(startXPx + (m.gridW * mmToPx) + (6 * mmToPx), lineY);
                 ctx.stroke();
             }
+
+            // Strip cutting line right below last row
+            const bottomCutLineY = startYPx + (m.gridH * mmToPx) + (gapYPx / 2);
+            ctx.beginPath();
+            ctx.moveTo(startXPx - (6 * mmToPx), bottomCutLineY);
+            ctx.lineTo(startXPx + (m.gridW * mmToPx) + (6 * mmToPx), bottomCutLineY);
+            ctx.stroke();
+
             ctx.restore();
         }
 
@@ -1522,7 +1602,7 @@ export class PassportStudio {
         ctx.fillStyle = '#64748b';
         ctx.font = `${Math.round(8 * (dpi / 72))}px sans-serif`;
         ctx.textAlign = 'left';
-        ctx.fillText(`TECHTIS Studio (${m.cols} × ${m.rows} = ${m.totalSlots} Photos) &bull; Photo Size: ${m.photo.widthMm} × ${m.photo.heightMm} mm &bull; Scale: 100% Actual Size`, startXPx, sheetH - 12);
+        ctx.fillText(`TECHTIS Studio (${m.cols} × ${m.rows} = ${m.totalSlots} Photos) • Photo Size: ${m.photo.widthMm} × ${m.photo.heightMm} mm • Top: ${m.marginT} mm • Scale: 100% Actual Size`, startXPx, sheetH - 12);
 
         return canvas;
     }
@@ -1633,11 +1713,13 @@ export class PassportStudio {
 
             // Cutting lines
             if (this.state.showCutLines) {
+                const gridBottomY = paperH_pt - startY_pt - (m.rows * photoH_pt) - ((m.rows - 1) * gapY_pt);
+
                 for (let c = 1; c < m.cols; c++) {
                     const lineX = startX_pt + (c * (photoW_pt + gapX_pt)) - (gapX_pt / 2);
                     page.drawLine({
-                        start: { x: lineX, y: paperH_pt - startY_pt + 8 },
-                        end: { x: lineX, y: paperH_pt - startY_pt - (m.rows * (photoH_pt + gapY_pt)) + gapY_pt - 8 },
+                        start: { x: lineX, y: Math.min(paperH_pt - 1, paperH_pt - startY_pt + 4) },
+                        end: { x: lineX, y: Math.max(0, gridBottomY - 4) },
                         color: window.PDFLib.rgb(0.65, 0.7, 0.75),
                         thickness: 0.5,
                         dashArray: [2, 2]
@@ -1647,17 +1729,27 @@ export class PassportStudio {
                 for (let r = 1; r < m.rows; r++) {
                     const lineY = paperH_pt - startY_pt - (r * (photoH_pt + gapY_pt)) + (gapY_pt / 2);
                     page.drawLine({
-                        start: { x: startX_pt - 8, y: lineY },
-                        end: { x: startX_pt + (m.cols * (photoW_pt + gapX_pt)) - gapX_pt + 8, y: lineY },
+                        start: { x: startX_pt - 6, y: lineY },
+                        end: { x: startX_pt + (m.cols * (photoW_pt + gapX_pt)) - gapX_pt + 6, y: lineY },
                         color: window.PDFLib.rgb(0.65, 0.7, 0.75),
                         thickness: 0.5,
                         dashArray: [2, 2]
                     });
                 }
+
+                // Strip cutting line right below last row
+                const stripCutY = gridBottomY - (gapY_pt / 2);
+                page.drawLine({
+                    start: { x: startX_pt - 6, y: stripCutY },
+                    end: { x: startX_pt + (m.cols * (photoW_pt + gapX_pt)) - gapX_pt + 6, y: stripCutY },
+                    color: window.PDFLib.rgb(0.65, 0.7, 0.75),
+                    thickness: 0.5,
+                    dashArray: [2, 2]
+                });
             }
 
             const fontBold = await pdfDoc.embedFont(window.PDFLib.StandardFonts.HelveticaBold);
-            page.drawText(`TECHTIS Studio (${m.cols} x ${m.rows} = ${m.totalSlots} Photos) &bull; Size: ${m.photo.widthMm} x ${m.photo.heightMm} mm &bull; Scale: 100% Actual Size`, {
+            page.drawText(`TECHTIS Studio (${m.cols} x ${m.rows} = ${m.totalSlots} Photos) • Size: ${m.photo.widthMm} x ${m.photo.heightMm} mm • Top: ${m.marginT} mm • Scale: 100% Actual Size`, {
                 x: startX_pt,
                 y: 12,
                 size: 7.5,
