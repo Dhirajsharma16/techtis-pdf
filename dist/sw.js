@@ -1,10 +1,10 @@
 /**
  * TECHTIS (techtis.in) - Progressive Web App Service Worker
  * Enables 100% Offline Client-Side Execution for all 60 PDF, Image & Dev Tools
- * Cache Version: v2.4.0
+ * Cache Version: v2.4.1
  */
 
-const CACHE_NAME = 'techtis-cache-v2.4.0';
+const CACHE_NAME = 'techtis-cache-v2.4.1';
 
 // Essential Core App Shell & WebAssembly/Worker Libraries
 const PRECACHE_URLS = [
