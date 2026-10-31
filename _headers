@@ -4,7 +4,7 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
 
-# Explicit UTF-8 on all HTML documents (Eliminates â€" mojibake across all search engines)
+# Explicit UTF-8 on all HTML documents (Eliminates title and character mojibake across all search engines)
 /*.html
   Content-Type: text/html; charset=utf-8
   Cache-Control: public, max-age=0, must-revalidate
@@ -18,9 +18,9 @@
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
-# High-Performance Precompiled CSS
+# High-Performance Precompiled CSS (Instant revalidation on new deployments)
 /css/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=86400
+  Cache-Control: public, max-age=0, must-revalidate
 
 # Application Scripts (Instant revalidation on new deployments)
 /js/*
