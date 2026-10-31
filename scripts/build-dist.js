@@ -10,7 +10,11 @@ const distDir = path.join(rootDir, 'dist');
 
 console.log('[Build Dist] Starting production distribution build for TECHTIS...');
 
-// 0. Regenerate SEO Pages across all 60 tools
+// 0. Regenerate Compliance & E-E-A-T Pages
+console.log('[Build Dist] Generating compliance & authority pages (about, privacy, terms, contact)...');
+execSync(`node "${path.join(__dirname, 'generate-compliance-pages.js')}"`, { stdio: 'inherit' });
+
+// 0.1 Regenerate SEO Pages across all 60 tools
 console.log('[Build Dist] Generating dedicated SEO static pages...');
 execSync(`node "${path.join(__dirname, 'build-seo.js')}"`, { stdio: 'inherit' });
 

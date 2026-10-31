@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,9 +6,10 @@
     <title>Privacy Policy - 100% Client-Side Privacy Guarantee | TECHTIS</title>
     <meta name="description" content="TECHTIS Privacy Policy. Learn how our 100% client-side WebAssembly architecture ensures zero document uploads, zero file retention, and total personal data privacy.">
     <link rel="canonical" href="https://techtis.in/privacy.html">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="stylesheet" href="css/tailwind.min.css">
     <link rel="stylesheet" href="css/styles.css">
-    <script src="vendor/lucide.min.js"></script>
+    <script defer src="vendor/lucide.min.js"></script>
     <!-- TechTis Official Brand Icons & Favicons (Google Search & Multi-Browser Compliant) -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
@@ -17,145 +18,192 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/favicon.ico">
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#002244">
-    <meta property="og:image" content="https://techtis.in/favicon-512x512.png">
-    <meta name="twitter:image" content="https://techtis.in/favicon-512x512.png">
-<script type="application/ld+json">
+    <meta property="og:image" content="https://techtis.in/logo.png">
+    <meta name="twitter:image" content="https://techtis.in/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <!-- Open Graph Metadata -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://techtis.in/privacy.html">
+    <meta property="og:site_name" content="TECHTIS">
+    <meta property="og:title" content="Privacy Policy - 100% Client-Side Privacy Guarantee | TECHTIS">
+    <meta property="og:description" content="TECHTIS zero-upload privacy architecture. All 60 PDF, Image, Dev, and CSS tools run strictly in your browser memory.">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "Privacy Policy | TECHTIS",
-      "url": "https://techtis.in/privacy.html",
-      "description": "TECHTIS 100% Client-Side Privacy Policy. Zero document uploads, zero data retention."
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://techtis.in/#organization",
+          "name": "TECHTIS",
+          "alternateName": ["TechTis", "TECHTIS Document Suite", "techtis.in"],
+          "url": "https://techtis.in/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://techtis.in/assets/images/logo.png",
+            "caption": "TECHTIS Logo"
+          },
+          "image": "https://techtis.in/logo.png"
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://techtis.in/privacy.html#webpage",
+          "url": "https://techtis.in/privacy.html",
+          "name": "TECHTIS Privacy Policy",
+          "description": "TECHTIS 100% Client-Side Privacy Policy. Zero document uploads, zero data retention.",
+          "publisher": { "@id": "https://techtis.in/#organization" },
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://techtis.in/" },
+              { "@type": "ListItem", "position": 2, "name": "Privacy Policy", "item": "https://techtis.in/privacy.html" }
+            ]
+          }
+        }
+      ]
     }
     </script>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
 
-    <!-- Header -->
-    <header class="header-glass sticky top-0 z-40 px-4 lg:px-8 py-3 flex items-center justify-between border-b border-slate-200">
-        <a href="./" class="flex items-center space-x-2.5">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-white shadow-md shadow-red-500/20">
-                <i data-lucide="file-text" class="w-5 h-5"></i>
-            </div>
+    <!-- Unified Header with TechTis Official Logo & Suite Navigation -->
+    <header class="header-glass sticky top-0 z-40 px-3 sm:px-6 py-2 flex items-center justify-between gap-3 border-b border-slate-200">
+        <a href="./" class="flex items-center gap-2.5 shrink-0 group" id="brand-logo-btn" title="TechTis - Free Online PDF, Image &amp; Developer Tools">
+            <img src="assets/images/logo.png" alt="TechTis Logo" width="69" height="40" fetchpriority="high" class="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform">
             <div>
-                <span class="text-lg font-extrabold tracking-tight text-slate-900">TECH<span class="text-red-600">TIS</span></span>
-                
+                <div class="leading-none">
+                    <span class="text-base sm:text-lg font-black tracking-tight text-[#002244]">Tech<span class="text-[#EA1D2C]">Tis</span></span>
+                </div>
+                <p class="text-[9px] font-semibold text-slate-500 mt-0.5 leading-none">Free <span class="text-[#EA1D2C] font-bold">PDF</span>, <span class="text-[#EA1D2C] font-bold">Image</span> &amp; Dev Tools</p>
             </div>
         </a>
 
-        <div class="flex items-center gap-3 text-xs font-semibold">
-            <a href="./" class="text-slate-600 hover:text-red-600 transition">&larr; Back to Tools</a>
-            <div class="hidden sm:flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Zero Server Uploads</span>
-            </div>
+        <!-- Fast Navigation Links Across All Suites -->
+        <nav class="hidden lg:flex items-center gap-1 text-xs font-semibold text-slate-600">
+            <a href="./#organize" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Organize</a>
+            <a href="./#edit-sign" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Edit &amp; Sign</a>
+            <a href="./#security" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Security</a>
+            <a href="./#convert" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Convert</a>
+            <a href="./#ai-smart" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">AI &amp; Edge</a>
+            <a href="./#image" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Images</a>
+            <a href="./#developer" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Dev Tools</a>
+            <a href="./#design" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">CSS Design</a>
+            <a href="./#text" class="px-2 py-1 rounded-md hover:text-red-600 hover:bg-red-50 transition">Text</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+            <a href="./" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 bg-white hover:border-red-400 hover:text-red-600 shadow-2xs transition">
+                <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+                <span>All 60 Free Tools</span>
+            </a>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
         <div class="space-y-3">
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-50 text-red-700 border border-red-200 rounded-full text-xs font-bold">
-                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-bold">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
                 <span>Strict Zero-Upload Architecture</span>
             </div>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Privacy Policy</h1>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Privacy Policy</h1>
             <p class="text-sm text-slate-500">Last updated: October 2026 &bull; Effective immediately for all visitors worldwide</p>
         </div>
 
         <!-- Privacy Summary Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-2">
-                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                    <i data-lucide="hard-drive" class="w-4 h-4"></i>
+            <div class="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-2">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    <i data-lucide="hard-drive" class="w-5 h-5"></i>
                 </div>
-                <h3 class="text-sm font-bold text-slate-800">100% In-Browser RAM</h3>
+                <h3 class="text-sm font-bold text-slate-900">100% In-Browser RAM</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">PDFs, images, and identity cards are processed strictly inside your device memory via WebAssembly and Canvas.</p>
             </div>
-            <div class="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-2">
-                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                    <i data-lucide="cloud-off" class="w-4 h-4"></i>
+            <div class="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-2">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    <i data-lucide="cloud-off" class="w-5 h-5"></i>
                 </div>
-                <h3 class="text-sm font-bold text-slate-800">Zero Server Uploads</h3>
-                <p class="text-xs text-slate-500 leading-relaxed">No files, photos, or extracted text strings are ever transmitted across the network to our servers.</p>
+                <h3 class="text-sm font-bold text-slate-900">Zero Server Uploads</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">We maintain no file servers or databases. Files are never transmitted over the Internet to TECHTIS.</p>
             </div>
-            <div class="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-2">
-                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <div class="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-2">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    <i data-lucide="trash-2" class="w-5 h-5"></i>
                 </div>
-                <h3 class="text-sm font-bold text-slate-800">Zero File Retention</h3>
-                <p class="text-xs text-slate-500 leading-relaxed">We maintain no file storage, databases, or document queues. Closing or refreshing the tab clears all memory.</p>
+                <h3 class="text-sm font-bold text-slate-900">Instant Memory Purge</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Closing your browser tab or clicking reset immediately clears all document buffers from your computer's RAM.</p>
             </div>
         </div>
 
-        <!-- Detailed Legal Sections -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 text-sm text-slate-700 leading-relaxed shadow-xs">
+        <!-- Detailed Legal Policy -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 space-y-8 text-sm text-slate-700 leading-relaxed shadow-xs">
             <section class="space-y-3">
-                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i data-lucide="info" class="w-4 h-4 text-red-600"></i>
-                    <span>1. Introduction &amp; Core Philosophy</span>
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="lock" class="w-5 h-5 text-red-600"></i>
+                    <span>1. Our Fundamental Privacy Commitment</span>
                 </h2>
                 <p>
-                    TECHTIS (<a href="https://techtis.in" class="text-red-600 font-medium hover:underline">techtis.in</a>) was engineered from the ground up on a radical privacy paradigm: <em>the most secure server is no server at all</em>. Traditional document conversion websites force users to upload sensitive tax returns, confidential legal agreements, and personal photos to remote cloud servers. TECHTIS eliminates this risk completely by executing 100% of PDF manipulation, image processing, and character recognition directly in the visitor's local web browser engine.
+                    At TECHTIS (<a href="https://techtis.in/" class="text-red-600 font-semibold hover:underline">techtis.in</a>), privacy is not an afterthought or an optional toggle—it is the foundational engineering principle of our entire platform.
+                </p>
+                <p>
+                    Most online file conversion services require you to transmit personal documents over the network to remote backend servers. TECHTIS eliminates this privacy vulnerability entirely by conducting 100% of document parsing, image rendering, merging, form filling, compression, and format transcoding directly inside your device's local memory.
                 </p>
             </section>
 
             <section class="space-y-3">
-                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i data-lucide="file-check" class="w-4 h-4 text-red-600"></i>
-                    <span>2. Document &amp; File Processing</span>
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="file-check" class="w-5 h-5 text-red-600"></i>
+                    <span>2. Document &amp; File Data Handling</span>
                 </h2>
-                <p>
-                    When you select a document or image on TECHTIS:
-                </p>
-                <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
-                    <li>Your file is read exclusively into local client memory via JavaScript <code>FileReader</code>, <code>HTMLCanvasElement</code>, or WebAssembly buffers.</li>
-                    <li>Operations (such as merging, splitting, compressing, cropping, passport photo tiling, and ID card OCR) execute entirely on your computer's CPU and GPU.</li>
-                    <li>No document data, pixel data, or metadata is ever saved, logged, or uploaded to TECHTIS servers or any third-party storage buckets.</li>
-                    <li>When you close your browser tab or click "Clear All Data", all working buffers are instantly released by your browser's garbage collector.</li>
+                <ul class="list-disc pl-5 space-y-2 text-xs text-slate-600">
+                    <li><strong>No Server Transmission:</strong> When you drag, drop, or select a file in any of our 60 tools, the file is read exclusively into the JavaScript heap memory of your local web browser.</li>
+                    <li><strong>No File Logging or Caching:</strong> TECHTIS operates zero file-storage buckets, zero object storage (such as AWS S3 or Cloudflare R2), and zero intermediate processing queues.</li>
+                    <li><strong>Immediate Destruction:</strong> When you complete an operation and download your file, or when you refresh/close the webpage, your browser's garbage collector automatically overwrites and reclaims the memory.</li>
                 </ul>
             </section>
 
             <section class="space-y-3">
-                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i data-lucide="eye-off" class="w-4 h-4 text-red-600"></i>
-                    <span>3. Identity Documents &amp; Private OCR</span>
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="scan" class="w-5 h-5 text-red-600"></i>
+                    <span>3. Special Privacy Provisions for Sensitive Tools</span>
                 </h2>
                 <p>
-                    Our Private Document OCR tool (<a href="id-card-ocr/" class="text-red-600 font-medium hover:underline">/id-card-ocr/</a>) is specifically built for sensitive government identity cards (including Indian Aadhaar and PAN cards):
+                    Certain tools in our suite handle exceptionally sensitive personal materials:
                 </p>
-                <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
-                    <li>Optical character recognition executes strictly client-side via in-browser Tesseract.js WebAssembly.</li>
-                    <li>Sensitive 12-digit Aadhaar numbers are masked by default (<code>XXXX XXXX 1234</code>) to protect against accidental visual shoulder-surfing.</li>
-                    <li>A prominent "Clear All Data" control allows users to instantly wipe recognized data and canvas buffers from RAM.</li>
+                <ul class="list-disc pl-5 space-y-2 text-xs text-slate-600">
+                    <li><strong>Aadhaar &amp; PAN Card OCR:</strong> Text extraction from Indian identification cards runs strictly on-device using WebAssembly compiled OCR. No card numbers, names, or photos are ever sent to remote AI services unless the user explicitly toggles a cloud AI option with their own personal API key.</li>
+                    <li><strong>Passport Photo Maker:</strong> Camera captures and uploaded portrait photographs are cropped, scaled, and tiled onto printable 4x6 / A4 sheets exclusively within client-side HTML5 Canvas.</li>
+                    <li><strong>PDF Form Filler:</strong> Flattened vectors, text stamps, and digital signatures are burned directly into the PDF byte stream using <code>pdf-lib</code> in client RAM.</li>
                 </ul>
             </section>
 
             <section class="space-y-3">
-                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i data-lucide="database" class="w-4 h-4 text-red-600"></i>
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="database" class="w-5 h-5 text-red-600"></i>
                     <span>4. Browser LocalStorage &amp; Cookies</span>
                 </h2>
                 <p>
-                    TECHTIS uses standard browser <code>localStorage</code> strictly for your convenience:
+                    TECHTIS utilizes standard browser <code>localStorage</code> strictly for user convenience:
                 </p>
-                <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
+                <ul class="list-disc pl-5 space-y-2 text-xs text-slate-600">
                     <li><strong>Activity Counter:</strong> A local counter of completed operations is saved on your device so you can view your personal productivity history. This data never leaves your device and can be cleared at any time in the Activity Log modal.</li>
                     <li><strong>Custom API Keys:</strong> If you optionally supply personal API keys (such as Google Gemini, Groq, or OCR.space), they are saved exclusively in your browser's local storage and used solely for direct client-to-API requests.</li>
                 </ul>
             </section>
 
             <section class="space-y-3">
-                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i data-lucide="ad" class="w-4 h-4 text-red-600"></i>
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="globe" class="w-5 h-5 text-red-600"></i>
                     <span>5. Advertising &amp; Third-Party Partners</span>
                 </h2>
                 <p>
-                    To keep all 40 document and image utilities 100% free with unlimited usage worldwide, TECHTIS may display non-intrusive advertisements served by Google AdSense and reputable advertising networks:
+                    To keep all 60 document and image utilities 100% free with unlimited usage worldwide, TECHTIS may display non-intrusive advertisements served by Google AdSense and reputable advertising networks:
                 </p>
-                <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
+                <ul class="list-disc pl-5 space-y-2 text-xs text-slate-600">
                     <li>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites.</li>
                     <li>Google's use of advertising cookies enables it and its partners to serve ads to users based on their visit to TECHTIS and/or other sites on the Internet.</li>
                     <li>Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener" class="text-red-600 hover:underline">Google Ads Settings</a> or through <a href="https://www.aboutads.info" target="_blank" rel="noopener" class="text-red-600 hover:underline">aboutads.info</a>.</li>
@@ -163,33 +211,266 @@
                 </ul>
             </section>
 
-            <section class="space-y-3">
-                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i data-lucide="mail" class="w-4 h-4 text-red-600"></i>
-                    <span>6. Contact Us Regarding Privacy</span>
+            <section class="space-y-3 pt-4 border-t border-slate-100">
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="mail" class="w-5 h-5 text-red-600"></i>
+                    <span>6. Privacy Inquiries &amp; Data Rights</span>
                 </h2>
+                <p>
+                    Because TECHTIS does not collect, store, or transmit your personal files or personal identifiers, there is no database of user records to export, modify, or erase under GDPR or CCPA. You retain 100% data sovereignty at all times.
+                </p>
                 <p>
                     If you have questions, feedback, or concerns regarding our privacy architecture, please contact us at:
                 </p>
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-800">
-                    Email: <a href="mailto:privacy@techtis.in" class="text-red-600 hover:underline">privacy@techtis.in</a> &bull; Website: <a href="https://techtis.in" class="text-red-600 hover:underline">https://techtis.in</a>
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-800">
+                    Email: <a href="mailto:privacy@techtis.in" class="text-red-600 hover:underline font-bold">privacy@techtis.in</a> &bull; Website: <a href="https://techtis.in" class="text-red-600 hover:underline">https://techtis.in</a>
                 </div>
             </section>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="mt-auto bg-white border-t border-slate-200 py-6 px-4 text-xs text-slate-500">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>&copy; 2026 TECHTIS (techtis.in). All rights reserved. 100% Client-Side Privacy Guarantee.</div>
-            <div class="flex items-center gap-4 text-slate-600 font-medium">
-                <a href="about.html" class="hover:text-red-600 transition">About Us</a>
-                <span>&bull;</span>
-                <a href="privacy.html" class="text-red-600 font-bold transition">Privacy Policy</a>
-                <span>&bull;</span>
-                <a href="terms.html" class="hover:text-red-600 transition">Terms of Service</a>
-                <span>&bull;</span>
-                <a href="contact.html" class="hover:text-red-600 transition">Contact Us</a>
+    <!-- Comprehensive Categorized Mesh Footer (PageRank & Google Crawling Booster) -->
+    <footer class="bg-white border-t border-slate-200 mt-12 text-slate-500 text-xs py-8 px-4 lg:px-8">
+        <div class="max-w-6xl mx-auto space-y-8">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pb-5 border-b border-slate-200">
+                <div class="flex items-center space-x-2.5">
+                    <img src="assets/images/logo.png" alt="TechTis Logo" width="69" height="40" class="h-8 w-auto object-contain">
+                    <span class="font-extrabold text-xs sm:text-sm text-slate-900 tracking-tight">TECH<span class="text-red-600">TIS</span></span>
+                    <span class="text-[10px] text-slate-400">&bull; 100% In-Browser Private Utility Platform</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 text-xs font-medium">
+                    <a href="./" class="hover:text-red-600 transition">Home</a>
+                    <a href="about.html" class="hover:text-red-600 transition">About</a>
+                    <a href="privacy.html" class="text-red-600 font-bold transition">Privacy</a>
+                    <a href="terms.html" class="hover:text-red-600 transition">Terms</a>
+                    <a href="contact.html" class="hover:text-red-600 transition">Contact</a>
+                </div>
+            </div>
+
+            <!-- Complete 9-Category 60-Tool Footer Directory Mesh -->
+            <div class="space-y-4">
+                <div class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center justify-between">
+                    <span>Explore All 60 Free Online Tools by Suite</span>
+                    <span class="text-[10px] text-emerald-600 font-semibold normal-case">100% Client-Side &bull; No Server Uploads</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>Organize PDF (6)</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                
+                    <a href="merge-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Merge PDF Online">Merge PDF</a>
+                
+                    <a href="split-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Split PDF Online">Split PDF</a>
+                
+                    <a href="rotate-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Rotate PDF Online">Rotate PDF</a>
+                
+                    <a href="remove-pages/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Remove Pages Online">Remove Pages</a>
+                
+                    <a href="extract-pages/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Extract Pages Online">Extract Pages</a>
+                
+                    <a href="organize-pages/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Organize Pages Online">Organize Pages</a>
+                
+            </div>
+        </div>
+    
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>Edit &amp; Sign (6)</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                
+                    <a href="add-page-numbers/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Add Page Numbers Online">Add Page Numbers</a>
+                
+                    <a href="add-watermark/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Add Watermark Online">Add Watermark</a>
+                
+                    <a href="edit-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Edit PDF Online">Edit PDF</a>
+                
+                    <a href="sign-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Sign PDF Online">Sign PDF</a>
+                
+                    <a href="form-filler/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Form Filler Online">Form Filler</a>
+                
+                    <a href="crop-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Crop PDF Margins Online">Crop PDF Margins</a>
+                
+            </div>
+        </div>
+    
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="lock" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>Security &amp; Lock (5)</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                
+                    <a href="protect-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Protect PDF Online">Protect PDF</a>
+                
+                    <a href="unlock-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Unlock PDF Online">Unlock PDF</a>
+                
+                    <a href="flatten-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Flatten PDF Forms Online">Flatten PDF Forms</a>
+                
+                    <a href="metadata-editor/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free PDF Metadata Editor Online">PDF Metadata Editor</a>
+                
+                    <a href="repair-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Repair PDF Online">Repair PDF</a>
+                
+            </div>
+        </div>
+    
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="arrow-left-right" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>Convert &amp; Optimize (10)</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                
+                    <a href="pdf-to-jpg/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free PDF to JPG Online">PDF to JPG</a>
+                
+                    <a href="compress-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Compress PDF Online">Compress PDF</a>
+                
+                    <a href="grayscale-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Grayscale PDF Online">Grayscale PDF</a>
+                
+                    <a href="jpg-to-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free JPG to PDF Online">JPG to PDF</a>
+                
+                    <a href="markdown-to-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Markdown to PDF Online">Markdown to PDF</a>
+                
+                    <a href="text-to-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Text to PDF Online">Text to PDF</a>
+                
+                    <a href="excel-to-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Excel (XLSX) to PDF Online">Excel (XLSX) to PDF</a>
+                
+                    <a href="word-to-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Word (DOCX) to PDF Online">Word (DOCX) to PDF</a>
+                
+                    <a href="ppt-to-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free PowerPoint to PDF Online">PowerPoint to PDF</a>
+                
+                    <a href="document-compare/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Document Compare Online">Document Compare</a>
+                
+            </div>
+        </div>
+    
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>AI &amp; Edge Tools (5)</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                
+                    <a href="ai-summarizer/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free AI Document Summarizer Online">AI Document Summarizer</a>
+                
+                    <a href="ocr-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free OCR PDF (Scan to Text) Online">OCR PDF (Scan to Text)</a>
+                
+                    <a href="ai-translator/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free AI PDF Translator Online">AI PDF Translator</a>
+                
+                    <a href="form-blank-detector/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Form Blank Detector Online">Form Blank Detector</a>
+                
+                    <a href="scan-to-pdf/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Scan to PDF (Webcam) Online">Scan to PDF (Webcam)</a>
+                
+            </div>
+        </div>
+    
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="image" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>Image Tools (13)</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                
+                    <a href="image-compressor/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Image Compressor Online">Image Compressor</a>
+                
+                    <a href="image-resizer/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Image Resizer Online">Image Resizer</a>
+                
+                    <a href="jpg-to-png/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free JPG to PNG Online">JPG to PNG</a>
+                
+                    <a href="png-to-jpg/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free PNG to JPG Online">PNG to JPG</a>
+                
+                    <a href="jpg-to-webp/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free JPG to WebP Online">JPG to WebP</a>
+                
+                    <a href="image-cropper/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Image Cropper Online">Image Cropper</a>
+                
+                    <a href="passport-photo-maker/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Passport &amp; ID Photo Maker Online">Passport &amp; ID Photo Maker</a>
+                
+                    <a href="id-card-ocr/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Private Document OCR Online">Private Document OCR</a>
+                
+                    <a href="fill-form/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Fill Form (OCR Assistant) Online">Fill Form (OCR Assistant)</a>
+                
+                    <a href="svg-to-png/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free SVG to High-Res PNG Online">SVG to High-Res PNG</a>
+                
+                    <a href="image-to-svg/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Image to SVG Vectorizer Online">Image to SVG Vectorizer</a>
+                
+                    <a href="webp-to-jpg/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free WebP to JPG / PNG Online">WebP to JPG / PNG</a>
+                
+                    <a href="social-media-resizer/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Social Media Image Resizer Online">Social Media Image Resizer</a>
+                
+            </div>
+        </div>
+    
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="code" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>Developer Tools (6)</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                
+                    <a href="qr-code-generator/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free QR Code Generator Online">QR Code Generator</a>
+                
+                    <a href="json-formatter/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free JSON Formatter &amp; Validator Online">JSON Formatter &amp; Validator</a>
+                
+                    <a href="base64-converter/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Base64 Encoder / Decoder Online">Base64 Encoder / Decoder</a>
+                
+                    <a href="url-encoder-decoder/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free URL Encoder / Decoder Online">URL Encoder / Decoder</a>
+                
+                    <a href="hash-generator/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Hash Generator Online">Hash Generator</a>
+                
+                    <a href="password-generator/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Password Generator Online">Password Generator</a>
+                
+            </div>
+        </div>
+    
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="palette" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>CSS &amp; Design (5)</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                
+                    <a href="css-glassmorphism/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free CSS Glassmorphism Generator Online">CSS Glassmorphism Generator</a>
+                
+                    <a href="css-box-shadow/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free CSS Box Shadow Generator Online">CSS Box Shadow Generator</a>
+                
+                    <a href="css-gradient/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free CSS Gradient Generator Online">CSS Gradient Generator</a>
+                
+                    <a href="css-neumorphism/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free CSS Neumorphism Generator Online">CSS Neumorphism Generator</a>
+                
+                    <a href="color-converter/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Color Converter &amp; Palette Online">Color Converter &amp; Palette</a>
+                
+            </div>
+        </div>
+    
+        <div class="space-y-1.5">
+            <div class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wider border-b border-slate-100 pb-1">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-red-600"></i>
+                <span>Text Tools (4)</span>
+            </div>
+            <div class="flex flex-col gap-1 text-[11px]">
+                
+                    <a href="word-counter/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Word &amp; Character Counter Online">Word &amp; Character Counter</a>
+                
+                    <a href="case-converter/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Case Converter Online">Case Converter</a>
+                
+                    <a href="lorem-ipsum-generator/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Lorem Ipsum Generator Online">Lorem Ipsum Generator</a>
+                
+                    <a href="markdown-to-html/" class="text-slate-600 hover:text-red-600 hover:bg-slate-50 px-1.5 py-0.5 rounded transition truncate" title="Free Markdown to HTML Converter Online">Markdown to HTML Converter</a>
+                
+            </div>
+        </div>
+    
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-slate-400 pt-4 border-t border-slate-100">
+                <div>&copy; 2026 TECHTIS (techtis.in). All rights reserved. 100% Client-Side Privacy Guarantee.</div>
+                <div>Sub-100ms In-Browser Engine &bull; Zero Server Uploads &bull; Free Forever</div>
             </div>
         </div>
     </footer>

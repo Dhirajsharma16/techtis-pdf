@@ -682,6 +682,7 @@ console.log(`[SEO Generator] Successfully updated sitemap.xml with all ${TOOLS.l
 const robotsTxt = `# TECHTIS (techtis.in) Robots Configuration
 User-agent: *
 Allow: /
+Disallow: /test-runner.html
 
 # Canonical XML Sitemap
 Sitemap: ${BASE_URL}/sitemap.xml

@@ -4,7 +4,7 @@
     <!-- Homepage / Main Catalog Hub -->
     <url>
         <loc>https://techtis.in/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
@@ -12,25 +12,25 @@
     <!-- Compliance & Policy Pages -->
     <url>
         <loc>https://techtis.in/about.html</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.70</priority>
     </url>
     <url>
         <loc>https://techtis.in/privacy.html</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.70</priority>
     </url>
     <url>
         <loc>https://techtis.in/terms.html</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.70</priority>
     </url>
     <url>
         <loc>https://techtis.in/contact.html</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.70</priority>
     </url>
@@ -39,7 +39,7 @@
     <!-- 1. Merge PDF -->
     <url>
         <loc>https://techtis.in/merge-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -47,7 +47,7 @@
     <!-- 2. Split PDF -->
     <url>
         <loc>https://techtis.in/split-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -55,7 +55,7 @@
     <!-- 3. Rotate PDF -->
     <url>
         <loc>https://techtis.in/rotate-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -63,7 +63,7 @@
     <!-- 4. Remove Pages -->
     <url>
         <loc>https://techtis.in/remove-pages/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -71,7 +71,7 @@
     <!-- 5. Extract Pages -->
     <url>
         <loc>https://techtis.in/extract-pages/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -79,7 +79,7 @@
     <!-- 6. Organize Pages -->
     <url>
         <loc>https://techtis.in/organize-pages/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -87,7 +87,7 @@
     <!-- 7. Add Page Numbers -->
     <url>
         <loc>https://techtis.in/add-page-numbers/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -95,7 +95,7 @@
     <!-- 8. Add Watermark -->
     <url>
         <loc>https://techtis.in/add-watermark/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -103,7 +103,7 @@
     <!-- 9. Edit PDF -->
     <url>
         <loc>https://techtis.in/edit-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -111,7 +111,7 @@
     <!-- 10. Sign PDF -->
     <url>
         <loc>https://techtis.in/sign-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -119,7 +119,7 @@
     <!-- 11. Form Filler -->
     <url>
         <loc>https://techtis.in/form-filler/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -127,7 +127,7 @@
     <!-- 12. Crop PDF Margins -->
     <url>
         <loc>https://techtis.in/crop-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -135,7 +135,7 @@
     <!-- 13. Protect PDF -->
     <url>
         <loc>https://techtis.in/protect-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -143,7 +143,7 @@
     <!-- 14. Unlock PDF -->
     <url>
         <loc>https://techtis.in/unlock-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -151,7 +151,7 @@
     <!-- 15. Flatten PDF Forms -->
     <url>
         <loc>https://techtis.in/flatten-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -159,7 +159,7 @@
     <!-- 16. PDF Metadata Editor -->
     <url>
         <loc>https://techtis.in/metadata-editor/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -167,7 +167,7 @@
     <!-- 17. Repair PDF -->
     <url>
         <loc>https://techtis.in/repair-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -175,7 +175,7 @@
     <!-- 18. PDF to JPG -->
     <url>
         <loc>https://techtis.in/pdf-to-jpg/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -183,7 +183,7 @@
     <!-- 19. Compress PDF -->
     <url>
         <loc>https://techtis.in/compress-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -191,7 +191,7 @@
     <!-- 20. Grayscale PDF -->
     <url>
         <loc>https://techtis.in/grayscale-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -199,7 +199,7 @@
     <!-- 21. JPG to PDF -->
     <url>
         <loc>https://techtis.in/jpg-to-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -207,7 +207,7 @@
     <!-- 22. Markdown to PDF -->
     <url>
         <loc>https://techtis.in/markdown-to-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -215,7 +215,7 @@
     <!-- 23. Text to PDF -->
     <url>
         <loc>https://techtis.in/text-to-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -223,7 +223,7 @@
     <!-- 24. Excel (XLSX) to PDF -->
     <url>
         <loc>https://techtis.in/excel-to-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -231,7 +231,7 @@
     <!-- 25. Word (DOCX) to PDF -->
     <url>
         <loc>https://techtis.in/word-to-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -239,7 +239,7 @@
     <!-- 26. PowerPoint to PDF -->
     <url>
         <loc>https://techtis.in/ppt-to-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -247,7 +247,7 @@
     <!-- 27. Document Compare -->
     <url>
         <loc>https://techtis.in/document-compare/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -255,7 +255,7 @@
     <!-- 28. AI Document Summarizer -->
     <url>
         <loc>https://techtis.in/ai-summarizer/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -263,7 +263,7 @@
     <!-- 29. OCR PDF (Scan to Text) -->
     <url>
         <loc>https://techtis.in/ocr-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -271,7 +271,7 @@
     <!-- 30. AI PDF Translator -->
     <url>
         <loc>https://techtis.in/ai-translator/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -279,7 +279,7 @@
     <!-- 31. Form Blank Detector -->
     <url>
         <loc>https://techtis.in/form-blank-detector/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -287,7 +287,7 @@
     <!-- 32. Scan to PDF (Webcam) -->
     <url>
         <loc>https://techtis.in/scan-to-pdf/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -295,7 +295,7 @@
     <!-- 33. Image Compressor -->
     <url>
         <loc>https://techtis.in/image-compressor/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -303,7 +303,7 @@
     <!-- 34. Image Resizer -->
     <url>
         <loc>https://techtis.in/image-resizer/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -311,7 +311,7 @@
     <!-- 35. JPG to PNG -->
     <url>
         <loc>https://techtis.in/jpg-to-png/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -319,7 +319,7 @@
     <!-- 36. PNG to JPG -->
     <url>
         <loc>https://techtis.in/png-to-jpg/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -327,7 +327,7 @@
     <!-- 37. JPG to WebP -->
     <url>
         <loc>https://techtis.in/jpg-to-webp/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -335,7 +335,7 @@
     <!-- 38. Image Cropper -->
     <url>
         <loc>https://techtis.in/image-cropper/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -343,7 +343,7 @@
     <!-- 39. Passport &amp; ID Photo Maker -->
     <url>
         <loc>https://techtis.in/passport-photo-maker/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -351,7 +351,7 @@
     <!-- 40. Private Document OCR -->
     <url>
         <loc>https://techtis.in/id-card-ocr/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -359,7 +359,7 @@
     <!-- 41. Fill Form (OCR Assistant) -->
     <url>
         <loc>https://techtis.in/fill-form/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -367,7 +367,7 @@
     <!-- 42. QR Code Generator -->
     <url>
         <loc>https://techtis.in/qr-code-generator/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -375,7 +375,7 @@
     <!-- 43. JSON Formatter &amp; Validator -->
     <url>
         <loc>https://techtis.in/json-formatter/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -383,7 +383,7 @@
     <!-- 44. Base64 Encoder / Decoder -->
     <url>
         <loc>https://techtis.in/base64-converter/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -391,7 +391,7 @@
     <!-- 45. URL Encoder / Decoder -->
     <url>
         <loc>https://techtis.in/url-encoder-decoder/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -399,7 +399,7 @@
     <!-- 46. Hash Generator -->
     <url>
         <loc>https://techtis.in/hash-generator/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -407,7 +407,7 @@
     <!-- 47. Password Generator -->
     <url>
         <loc>https://techtis.in/password-generator/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -415,7 +415,7 @@
     <!-- 48. CSS Glassmorphism Generator -->
     <url>
         <loc>https://techtis.in/css-glassmorphism/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -423,7 +423,7 @@
     <!-- 49. CSS Box Shadow Generator -->
     <url>
         <loc>https://techtis.in/css-box-shadow/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -431,7 +431,7 @@
     <!-- 50. CSS Gradient Generator -->
     <url>
         <loc>https://techtis.in/css-gradient/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -439,7 +439,7 @@
     <!-- 51. CSS Neumorphism Generator -->
     <url>
         <loc>https://techtis.in/css-neumorphism/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -447,7 +447,7 @@
     <!-- 52. Color Converter &amp; Palette -->
     <url>
         <loc>https://techtis.in/color-converter/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -455,7 +455,7 @@
     <!-- 53. Word &amp; Character Counter -->
     <url>
         <loc>https://techtis.in/word-counter/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -463,7 +463,7 @@
     <!-- 54. Case Converter -->
     <url>
         <loc>https://techtis.in/case-converter/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -471,7 +471,7 @@
     <!-- 55. Lorem Ipsum Generator -->
     <url>
         <loc>https://techtis.in/lorem-ipsum-generator/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -479,7 +479,7 @@
     <!-- 56. Markdown to HTML Converter -->
     <url>
         <loc>https://techtis.in/markdown-to-html/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -487,7 +487,7 @@
     <!-- 57. SVG to High-Res PNG -->
     <url>
         <loc>https://techtis.in/svg-to-png/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -495,7 +495,7 @@
     <!-- 58. Image to SVG Vectorizer -->
     <url>
         <loc>https://techtis.in/image-to-svg/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>
@@ -503,7 +503,7 @@
     <!-- 59. WebP to JPG / PNG -->
     <url>
         <loc>https://techtis.in/webp-to-jpg/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.90</priority>
     </url>
@@ -511,7 +511,7 @@
     <!-- 60. Social Media Image Resizer -->
     <url>
         <loc>https://techtis.in/social-media-resizer/</loc>
-        <lastmod>2026-10-29</lastmod>
+        <lastmod>2026-10-31</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.95</priority>
     </url>

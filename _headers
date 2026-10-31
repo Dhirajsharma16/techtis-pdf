@@ -1,22 +1,48 @@
-# Cache-Control and security headers for static assets
+# Security & Character Encoding Headers for All Pages
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Explicit UTF-8 on all HTML documents (Eliminates â€" mojibake across all search engines)
+/*.html
+  Content-Type: text/html; charset=utf-8
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Content-Type: text/html; charset=utf-8
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Vendor Libraries (pdf-lib, pdf.js, lucide, jszip, tesseract)
 /vendor/*
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
+# High-Performance Precompiled CSS
 /css/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=86400
 
+# Application Scripts (Instant revalidation on new deployments)
 /js/*
   Cache-Control: public, max-age=0, must-revalidate
 
+# Static Brand Assets (Logos & Illustrations)
 /assets/*
   Cache-Control: public, max-age=2592000, immutable
+  Access-Control-Allow-Origin: *
 
+# Favicons & Search Engine Brand Icons
 /favicon*
   Cache-Control: public, max-age=2592000, immutable
+  Access-Control-Allow-Origin: *
+
+/favicon.ico
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Access-Control-Allow-Origin: *
 
 /apple-touch-icon.png
   Cache-Control: public, max-age=2592000, immutable
+  Access-Control-Allow-Origin: *
 
 /site.webmanifest
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400

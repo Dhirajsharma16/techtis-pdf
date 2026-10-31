@@ -1,6 +1,7 @@
 # TECHTIS (techtis.in) Robots Configuration
 User-agent: *
 Allow: /
+Disallow: /test-runner.html
 
 # Canonical XML Sitemap
 Sitemap: https://techtis.in/sitemap.xml
