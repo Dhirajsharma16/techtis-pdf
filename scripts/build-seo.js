@@ -66,8 +66,8 @@ let generatedCount = 0;
 
 for (const tool of TOOLS) {
     const seo = SEO_DATA[tool.id] || {
-        title: `${tool.name} Online Free - 100% Private Tool | TECHTIS`,
-        metaDescription: `${tool.name} online free: ${tool.tagline}. 100% private in-browser RAM execution, zero file uploads, unlimited free access worldwide.`,
+        title: `${tool.name} Online Free | TECHTIS`,
+        metaDescription: `${tool.name} online free: ${tool.tagline}. Fast in-browser RAM execution, zero file uploads, unlimited free access worldwide.`,
         keywords: `${tool.name.toLowerCase()}, free ${tool.name.toLowerCase()}, ${tool.name.toLowerCase()} online, fast ${tool.name.toLowerCase()}`,
         h1: `${tool.name} Online Free`,
         subtitle: tool.tagline,
@@ -98,15 +98,30 @@ for (const tool of TOOLS) {
     let cleanTitle = `${tool.name} Online Free | TECHTIS`;
     if (cleanTitle.length > 60) cleanTitle = `${tool.name} | TECHTIS`;
 
-    // Ensure Meta Description is strictly between 120 and 158 characters
-    let cleanDesc = seo.metaDescription || `${tool.name} online free with TECHTIS. 100% private in-browser RAM execution, zero file uploads, and instant processing worldwide.`;
+    // Ensure Meta Description is strictly between 120 and 158 characters without "100% private"
+    let cleanDesc = (seo.metaDescription || `${tool.name} online free with TECHTIS. Fast in-browser RAM execution, zero file uploads, and instant processing worldwide.`)
+        .replace(/100%\s*private\s+in-browser\s+RAM\s+execution/gi, 'in-browser RAM execution')
+        .replace(/100%\s*private\s+in\s+browser\s+RAM/gi, 'in browser RAM')
+        .replace(/100%\s*private\s+in\s+browser\s+memory/gi, 'in browser memory')
+        .replace(/100%\s*private\s+in\s+browser/gi, 'in your browser')
+        .replace(/100%\s*private\s+client-side\s+processing/gi, 'client-side processing')
+        .replace(/100%\s*private,?\s*zero\s+uploads/gi, 'zero server uploads')
+        .replace(/100%\s*private,?\s*zero\s+cost/gi, 'zero server cost')
+        .replace(/100%\s*private,?\s*no\s+signup/gi, 'no signup required')
+        .replace(/,\s*100%\s*private/gi, '')
+        .replace(/\.\s*100%\s*private\.?/gi, '.')
+        .replace(/100%\s*private\.?/gi, '')
+        .trim();
+
+    cleanDesc = cleanDesc.replace(/\s{2,}/g, ' ').replace(/\s+([.,])/g, '$1').replace(/,\./g, '.');
+
     if (cleanDesc.length > 158) {
         const trimmed = cleanDesc.substring(0, 155);
         const lastSpace = trimmed.lastIndexOf(' ');
         cleanDesc = trimmed.substring(0, lastSpace).replace(/[,;:\s]+$/, '') + '.';
     }
     if (cleanDesc.length < 120) {
-        cleanDesc = cleanDesc.replace(/\.$/, '') + '. 100% private client-side processing.';
+        cleanDesc = cleanDesc.replace(/\.$/, '') + '. Fast, secure, and client-side.';
     }
 
     // Build JSON-LD Schema Graphs
@@ -148,7 +163,7 @@ for (const tool of TOOLS) {
                 'logo': {
                     '@type': 'ImageObject',
                     'url': `${BASE_URL}/assets/images/logo.png`,
-                    'caption': 'TECHTIS - 100% Private, Free Online PDF & Web Utilities'
+                    'caption': 'TECHTIS - Free Online PDF & Web Utilities'
                 },
                 'sameAs': [
                     'https://github.com/Dhirajsharma16/techtis-pdf'

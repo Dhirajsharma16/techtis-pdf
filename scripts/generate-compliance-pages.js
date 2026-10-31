@@ -172,7 +172,7 @@ ${commonHeadIcons}
             "caption": "TECHTIS Logo"
           },
           "image": "https://techtis.in/logo.png",
-          "description": "TECHTIS is a 100% private, zero-server client-side PDF, document, and image utilities platform featuring 60 free tools.",
+          "description": "TECHTIS is a free online, zero-server client-side PDF, document, and image utilities platform featuring 60 free tools.",
           "foundingDate": "2024",
           "sameAs": [
             "https://github.com/Dhirajsharma16/techtis-pdf"
@@ -377,7 +377,7 @@ const privacyHtml = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - 100% Client-Side Security | TECHTIS</title>
+    <title>Privacy Policy - Client-Side Security | TECHTIS</title>
     <meta name="description" content="TECHTIS Privacy Policy. Learn how our client-side WebAssembly architecture ensures zero file uploads, zero data retention, and total document privacy.">
     <link rel="canonical" href="https://techtis.in/privacy.html">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -389,7 +389,7 @@ ${commonHeadIcons}
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://techtis.in/privacy.html">
     <meta property="og:site_name" content="TECHTIS">
-    <meta property="og:title" content="Privacy Policy - 100% Client-Side Privacy Guarantee | TECHTIS">
+    <meta property="og:title" content="Privacy Policy - Client-Side Security | TECHTIS">
     <meta property="og:description" content="TECHTIS zero-upload privacy architecture. All 60 PDF, Image, Dev, and CSS tools run strictly in your browser memory.">
 
     <!-- Schema.org Structured Data -->
@@ -415,7 +415,7 @@ ${commonHeadIcons}
           "@id": "https://techtis.in/privacy.html#webpage",
           "url": "https://techtis.in/privacy.html",
           "name": "TECHTIS Privacy Policy",
-          "description": "TECHTIS 100% Client-Side Privacy Policy. Zero document uploads, zero data retention.",
+          "description": "TECHTIS Client-Side Privacy Policy. Zero document uploads, zero data retention.",
           "publisher": { "@id": "https://techtis.in/#organization" },
           "breadcrumb": {
             "@type": "BreadcrumbList",
