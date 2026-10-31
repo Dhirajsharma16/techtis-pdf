@@ -1,17 +1,18 @@
 /**
  * TECHTIS (techtis.in) - Professional Passport Photo Maker & A4 Print Studio
  * 100% Client-Side Engine for Photo Studios, Cyber Cafes, CSC Centres & Students
+ * 
  * Features:
- * - Multi-image upload queue with individual copy counts (Photo A: 4, Photo B: 6, etc.)
+ * - Direct "Photos per Row" (Columns) & "Number of Rows" controls (e.g. 3 cols × 4 rows = 12 photos)
+ * - Quick Studio Grid Presets: 3×4 (12 Photos), 4×4 (16 Photos), 4×5 (20 Photos), 5×5 (25 Photos), 2×4 (8 Photos)
+ * - Realistic A4 Paper Preview with 3D stacked sheets mockup effect matching physical studio prints
  * - Verified presets (India 35x45mm, US 2x2", UK/Schengen, PAN 25x35mm, Exams) + Custom DPI
- * - Interactive Canvas framing (Drag-to-Pan, Zoom, 90° Rotate, Mirror)
+ * - Interactive Canvas framing (Drag-to-Pan, Zoom 30%-350%, 90° Rotate Left/Right, Mirror)
  * - Biometric face oval & eye level framing guide
- * - Studio background replacement (Pure White, Studio Blue, Light Gray)
- * - Optional 1px photo border for scissors cutting
- * - A4 Portrait / Landscape and 4x6" Photo Paper layouts with Auto-Fit calculations
+ * - Studio background colors (Pure White, Studio Blue, Light Gray)
+ * - Crisp photo cut borders (0.75-1px dark charcoal/slate border)
  * - Scissor cutting lines / guides
- * - Live realistic paper preview with multi-page navigation
- * - Exact physical measurement PDF generation (pdf-lib at 300 DPI)
+ * - Exact physical millimeter PDF generation (pdf-lib at 300 DPI)
  * - 100% Actual-Size printing system with print instructions modal
  */
 
@@ -137,7 +138,7 @@ export const PAPER_FORMATS = [
         name: 'A4 Portrait (210 × 297 mm)',
         widthMm: 210,
         heightMm: 297,
-        label: 'A4 Portrait &bull; Standard Printing',
+        label: 'A4 Portrait',
         isA4: true
     },
     {
@@ -145,7 +146,7 @@ export const PAPER_FORMATS = [
         name: 'A4 Landscape (297 × 210 mm)',
         widthMm: 297,
         heightMm: 210,
-        label: 'A4 Landscape &bull; Wide Paper',
+        label: 'A4 Landscape',
         isA4: true
     },
     {
@@ -183,14 +184,20 @@ export class PassportStudio {
                 dpi: 300
             },
             paperId: 'a4-portrait',
-            margins: { top: 10, bottom: 10, left: 10, right: 10 },
-            gapX: 3,
-            gapY: 4,
-            autoFit: true,
-            manualCols: 5,
-            manualRows: 5,
+            
+            // Grid Configuration (User Requested: Select photos in row and columns)
+            cols: 3, // Default 3 columns (matching user's uploaded image!)
+            rows: 4, // Default 4 rows (3 x 4 = 12 photos on sheet!)
+            
+            gapX: 4, // mm between photos
+            gapY: 5, // mm between photos
+            autoCenter: true,
             showCutLines: true,
+            hasBorder: true,
+            borderColor: '#334155', // crisp dark photo outline
+            bgColor: '#ffffff',
             showFaceGuide: true,
+            fillSheet: true, // Automatically repeat active photo across the sheet
             activePage: 1
         };
 
@@ -203,15 +210,106 @@ export class PassportStudio {
     }
 
     init() {
+        this.initDefaultSamplePhoto();
         this.renderUI();
         this.bindEvents();
         this.updateDimensionsInfo();
+        this.renderCropCanvas();
+        this.renderSheetPreview();
+    }
+
+    initDefaultSamplePhoto() {
+        // Create an elegant studio portrait placeholder so the A4 sheet is preview-ready immediately
+        const c = document.createElement('canvas');
+        c.width = 413;
+        c.height = 531;
+        const ctx = c.getContext('2d');
+
+        // Light gray/blue studio backdrop gradient
+        const grad = ctx.createLinearGradient(0, 0, 0, 531);
+        grad.addColorStop(0, '#e2e8f0');
+        grad.addColorStop(1, '#cbd5e1');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 413, 531);
+
+        // Portrait silhouette body
+        ctx.fillStyle = '#1e3a8a'; // Navy blazer
+        ctx.beginPath();
+        ctx.ellipse(206, 510, 160, 120, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Inner shirt collar
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(206, 390);
+        ctx.lineTo(185, 450);
+        ctx.lineTo(227, 450);
+        ctx.closePath();
+        ctx.fill();
+
+        // Neck
+        ctx.fillStyle = '#fcd34d';
+        ctx.fillRect(186, 330, 40, 70);
+
+        // Head / Face
+        ctx.beginPath();
+        ctx.ellipse(206, 250, 75, 95, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#fde68a';
+        ctx.fill();
+
+        // Hair
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.arc(206, 220, 80, Math.PI, 0);
+        ctx.lineTo(286, 280);
+        ctx.lineTo(260, 240);
+        ctx.lineTo(152, 240);
+        ctx.lineTo(126, 280);
+        ctx.closePath();
+        ctx.fill();
+
+        // Eyes
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(176, 245, 6, 0, Math.PI * 2);
+        ctx.arc(236, 245, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Smile
+        ctx.strokeStyle = '#92400e';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(206, 280, 22, 0.15 * Math.PI, 0.85 * Math.PI);
+        ctx.stroke();
+
+        const img = new Image();
+        img.src = c.toDataURL('image/jpeg', 0.95);
+
+        const sampleId = 'sample_portrait_demo';
+        this.state.photos = [{
+            id: sampleId,
+            name: 'Sample Portrait (Upload your photo)',
+            sizeStr: 'Default Demo',
+            dimStr: '413 × 531',
+            dataUrl: img.src,
+            img: img,
+            copies: 12,
+            zoom: 1.0,
+            panX: 0,
+            panY: 0,
+            rotation: 0,
+            isFlippedH: false,
+            bgColor: '#ffffff',
+            hasBorder: true
+        }];
+        this.state.activePhotoId = sampleId;
     }
 
     // ================= UI RENDERING =================
     renderUI() {
         this.container.innerHTML = `
             <div id="passport-studio-root" class="space-y-4">
+                
                 <!-- Studio Header Bar -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
                     <div class="flex items-center gap-3">
@@ -223,72 +321,54 @@ export class PassportStudio {
                                 <h3 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">Passport Photo Maker &amp; A4 Print Studio</h3>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600 border border-red-200">CSC &amp; Studio Pro</span>
                             </div>
-                            <p class="text-xs text-slate-500">Auto-align multi-photo batches on A4 or 4×6 photo paper with 100% exact physical millimeter printing.</p>
+                            <p class="text-xs text-slate-500">Pick rows &amp; columns to tile passport photos on A4 sheet with 100% exact millimeter scale.</p>
                         </div>
                     </div>
+                    
                     <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                        <button type="button" id="ps-btn-add-more" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-white text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
-                            <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-red-600"></i>
-                            <span>Add Photo</span>
+                        <button type="button" id="ps-btn-upload-direct" class="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer">
+                            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                            <span>Upload Your Photo</span>
                         </button>
-                        <button type="button" id="ps-btn-reset-all" class="px-3 py-1.5 rounded-xl border border-red-200 hover:bg-red-50 text-red-600 text-xs font-semibold transition flex items-center gap-1 cursor-pointer">
+                        <button type="button" id="ps-btn-reset-all" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold transition flex items-center gap-1 cursor-pointer">
                             <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
-                            <span>Reset All</span>
+                            <span>Reset</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Main 3-Column Studio Workspace -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <!-- Main Studio Workspace (Left Controls & Right Live A4 Stage) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                     
-                    <!-- COLUMN 1: Upload, Photo Queue & Size Configuration (4 cols) -->
-                    <div class="lg:col-span-4 space-y-4">
+                    <!-- LEFT COLUMN: Photo Upload, Presets & Framing Controls (5 cols) -->
+                    <div class="lg:col-span-5 space-y-4">
                         
                         <!-- Upload Dropzone -->
-                        <div id="ps-dropzone" class="border-2 border-dashed border-slate-300 hover:border-red-500 bg-white hover:bg-red-50/20 rounded-2xl p-5 text-center cursor-pointer transition group">
+                        <div id="ps-dropzone" class="border-2 border-dashed border-red-300 hover:border-red-500 bg-red-50/20 hover:bg-red-50/40 rounded-2xl p-4 text-center cursor-pointer transition group">
                             <input type="file" id="ps-file-input" accept="image/jpeg,image/png,image/webp" multiple class="hidden">
-                            <div class="space-y-2 pointer-events-none">
-                                <div class="w-12 h-12 mx-auto rounded-xl bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-105 transition shadow-2xs">
-                                    <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+                            <div class="space-y-1.5 pointer-events-none">
+                                <div class="w-10 h-10 mx-auto rounded-xl bg-red-100 text-red-600 flex items-center justify-center group-hover:scale-110 transition shadow-2xs">
+                                    <i data-lucide="image-plus" class="w-5 h-5"></i>
                                 </div>
-                                <h4 class="text-xs sm:text-sm font-bold text-slate-800">Drop Portrait Photos Here</h4>
-                                <p class="text-[11px] text-slate-500">JPG, PNG, WebP &bull; Select single or multiple photos</p>
+                                <h4 class="text-xs sm:text-sm font-bold text-slate-800">Drop Portrait Photograph Here</h4>
+                                <p class="text-[11px] text-slate-500">Supports JPG, PNG, WebP &bull; High resolution camera photos</p>
                                 <button type="button" class="px-3 py-1 bg-red-600 text-white rounded-lg text-xs font-semibold shadow-2xs pointer-events-auto">Browse Device</button>
                             </div>
                         </div>
 
-                        <!-- Photo Queue & Quantity Manager -->
-                        <div id="ps-queue-card" class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-xs">
-                            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                                <div class="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-                                    <i data-lucide="layers" class="w-4 h-4 text-red-600"></i>
-                                    <span>Photo Queue</span>
-                                    <span id="ps-queue-badge" class="px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">0</span>
-                                </div>
-                                <span class="text-[11px] text-slate-400 font-medium">Click photo to crop</span>
-                            </div>
-
-                            <div id="ps-queue-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
-                                <!-- Populated dynamically -->
-                                <div class="text-center py-6 text-xs text-slate-400 italic">No photos uploaded yet. Upload one above.</div>
-                            </div>
-                        </div>
-
-                        <!-- Passport Size & Preset Settings -->
+                        <!-- Document Preset Selector -->
                         <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-xs">
                             <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                                 <div class="flex items-center gap-1.5 text-xs font-bold text-slate-900">
                                     <i data-lucide="crop" class="w-4 h-4 text-blue-600"></i>
-                                    <span>Document Size Preset</span>
+                                    <span>Passport &amp; ID Size Preset</span>
                                 </div>
                                 <span id="ps-target-px-pill" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200">
-                                    413 × 531 px @ 300 DPI
+                                    35 × 45 mm (413 × 531 px)
                                 </span>
                             </div>
 
-                            <!-- Preset Dropdown -->
                             <div>
-                                <label class="text-[11px] font-bold text-slate-700 block mb-1">Standard Presets</label>
                                 <select id="ps-preset-select" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 bg-white font-medium">
                                     ${PASSPORT_PRESETS.map(p => `
                                         <option value="${p.id}" ${p.id === 'in-passport' ? 'selected' : ''}>
@@ -299,7 +379,7 @@ export class PassportStudio {
                                 <p id="ps-preset-desc" class="text-[11px] text-slate-500 mt-1 font-medium">Standard 35 × 45 mm color photo with light background.</p>
                             </div>
 
-                            <!-- Custom Dimension Drawer (Hidden unless 'custom' selected) -->
+                            <!-- Custom Size Drawer -->
                             <div id="ps-custom-dim-drawer" class="hidden p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2.5">
                                 <div class="grid grid-cols-2 gap-2 text-xs">
                                     <div>
@@ -331,226 +411,244 @@ export class PassportStudio {
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Studio Styling: Background Color & Cut Border -->
-                            <div class="pt-2 border-t border-slate-100 space-y-2">
-                                <label class="text-[11px] font-bold text-slate-700 block">Studio Background &amp; Cut Border</label>
-                                
-                                <div class="flex items-center gap-1.5 text-xs">
-                                    <button type="button" class="ps-bg-btn active px-2.5 py-1 rounded-lg border border-slate-300 font-semibold text-[11px] flex items-center gap-1.5 bg-white shadow-2xs" data-color="#ffffff">
-                                        <span class="w-3 h-3 rounded-full bg-white border border-slate-300"></span>
-                                        <span>White</span>
-                                    </button>
-                                    <button type="button" class="ps-bg-btn px-2.5 py-1 rounded-lg border border-slate-200 font-semibold text-[11px] flex items-center gap-1.5 bg-slate-50 hover:bg-white" data-color="#dbeafe">
-                                        <span class="w-3 h-3 rounded-full bg-blue-100 border border-blue-300"></span>
-                                        <span>Light Blue</span>
-                                    </button>
-                                    <button type="button" class="ps-bg-btn px-2.5 py-1 rounded-lg border border-slate-200 font-semibold text-[11px] flex items-center gap-1.5 bg-slate-50 hover:bg-white" data-color="#f1f5f9">
-                                        <span class="w-3 h-3 rounded-full bg-slate-200 border border-slate-300"></span>
-                                        <span>Light Gray</span>
-                                    </button>
-                                </div>
-
-                                <div class="pt-1 flex items-center justify-between text-xs text-slate-700 select-none">
-                                    <label class="flex items-center gap-2 cursor-pointer font-medium">
-                                        <input type="checkbox" id="ps-toggle-border" checked class="rounded text-red-600 focus:ring-red-500 w-3.5 h-3.5">
-                                        <span>Add 1px subtle cutting border</span>
-                                    </label>
-                                </div>
-                            </div>
                         </div>
 
-                    </div>
-
-                    <!-- COLUMN 2: Interactive Crop & Biometric Framing (4 cols) -->
-                    <div class="lg:col-span-4 space-y-4">
-                        <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-between shadow-xs min-h-[500px]">
-                            
-                            <!-- Card Header -->
-                            <div class="w-full flex items-center justify-between border-b border-slate-100 pb-2">
+                        <!-- Interactive Crop, Zoom & Framing Canvas -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-xs">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                                 <div class="flex items-center gap-1.5 text-xs font-bold text-slate-900">
                                     <i data-lucide="move" class="w-4 h-4 text-red-600"></i>
-                                    <span>Interactive Crop &amp; Framing</span>
+                                    <span>Interactive Face Framing</span>
                                 </div>
-                                <span id="ps-active-photo-name" class="text-[11px] font-mono text-slate-500 max-w-[150px] truncate">No photo</span>
+                                <span class="text-[10px] font-mono text-slate-400">Drag to center face</span>
                             </div>
 
-                            <!-- Canvas Container with Visual Framing Box -->
-                            <div class="relative w-full flex-1 flex items-center justify-center p-3 my-2 bg-slate-900/5 rounded-xl border border-slate-200/80 overflow-hidden select-none">
-                                <canvas id="ps-crop-canvas" class="rounded-lg shadow-md border border-slate-300 max-h-[360px] max-w-full bg-white cursor-grab active:cursor-grabbing transition-transform duration-75"></canvas>
+                            <div class="relative w-full flex items-center justify-center p-3 bg-slate-900/5 rounded-xl border border-slate-200/80 overflow-hidden select-none min-h-[220px]">
+                                <canvas id="ps-crop-canvas" class="rounded shadow border border-slate-300 max-h-[200px] max-w-full bg-white cursor-grab active:cursor-grabbing"></canvas>
                                 
-                                <div id="ps-crop-tip" class="absolute bottom-2 left-2 bg-slate-900/85 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded-md font-mono flex items-center gap-1.5 pointer-events-none">
-                                    <i data-lucide="move" class="w-3 h-3 text-red-400"></i>
-                                    <span>Drag photo to center &bull; Scroll to zoom</span>
+                                <div class="absolute bottom-2 left-2 bg-slate-900/80 text-white text-[9px] px-2 py-0.5 rounded font-mono pointer-events-none">
+                                    Drag photo to reposition
                                 </div>
                             </div>
 
-                            <!-- Rotation & Orientation Controls -->
-                            <div class="w-full space-y-3 pt-2 border-t border-slate-100">
-                                <div class="grid grid-cols-3 gap-1.5 text-xs">
-                                    <button type="button" id="ps-btn-rot-ccw" class="px-2 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 font-semibold flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
-                                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-slate-500"></i>
-                                        <span>90° Left</span>
+                            <!-- Zoom Slider -->
+                            <div>
+                                <div class="flex items-center justify-between text-xs font-semibold text-slate-700 mb-1">
+                                    <span>Face Scale &amp; Zoom</span>
+                                    <span id="ps-zoom-text" class="font-bold text-red-600 font-mono">100%</span>
+                                </div>
+                                <input type="range" id="ps-zoom-range" min="30" max="350" value="100" class="w-full accent-red-600 cursor-pointer h-2 bg-slate-200 rounded-lg">
+                            </div>
+
+                            <!-- Rotate, Flip & Recenter -->
+                            <div class="grid grid-cols-4 gap-1.5 text-xs">
+                                <button type="button" id="ps-btn-rot-ccw" class="px-2 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 font-semibold flex items-center justify-center gap-1 shadow-2xs cursor-pointer" title="Rotate 90 Left">
+                                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                    <span>-90°</span>
+                                </button>
+                                <button type="button" id="ps-btn-rot-cw" class="px-2 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 font-semibold flex items-center justify-center gap-1 shadow-2xs cursor-pointer" title="Rotate 90 Right">
+                                    <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                                    <span>+90°</span>
+                                </button>
+                                <button type="button" id="ps-btn-flip-h" class="px-2 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 font-semibold flex items-center justify-center gap-1 shadow-2xs cursor-pointer" title="Mirror Photo">
+                                    <i data-lucide="flip-horizontal" class="w-3.5 h-3.5"></i>
+                                    <span>Mirror</span>
+                                </button>
+                                <button type="button" id="ps-btn-recenter" class="px-2 py-1.5 border border-red-200 text-red-600 hover:bg-red-50 rounded-xl font-bold flex items-center justify-center shadow-2xs cursor-pointer" title="Reset Framing">
+                                    <span>Reset</span>
+                                </button>
+                            </div>
+
+                            <!-- Studio Styling: Background Color & Cut Border -->
+                            <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[11px] font-bold text-slate-600">BG:</span>
+                                    <button type="button" class="ps-bg-btn active px-2 py-0.5 rounded-lg border border-slate-300 font-semibold text-[10px] flex items-center gap-1 bg-white shadow-2xs" data-color="#ffffff">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-white border border-slate-300"></span>
+                                        <span>White</span>
                                     </button>
-                                    <button type="button" id="ps-btn-rot-cw" class="px-2 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 font-semibold flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
-                                        <i data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i>
-                                        <span>90° Right</span>
+                                    <button type="button" class="ps-bg-btn px-2 py-0.5 rounded-lg border border-slate-200 font-semibold text-[10px] flex items-center gap-1 bg-slate-50 hover:bg-white" data-color="#dbeafe">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-blue-100 border border-blue-300"></span>
+                                        <span>Blue</span>
                                     </button>
-                                    <button type="button" id="ps-btn-flip-h" class="px-2 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 font-semibold flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
-                                        <i data-lucide="flip-horizontal" class="w-3.5 h-3.5 text-slate-500"></i>
-                                        <span>Mirror</span>
+                                    <button type="button" class="ps-bg-btn px-2 py-0.5 rounded-lg border border-slate-200 font-semibold text-[10px] flex items-center gap-1 bg-slate-50 hover:bg-white" data-color="#f1f5f9">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-slate-200 border border-slate-300"></span>
+                                        <span>Gray</span>
                                     </button>
                                 </div>
 
-                                <!-- Zoom Slider -->
-                                <div>
-                                    <div class="flex items-center justify-between text-xs font-semibold text-slate-700 mb-1">
-                                        <span>Face Scale &amp; Zoom</span>
-                                        <span id="ps-zoom-text" class="font-bold text-red-600 font-mono">100%</span>
-                                    </div>
-                                    <input type="range" id="ps-zoom-range" min="30" max="350" value="100" class="w-full accent-red-600 cursor-pointer h-2 bg-slate-200 rounded-lg">
-                                </div>
-
-                                <!-- Biometric Oval Guide Toggle & Reset -->
-                                <div class="flex items-center justify-between text-xs pt-1 select-none">
-                                    <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-                                        <input type="checkbox" id="ps-toggle-guide" checked class="rounded text-red-600 focus:ring-red-500 w-3.5 h-3.5">
-                                        <span>Biometric Face Oval Guide</span>
-                                    </label>
-                                    <button type="button" id="ps-btn-recenter" class="text-[11px] text-red-600 hover:underline font-bold cursor-pointer">
-                                        Re-Center
-                                    </button>
-                                </div>
+                                <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-700 font-medium select-none">
+                                    <input type="checkbox" id="ps-toggle-border" checked class="rounded text-red-600 focus:ring-red-500 w-3.5 h-3.5">
+                                    <span>Dark border</span>
+                                </label>
                             </div>
                         </div>
+
                     </div>
 
-                    <!-- COLUMN 3: A4 Sheet Generator & Live Preview (4 cols) -->
-                    <div class="lg:col-span-4 space-y-4">
-                        <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-xs min-h-[500px]">
-                            
-                            <!-- Card Header -->
-                            <div class="w-full flex items-center justify-between border-b border-slate-100 pb-2">
-                                <div class="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-                                    <i data-lucide="printer" class="w-4 h-4 text-emerald-600"></i>
-                                    <span>Print Sheet Layout</span>
+                    <!-- RIGHT COLUMN: User-Selected Rows/Columns & Realistic A4 Paper Stage (7 cols) -->
+                    <div class="lg:col-span-7 space-y-4">
+                        
+                        <!-- A4 Grid & Layout Selector Bar (User Request: Select photos in row and columns!) -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-xs">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                <div class="flex items-center gap-1.5 text-xs font-black text-slate-900 uppercase tracking-wider">
+                                    <i data-lucide="grid" class="w-4 h-4 text-red-600"></i>
+                                    <span>A4 Sheet Grid: Photos Per Row &amp; Columns</span>
                                 </div>
-                                <span id="ps-sheet-stats-chip" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                    0 Copies &bull; 1 Page
+                                <span id="ps-live-grid-summary" class="px-2.5 py-0.5 rounded-full bg-red-50 text-red-700 text-xs font-black border border-red-200 font-mono">
+                                    3 Cols × 4 Rows = 12 Photos
                                 </span>
                             </div>
 
-                            <!-- Paper Format & Grid Controls -->
-                            <div class="w-full space-y-2 pt-2">
-                                <div class="grid grid-cols-2 gap-2 text-xs">
-                                    <div>
-                                        <label class="text-[10px] font-bold text-slate-600 block mb-0.5">Paper Format</label>
-                                        <select id="ps-paper-select" class="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-xl bg-white font-semibold">
-                                            ${PAPER_FORMATS.map(f => `
-                                                <option value="${f.id}" ${f.id === 'a4-portrait' ? 'selected' : ''}>${f.name}</option>
-                                            `).join('')}
-                                        </select>
+                            <!-- Quick 1-Click Studio Grid Presets -->
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Quick Studio Grid Presets</label>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button type="button" class="ps-grid-preset-btn active px-3 py-1.5 rounded-xl border border-red-300 bg-red-50 text-red-700 text-xs font-bold shadow-2xs transition cursor-pointer" data-cols="3" data-rows="4">
+                                        ⭐ 3 × 4 (12 Photos)
+                                    </button>
+                                    <button type="button" class="ps-grid-preset-btn px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition cursor-pointer" data-cols="4" data-rows="4">
+                                        4 × 4 (16 Photos)
+                                    </button>
+                                    <button type="button" class="ps-grid-preset-btn px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition cursor-pointer" data-cols="4" data-rows="5">
+                                        4 × 5 (20 Photos)
+                                    </button>
+                                    <button type="button" class="ps-grid-preset-btn px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition cursor-pointer" data-cols="5" data-rows="5">
+                                        5 × 5 (25 Photos)
+                                    </button>
+                                    <button type="button" class="ps-grid-preset-btn px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition cursor-pointer" data-cols="2" data-rows="4">
+                                        2 × 4 (8 Photos - 4×6)
+                                    </button>
+                                    <button type="button" class="ps-grid-preset-btn px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition cursor-pointer" data-cols="2" data-rows="3">
+                                        2 × 3 (6 Photos)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Steppers for Exact Rows and Columns -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                                
+                                <!-- Photos per row (Columns) -->
+                                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-bold text-slate-800">Photos per Row (Cols):</span>
+                                        <div class="flex items-center gap-1">
+                                            <button type="button" id="ps-btn-dec-cols" class="w-6 h-6 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs">-</button>
+                                            <span id="ps-val-cols" class="w-8 text-center font-black text-sm text-red-600 font-mono">3</span>
+                                            <button type="button" id="ps-btn-inc-cols" class="w-6 h-6 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs">+</button>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="text-[10px] font-bold text-slate-600 block mb-0.5">Layout Mode</label>
-                                        <select id="ps-autofit-select" class="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-xl bg-white font-semibold">
-                                            <option value="auto" selected>Auto-Fit (Recommended)</option>
-                                            <option value="manual">Manual Grid Spacing</option>
-                                        </select>
+                                    <div class="flex items-center justify-between gap-1 pt-1">
+                                        <span class="text-[10px] text-slate-400 font-medium">Quick Pick:</span>
+                                        <div class="flex items-center gap-1">
+                                            <button type="button" class="ps-col-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400" data-val="2">2</button>
+                                            <button type="button" class="ps-col-pill px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold" data-val="3">3</button>
+                                            <button type="button" class="ps-col-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400" data-val="4">4</button>
+                                            <button type="button" class="ps-col-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400" data-val="5">5</button>
+                                            <button type="button" class="ps-col-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400" data-val="6">6</button>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- Manual Grid Adjustments (Hidden unless 'manual' selected) -->
-                                <div id="ps-manual-grid-drawer" class="hidden p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label class="text-[10px] font-bold text-slate-600 block mb-0.5">Photos per Row (Cols)</label>
-                                            <input type="number" id="ps-manual-cols" value="5" min="1" max="15" class="w-full px-2 py-1 text-xs border border-slate-200 rounded bg-white font-semibold">
-                                        </div>
-                                        <div>
-                                            <label class="text-[10px] font-bold text-slate-600 block mb-0.5">Number of Rows</label>
-                                            <input type="number" id="ps-manual-rows" value="5" min="1" max="15" class="w-full px-2 py-1 text-xs border border-slate-200 rounded bg-white font-semibold">
+                                <!-- Number of Rows -->
+                                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-bold text-slate-800">Number of Rows:</span>
+                                        <div class="flex items-center gap-1">
+                                            <button type="button" id="ps-btn-dec-rows" class="w-6 h-6 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs">-</button>
+                                            <span id="ps-val-rows" class="w-8 text-center font-black text-sm text-red-600 font-mono">4</span>
+                                            <button type="button" id="ps-btn-inc-rows" class="w-6 h-6 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs">+</button>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label class="text-[10px] font-bold text-slate-600 block mb-0.5">Gap X (mm)</label>
-                                            <input type="number" id="ps-gap-x" value="3" min="0" max="25" class="w-full px-2 py-1 text-xs border border-slate-200 rounded bg-white font-semibold">
-                                        </div>
-                                        <div>
-                                            <label class="text-[10px] font-bold text-slate-600 block mb-0.5">Gap Y (mm)</label>
-                                            <input type="number" id="ps-gap-y" value="4" min="0" max="25" class="w-full px-2 py-1 text-xs border border-slate-200 rounded bg-white font-semibold">
+                                    <div class="flex items-center justify-between gap-1 pt-1">
+                                        <span class="text-[10px] text-slate-400 font-medium">Quick Pick:</span>
+                                        <div class="flex items-center gap-1">
+                                            <button type="button" class="ps-row-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400" data-val="2">2</button>
+                                            <button type="button" class="ps-row-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400" data-val="3">3</button>
+                                            <button type="button" class="ps-row-pill px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold" data-val="4">4</button>
+                                            <button type="button" class="ps-row-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400" data-val="5">5</button>
+                                            <button type="button" class="ps-row-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400" data-val="6">6</button>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="flex items-center justify-between text-xs text-slate-700 select-none pt-1">
-                                    <label class="flex items-center gap-2 cursor-pointer font-medium">
+                            <!-- Paper Format & Scissor Cutting Lines -->
+                            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
+                                <div class="flex items-center gap-2">
+                                    <label class="text-[11px] font-bold text-slate-700">Paper:</label>
+                                    <select id="ps-paper-select" class="px-2.5 py-1 text-xs border border-slate-200 rounded-lg bg-white font-semibold">
+                                        ${PAPER_FORMATS.map(f => `
+                                            <option value="${f.id}" ${f.id === 'a4-portrait' ? 'selected' : ''}>${f.name}</option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+
+                                <div class="flex items-center gap-3">
+                                    <label class="flex items-center gap-1.5 cursor-pointer font-medium text-slate-700 select-none">
                                         <input type="checkbox" id="ps-toggle-cutlines" checked class="rounded text-red-600 focus:ring-red-500 w-3.5 h-3.5">
-                                        <span>Show scissor cutting lines</span>
+                                        <span>Scissor cut lines</span>
                                     </label>
-                                    <span id="ps-max-fit-text" class="text-[10px] font-mono text-slate-400">Fits max 25 / page</span>
-                                </div>
-                            </div>
-
-                            <!-- Live Sheet Canvas Preview -->
-                            <div class="relative w-full flex-1 flex flex-col items-center justify-center p-3 my-2 bg-slate-900/5 rounded-xl border border-slate-200/80 overflow-hidden select-none">
-                                <canvas id="ps-sheet-canvas" class="rounded shadow-md border border-slate-300 max-h-[300px] max-w-full bg-white"></canvas>
-
-                                <!-- Multi-page pagination -->
-                                <div id="ps-pagination-bar" class="hidden items-center justify-center gap-2 mt-2 pt-1 border-t border-slate-200/60 w-full">
-                                    <button type="button" id="ps-btn-prev-page" class="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs hover:bg-slate-50">&larr; Prev</button>
-                                    <span id="ps-page-label" class="text-[11px] font-bold text-slate-700">Page 1 of 1</span>
-                                    <button type="button" id="ps-btn-next-page" class="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs hover:bg-slate-50">Next &rarr;</button>
-                                </div>
-                            </div>
-
-                            <!-- Helpful Actual-Size Print Badge -->
-                            <div class="p-2.5 bg-amber-50 border border-amber-200/80 rounded-xl text-[11px] text-amber-900 leading-snug flex items-start gap-2">
-                                <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
-                                <div>
-                                    <strong>Studio Print Tip:</strong> In printer settings, always choose <strong>"Actual Size" / 100% scale</strong>. Never select "Fit to page" or physical millimeter dimensions will be distorted.
+                                    <label class="flex items-center gap-1.5 cursor-pointer font-medium text-slate-700 select-none">
+                                        <input type="checkbox" id="ps-toggle-fill" checked class="rounded text-red-600 focus:ring-red-500 w-3.5 h-3.5">
+                                        <span>Repeat to fill sheet</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- REALISTIC A4 PAPER PREVIEW STAGE (Matches User's Uploaded Image!) -->
+                        <div class="bg-gradient-to-b from-slate-100 to-slate-200/90 border border-slate-300 rounded-3xl p-4 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
+                            
+                            <!-- Visual Stacked Sheets Mockup Effect in Background (Just like user's photo!) -->
+                            <div class="absolute w-[72%] max-w-[420px] h-[88%] bg-white/70 rounded-md shadow-lg -rotate-6 -translate-x-12 translate-y-4 border border-slate-200 pointer-events-none hidden sm:block"></div>
+                            <div class="absolute w-[74%] max-w-[430px] h-[89%] bg-white/85 rounded-md shadow-lg -rotate-3 -translate-x-6 translate-y-2 border border-slate-200 pointer-events-none hidden sm:block"></div>
+
+                            <!-- Main Foreground A4 Paper Sheet (Realistic Drop Shadow & Studio Crispness) -->
+                            <div class="relative bg-white rounded-sm overflow-hidden z-10 transition-transform duration-200 hover:scale-[1.01]" 
+                                 style="box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.08);">
+                                
+                                <canvas id="ps-sheet-canvas" class="block max-h-[520px] max-w-full bg-white"></canvas>
+
+                            </div>
+
+                            <div class="mt-3 z-10 flex items-center gap-2 text-[11px] font-bold text-slate-600 bg-white/90 backdrop-blur-xs px-3 py-1 rounded-full border border-slate-200/80 shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span id="ps-sheet-caption">Realistic A4 Paper Preview &bull; 100% Actual Print Size</span>
+                            </div>
+                        </div>
+
+                        <!-- EXPORT & PRINT ACTION BAR (Prominent & High-Priority) -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <button type="button" id="ps-btn-dl-single" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Download single 300 DPI photo">
+                                    <i data-lucide="image" class="w-4 h-4 text-slate-600"></i>
+                                    <span>Single Photo</span>
+                                </button>
+                                <button type="button" id="ps-btn-dl-sheet-img" class="px-3.5 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Download 300 DPI A4 sheet as JPG">
+                                    <i data-lucide="file-image" class="w-4 h-4 text-slate-300"></i>
+                                    <span>A4 Image (JPG)</span>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                                <!-- Download Print-Ready PDF -->
+                                <button type="button" id="ps-btn-dl-pdf" class="flex-1 sm:flex-initial px-4 py-2.5 bg-[#002244] hover:bg-[#003366] text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                                    <i data-lucide="file-text" class="w-4 h-4 text-amber-400"></i>
+                                    <span>Download PDF</span>
+                                </button>
+
+                                <!-- Direct 100% Actual-Size Print Button -->
+                                <button type="button" id="ps-btn-print" class="flex-1 sm:flex-initial px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl text-xs font-black transition flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer">
+                                    <i data-lucide="printer" class="w-4 h-4"></i>
+                                    <span>PRINT A4 SHEET</span>
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
 
-                </div>
-
-                <!-- BOTTOM EXPORT & PRINT ACTION BAR -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div class="flex items-center gap-2 text-xs text-slate-600">
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 font-semibold text-[11px] border border-emerald-200">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-                            <span>100% In-Browser Privacy &bull; Zero Server Uploads</span>
-                        </span>
-                    </div>
-
-                    <div class="flex flex-wrap items-center justify-end gap-2 w-full sm:w-auto">
-                        <!-- Download Single Photo -->
-                        <button type="button" id="ps-btn-dl-single" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
-                            <i data-lucide="image" class="w-4 h-4 text-slate-600"></i>
-                            <span>Single Photo (300 DPI)</span>
-                        </button>
-
-                        <!-- Download High-Res Sheet Image -->
-                        <button type="button" id="ps-btn-dl-sheet-img" class="px-3 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
-                            <i data-lucide="file-image" class="w-4 h-4 text-slate-300"></i>
-                            <span>Download Sheet (JPG)</span>
-                        </button>
-
-                        <!-- Download Print-Ready PDF -->
-                        <button type="button" id="ps-btn-dl-pdf" class="px-4 py-2 bg-[#002244] hover:bg-[#003366] text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer">
-                            <i data-lucide="file-text" class="w-4 h-4 text-amber-400"></i>
-                            <span>Download PDF (Exact mm)</span>
-                        </button>
-
-                        <!-- Direct Actual-Size Print Button -->
-                        <button type="button" id="ps-btn-print" class="px-5 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl text-xs font-black transition flex items-center gap-2 shadow-md hover:shadow-lg cursor-pointer">
-                            <i data-lucide="printer" class="w-4 h-4"></i>
-                            <span>PRINT SHEET (100% SCALE)</span>
-                        </button>
-                    </div>
                 </div>
 
                 <!-- Print Instructions & Confirmation Modal -->
@@ -563,7 +661,7 @@ export class PassportStudio {
                                 </div>
                                 <div>
                                     <h4 class="text-base font-bold text-slate-900">100% Actual-Size Print Ready</h4>
-                                    <p class="text-[11px] text-slate-500">Physical measurement accuracy guide</p>
+                                    <p class="text-[11px] text-slate-500">Physical millimeter measurement accuracy guide</p>
                                 </div>
                             </div>
                             <button id="ps-btn-close-print-modal" class="p-1 text-slate-400 hover:text-slate-700 rounded-lg">
@@ -597,8 +695,8 @@ export class PassportStudio {
                         </div>
 
                         <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                            <button id="ps-btn-cancel-print" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
-                            <button id="ps-btn-confirm-print" class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-md flex items-center gap-1.5">
+                            <button id="ps-btn-cancel-print" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">Cancel</button>
+                            <button id="ps-btn-confirm-print" class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-md flex items-center gap-1.5 cursor-pointer">
                                 <i data-lucide="printer" class="w-3.5 h-3.5"></i>
                                 <span>Open Print Dialog</span>
                             </button>
@@ -620,17 +718,116 @@ export class PassportStudio {
     bindEvents() {
         const dropzone = document.getElementById('ps-dropzone');
         const fileInput = document.getElementById('ps-file-input');
-        const addMoreBtn = document.getElementById('ps-btn-add-more');
+        const directUploadBtn = document.getElementById('ps-btn-upload-direct');
         const resetAllBtn = document.getElementById('ps-btn-reset-all');
 
         // File upload triggers
         dropzone?.addEventListener('click', () => fileInput?.click());
-        addMoreBtn?.addEventListener('click', () => fileInput?.click());
+        directUploadBtn?.addEventListener('click', () => fileInput?.click());
         fileInput?.addEventListener('change', (e) => {
             if (e.target?.files?.length) {
                 this.loadFiles(Array.from(e.target.files));
                 fileInput.value = '';
             }
+        });
+
+        // ================= ROWS & COLUMNS CONTROLS =================
+        const valCols = document.getElementById('ps-val-cols');
+        const valRows = document.getElementById('ps-val-rows');
+        const liveSummary = document.getElementById('ps-live-grid-summary');
+
+        const updateGridUI = () => {
+            if (valCols) valCols.textContent = this.state.cols;
+            if (valRows) valRows.textContent = this.state.rows;
+            const total = this.state.cols * this.state.rows;
+            if (liveSummary) {
+                liveSummary.textContent = `${this.state.cols} Cols × ${this.state.rows} Rows = ${total} Photos`;
+            }
+
+            // Sync quick pick pills
+            document.querySelectorAll('.ps-col-pill').forEach(btn => {
+                const v = parseInt(btn.getAttribute('data-val'), 10);
+                if (v === this.state.cols) {
+                    btn.className = 'ps-col-pill px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold';
+                } else {
+                    btn.className = 'ps-col-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400';
+                }
+            });
+
+            document.querySelectorAll('.ps-row-pill').forEach(btn => {
+                const v = parseInt(btn.getAttribute('data-val'), 10);
+                if (v === this.state.rows) {
+                    btn.className = 'ps-row-pill px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold';
+                } else {
+                    btn.className = 'ps-row-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400';
+                }
+            });
+
+            // Sync quick grid preset buttons
+            document.querySelectorAll('.ps-grid-preset-btn').forEach(btn => {
+                const c = parseInt(btn.getAttribute('data-cols'), 10);
+                const r = parseInt(btn.getAttribute('data-rows'), 10);
+                if (c === this.state.cols && r === this.state.rows) {
+                    btn.className = 'ps-grid-preset-btn active px-3 py-1.5 rounded-xl border border-red-300 bg-red-50 text-red-700 text-xs font-bold shadow-2xs transition cursor-pointer';
+                } else {
+                    btn.className = 'ps-grid-preset-btn px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition cursor-pointer';
+                }
+            });
+
+            this.renderSheetPreview();
+        };
+
+        // Stepper: Columns
+        document.getElementById('ps-btn-dec-cols')?.addEventListener('click', () => {
+            if (this.state.cols > 1) {
+                this.state.cols--;
+                updateGridUI();
+            }
+        });
+        document.getElementById('ps-btn-inc-cols')?.addEventListener('click', () => {
+            if (this.state.cols < 10) {
+                this.state.cols++;
+                updateGridUI();
+            }
+        });
+
+        // Stepper: Rows
+        document.getElementById('ps-btn-dec-rows')?.addEventListener('click', () => {
+            if (this.state.rows > 1) {
+                this.state.rows--;
+                updateGridUI();
+            }
+        });
+        document.getElementById('ps-btn-inc-rows')?.addEventListener('click', () => {
+            if (this.state.rows < 12) {
+                this.state.rows++;
+                updateGridUI();
+            }
+        });
+
+        // Quick Pick Column Pills
+        document.querySelectorAll('.ps-col-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.state.cols = parseInt(btn.getAttribute('data-val'), 10) || 3;
+                updateGridUI();
+            });
+        });
+
+        // Quick Pick Row Pills
+        document.querySelectorAll('.ps-row-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.state.rows = parseInt(btn.getAttribute('data-val'), 10) || 4;
+                updateGridUI();
+            });
+        });
+
+        // Quick Grid Preset Buttons (e.g. 3x4, 4x4, 5x5)
+        document.querySelectorAll('.ps-grid-preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.state.cols = parseInt(btn.getAttribute('data-cols'), 10) || 3;
+                this.state.rows = parseInt(btn.getAttribute('data-rows'), 10) || 4;
+                updateGridUI();
+            });
         });
 
         // Preset selector
@@ -676,23 +873,43 @@ export class PassportStudio {
                 });
                 btn.classList.add('active', 'border-slate-300', 'shadow-2xs');
                 const color = btn.getAttribute('data-color') || '#ffffff';
+                this.state.bgColor = color;
                 const activePhoto = this.getActivePhoto();
                 if (activePhoto) {
                     activePhoto.bgColor = color;
-                    this.renderCropCanvas();
-                    this.renderSheetPreview();
                 }
+                this.renderCropCanvas();
+                this.renderSheetPreview();
             });
         });
 
         // Cutting border toggle
         document.getElementById('ps-toggle-border')?.addEventListener('change', (e) => {
+            this.state.hasBorder = e.target.checked;
             const activePhoto = this.getActivePhoto();
             if (activePhoto) {
                 activePhoto.hasBorder = e.target.checked;
-                this.renderCropCanvas();
-                this.renderSheetPreview();
             }
+            this.renderCropCanvas();
+            this.renderSheetPreview();
+        });
+
+        // Scissor cutting lines toggle
+        document.getElementById('ps-toggle-cutlines')?.addEventListener('change', (e) => {
+            this.state.showCutLines = e.target.checked;
+            this.renderSheetPreview();
+        });
+
+        // Repeat to fill sheet toggle
+        document.getElementById('ps-toggle-fill')?.addEventListener('change', (e) => {
+            this.state.fillSheet = e.target.checked;
+            this.renderSheetPreview();
+        });
+
+        // Paper format selector
+        document.getElementById('ps-paper-select')?.addEventListener('change', (e) => {
+            this.state.paperId = e.target.value;
+            this.renderSheetPreview();
         });
 
         // Framing canvas events (Pan, Zoom, Drag)
@@ -817,60 +1034,6 @@ export class PassportStudio {
             }
         });
 
-        document.getElementById('ps-toggle-guide')?.addEventListener('change', (e) => {
-            this.state.showFaceGuide = e.target.checked;
-            this.renderCropCanvas();
-        });
-
-        // Paper & Sheet Layout Controls
-        document.getElementById('ps-paper-select')?.addEventListener('change', (e) => {
-            this.state.paperId = e.target.value;
-            this.renderSheetPreview();
-        });
-
-        const autoFitSelect = document.getElementById('ps-autofit-select');
-        const manualGridDrawer = document.getElementById('ps-manual-grid-drawer');
-        autoFitSelect?.addEventListener('change', (e) => {
-            this.state.autoFit = (e.target.value === 'auto');
-            if (this.state.autoFit) {
-                manualGridDrawer?.classList.add('hidden');
-            } else {
-                manualGridDrawer?.classList.remove('hidden');
-            }
-            this.renderSheetPreview();
-        });
-
-        ['ps-manual-cols', 'ps-manual-rows', 'ps-gap-x', 'ps-gap-y'].forEach(id => {
-            document.getElementById(id)?.addEventListener('input', () => {
-                this.state.manualCols = parseInt(document.getElementById('ps-manual-cols')?.value, 10) || 5;
-                this.state.manualRows = parseInt(document.getElementById('ps-manual-rows')?.value, 10) || 5;
-                this.state.gapX = parseFloat(document.getElementById('ps-gap-x')?.value) || 3;
-                this.state.gapY = parseFloat(document.getElementById('ps-gap-y')?.value) || 4;
-                this.renderSheetPreview();
-            });
-        });
-
-        document.getElementById('ps-toggle-cutlines')?.addEventListener('change', (e) => {
-            this.state.showCutLines = e.target.checked;
-            this.renderSheetPreview();
-        });
-
-        // Sheet Pagination
-        document.getElementById('ps-btn-prev-page')?.addEventListener('click', () => {
-            if (this.state.activePage > 1) {
-                this.state.activePage--;
-                this.renderSheetPreview();
-            }
-        });
-
-        document.getElementById('ps-btn-next-page')?.addEventListener('click', () => {
-            const layout = this.calculateSheetLayout();
-            if (this.state.activePage < layout.totalPages) {
-                this.state.activePage++;
-                this.renderSheetPreview();
-            }
-        });
-
         // Action Buttons
         document.getElementById('ps-btn-dl-single')?.addEventListener('click', () => this.downloadSinglePhoto('jpeg'));
         document.getElementById('ps-btn-dl-sheet-img')?.addEventListener('click', () => this.downloadSheetImage('jpeg'));
@@ -879,10 +1042,6 @@ export class PassportStudio {
         // Print Flow
         const printModal = document.getElementById('ps-print-modal');
         document.getElementById('ps-btn-print')?.addEventListener('click', () => {
-            if (this.state.photos.length === 0) {
-                this.app.showToast('Please upload at least one photo before printing.', 'error');
-                return;
-            }
             const paper = this.getSelectedPaper();
             const modalPaper = document.getElementById('ps-print-modal-paper');
             if (modalPaper) modalPaper.textContent = paper.isA4 ? 'A4' : '4 × 6 inches';
@@ -897,19 +1056,17 @@ export class PassportStudio {
         });
 
         resetAllBtn?.addEventListener('click', () => {
-            if (confirm('Clear all uploaded photos and start fresh?')) {
-                this.state.photos = [];
-                this.state.activePhotoId = null;
-                this.state.activePage = 1;
-                this.updateQueueUI();
-                this.renderCropCanvas();
-                this.renderSheetPreview();
-                this.app.showToast('Studio reset. Upload new photos to begin.', 'info');
-            }
+            this.initDefaultSamplePhoto();
+            this.state.cols = 3;
+            this.state.rows = 4;
+            updateGridUI();
+            this.renderCropCanvas();
+            this.renderSheetPreview();
+            this.app.showToast('Reset to default 3 × 4 studio layout.', 'info');
         });
     }
 
-    // ================= FILE LOADING & QUEUE MANAGEMENT =================
+    // ================= FILE LOADING =================
     async loadFiles(fileList) {
         if (!fileList || fileList.length === 0) return;
 
@@ -924,34 +1081,39 @@ export class PassportStudio {
             const sizeStr = (file.size / 1024).toFixed(0) + ' KB';
             const dimStr = `${img.naturalWidth} × ${img.naturalHeight}`;
 
-            this.state.photos.push({
+            const newPhoto = {
                 id,
                 name: file.name,
                 sizeStr,
                 dimStr,
                 dataUrl,
                 img,
-                copies: 6, // Default CSC/studio standard 6 copies
+                copies: this.state.cols * this.state.rows,
                 zoom: 1.0,
                 panX: 0,
                 panY: 0,
                 rotation: 0,
                 isFlippedH: false,
-                bgColor: '#ffffff',
-                hasBorder: true
-            });
+                bgColor: this.state.bgColor || '#ffffff',
+                hasBorder: this.state.hasBorder
+            };
 
-            if (!this.state.activePhotoId) {
-                this.state.activePhotoId = id;
+            // Replace demo placeholder or add to list
+            if (this.state.photos.length === 1 && this.state.photos[0].id === 'sample_portrait_demo') {
+                this.state.photos = [newPhoto];
+            } else {
+                this.state.photos.unshift(newPhoto);
             }
+
+            this.state.activePhotoId = id;
             loadedCount++;
         }
 
         if (loadedCount > 0) {
-            this.updateQueueUI();
+            this.syncActivePhotoControls();
             this.renderCropCanvas();
             this.renderSheetPreview();
-            this.app.showToast(`Loaded ${loadedCount} photo(s) into Passport Studio!`, 'success');
+            this.app.showToast(`Loaded ${loadedCount} photo(s)! Preview updated on A4 sheet.`, 'success');
         }
     }
 
@@ -980,138 +1142,6 @@ export class PassportStudio {
         return this.state.photos.find(p => p.id === this.state.activePhotoId) || null;
     }
 
-    updateQueueUI() {
-        const queueList = document.getElementById('ps-queue-list');
-        const queueBadge = document.getElementById('ps-queue-badge');
-        const activePhotoName = document.getElementById('ps-active-photo-name');
-
-        if (queueBadge) queueBadge.textContent = this.state.photos.length;
-
-        const activePhoto = this.getActivePhoto();
-        if (activePhotoName) {
-            activePhotoName.textContent = activePhoto ? activePhoto.name : 'No photo';
-        }
-
-        if (!queueList) return;
-
-        if (this.state.photos.length === 0) {
-            queueList.innerHTML = `<div class="text-center py-6 text-xs text-slate-400 italic">No photos uploaded yet. Drop photos above.</div>`;
-            return;
-        }
-
-        queueList.innerHTML = this.state.photos.map(p => {
-            const isActive = p.id === this.state.activePhotoId;
-            return `
-                <div class="ps-queue-item flex items-center justify-between p-2 rounded-xl border ${isActive ? 'bg-red-50/40 border-red-300 ring-1 ring-red-400/20' : 'bg-slate-50 border-slate-200'} transition cursor-pointer" data-id="${p.id}">
-                    <div class="flex items-center gap-2 min-w-0">
-                        <img src="${p.dataUrl}" alt="${p.name}" class="w-9 h-11 object-cover rounded border border-slate-300 bg-white shrink-0">
-                        <div class="min-w-0">
-                            <p class="text-xs font-bold text-slate-800 truncate leading-snug">${p.name}</p>
-                            <p class="text-[10px] text-slate-400">${p.dimStr} &bull; ${p.sizeStr}</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 shrink-0" onclick="event.stopPropagation()">
-                        <!-- Copies Counter -->
-                        <div class="flex items-center border border-slate-200 rounded-lg bg-white overflow-hidden shadow-2xs">
-                            <button type="button" class="ps-btn-dec px-2 py-0.5 text-xs text-slate-600 hover:bg-slate-100 font-bold" data-id="${p.id}">-</button>
-                            <span class="px-2 py-0.5 text-xs font-bold text-slate-900 font-mono">${p.copies}</span>
-                            <button type="button" class="ps-btn-inc px-2 py-0.5 text-xs text-slate-600 hover:bg-slate-100 font-bold" data-id="${p.id}">+</button>
-                        </div>
-
-                        <!-- Duplicate Photo -->
-                        <button type="button" class="ps-btn-dup p-1 text-slate-400 hover:text-blue-600 rounded transition" title="Duplicate Photo" data-id="${p.id}">
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                        </button>
-
-                        <!-- Remove Photo -->
-                        <button type="button" class="ps-btn-del p-1 text-slate-400 hover:text-red-600 rounded transition" title="Remove Photo" data-id="${p.id}">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Queue item click -> select photo for framing
-        queueList.querySelectorAll('.ps-queue-item').forEach(el => {
-            el.addEventListener('click', () => {
-                const id = el.getAttribute('data-id');
-                this.state.activePhotoId = id;
-                this.updateQueueUI();
-                this.syncActivePhotoControls();
-                this.renderCropCanvas();
-            });
-        });
-
-        // Stepper: Increment copies
-        queueList.querySelectorAll('.ps-btn-inc').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = btn.getAttribute('data-id');
-                const p = this.state.photos.find(x => x.id === id);
-                if (p) {
-                    p.copies = Math.min(100, p.copies + 1);
-                    this.updateQueueUI();
-                    this.renderSheetPreview();
-                }
-            });
-        });
-
-        // Stepper: Decrement copies
-        queueList.querySelectorAll('.ps-btn-dec').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = btn.getAttribute('data-id');
-                const p = this.state.photos.find(x => x.id === id);
-                if (p) {
-                    p.copies = Math.max(1, p.copies - 1);
-                    this.updateQueueUI();
-                    this.renderSheetPreview();
-                }
-            });
-        });
-
-        // Duplicate
-        queueList.querySelectorAll('.ps-btn-dup').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = btn.getAttribute('data-id');
-                const p = this.state.photos.find(x => x.id === id);
-                if (p) {
-                    const newId = 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                    this.state.photos.push({
-                        ...p,
-                        id: newId,
-                        name: p.name.replace(/\.[^/.]+$/, '') + ' (Copy)' + (p.name.match(/\.[^/.]+$/)?.[0] || '')
-                    });
-                    this.updateQueueUI();
-                    this.renderSheetPreview();
-                }
-            });
-        });
-
-        // Delete
-        queueList.querySelectorAll('.ps-btn-del').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = btn.getAttribute('data-id');
-                this.state.photos = this.state.photos.filter(x => x.id !== id);
-                if (this.state.activePhotoId === id) {
-                    this.state.activePhotoId = this.state.photos[0]?.id || null;
-                }
-                this.updateQueueUI();
-                this.syncActivePhotoControls();
-                this.renderCropCanvas();
-                this.renderSheetPreview();
-            });
-        });
-
-        if (window.lucide && typeof window.lucide.createIcons === 'function') {
-            window.lucide.createIcons();
-        }
-    }
-
     syncActivePhotoControls() {
         const p = this.getActivePhoto();
         if (!p) return;
@@ -1120,22 +1150,9 @@ export class PassportStudio {
         const zoomText = document.getElementById('ps-zoom-text');
         if (zoomRange) zoomRange.value = Math.round(p.zoom * 100);
         if (zoomText) zoomText.textContent = `${Math.round(p.zoom * 100)}%`;
-
-        const borderToggle = document.getElementById('ps-toggle-border');
-        if (borderToggle) borderToggle.checked = p.hasBorder;
-
-        // Background color buttons
-        document.querySelectorAll('.ps-bg-btn').forEach(b => {
-            const color = b.getAttribute('data-color');
-            if (color === p.bgColor) {
-                b.classList.add('active', 'border-slate-300', 'shadow-2xs');
-            } else {
-                b.classList.remove('active', 'border-slate-300', 'shadow-2xs');
-            }
-        });
     }
 
-    // ================= PHYSICAL DIMENSIONS & SPEC CALCULATIONS =================
+    // ================= PHYSICAL DIMENSIONS =================
     getPhotoDimensionsMm() {
         if (this.state.presetId === 'custom') {
             const c = this.state.custom;
@@ -1180,11 +1197,11 @@ export class PassportStudio {
 
         const pill = document.getElementById('ps-target-px-pill');
         if (pill) {
-            pill.textContent = `${dim.widthMm} × ${dim.heightMm} mm (${pxW} × ${pxH} px @ ${dim.dpi} DPI)`;
+            pill.textContent = `${dim.widthMm} × ${dim.heightMm} mm (${pxW} × ${pxH} px)`;
         }
     }
 
-    // ================= INTERACTIVE CROP CANVAS RENDERING =================
+    // ================= INTERACTIVE CROP CANVAS =================
     renderCropCanvas() {
         const canvas = document.getElementById('ps-crop-canvas');
         if (!canvas) return;
@@ -1193,7 +1210,6 @@ export class PassportStudio {
         const ctx = canvas.getContext('2d');
         const dim = this.getPhotoDimensionsMm();
 
-        // Calculate 300 DPI target resolution for canvas buffer
         const targetW = Math.round((dim.widthMm * 300) / 25.4);
         const targetH = Math.round((dim.heightMm * 300) / 25.4);
 
@@ -1201,23 +1217,13 @@ export class PassportStudio {
         canvas.height = targetH;
 
         if (!photo || !photo.img) {
-            // Draw placeholder
             ctx.fillStyle = '#f8fafc';
             ctx.fillRect(0, 0, targetW, targetH);
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([6, 6]);
-            ctx.strokeRect(8, 8, targetW - 16, targetH - 16);
-
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = 'bold 16px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('Select or Upload a Photo', targetW / 2, targetH / 2);
             return;
         }
 
-        // 1. Fill Chosen Background Color
-        ctx.fillStyle = photo.bgColor || '#ffffff';
+        // 1. Fill Background Color
+        ctx.fillStyle = photo.bgColor || this.state.bgColor || '#ffffff';
         ctx.fillRect(0, 0, targetW, targetH);
 
         // 2. Transform & Draw Cropped Image
@@ -1238,16 +1244,16 @@ export class PassportStudio {
         ctx.drawImage(photo.img, -drawW / 2, -drawH / 2, drawW, drawH);
         ctx.restore();
 
-        // 3. Optional 1px Subtle Border for clean cutting
-        if (photo.hasBorder) {
+        // 3. Dark Photo Cut Outline (matches user's uploaded photo)
+        if (this.state.hasBorder) {
             ctx.save();
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = Math.max(1, Math.round(targetW * 0.003));
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = Math.max(1, Math.round(targetW * 0.0035));
             ctx.strokeRect(0, 0, targetW, targetH);
             ctx.restore();
         }
 
-        // 4. Biometric Face Oval & Eye Level Guide Overlay
+        // 4. Biometric Face Oval Guide Overlay
         if (this.state.showFaceGuide) {
             ctx.save();
             ctx.strokeStyle = 'rgba(234, 29, 44, 0.85)';
@@ -1276,17 +1282,11 @@ export class PassportStudio {
             ctx.lineTo(targetW * 0.72, ovalCenterY + radiusY);
             ctx.stroke();
 
-            // Top Crown Boundary
-            ctx.beginPath();
-            ctx.moveTo(targetW * 0.35, ovalCenterY - radiusY);
-            ctx.lineTo(targetW * 0.65, ovalCenterY - radiusY);
-            ctx.stroke();
-
             ctx.restore();
         }
     }
 
-    // ================= HIGH-RES PHOTO CANVASES =================
+    // ================= CLEAN 300 DPI PHOTO GENERATOR =================
     generateCleanPhotoCanvas(photo, dpi = 300) {
         if (!photo || !photo.img) return null;
 
@@ -1300,7 +1300,7 @@ export class PassportStudio {
         const ctx = canvas.getContext('2d');
 
         // Background
-        ctx.fillStyle = photo.bgColor || '#ffffff';
+        ctx.fillStyle = photo.bgColor || this.state.bgColor || '#ffffff';
         ctx.fillRect(0, 0, targetW, targetH);
 
         // Transform
@@ -1321,11 +1321,11 @@ export class PassportStudio {
         ctx.drawImage(photo.img, -drawW / 2, -drawH / 2, drawW, drawH);
         ctx.restore();
 
-        // 1px Border
-        if (photo.hasBorder) {
+        // Dark Outline (matching studio print)
+        if (this.state.hasBorder) {
             ctx.save();
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = Math.max(1, Math.round(targetW * 0.003));
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = Math.max(1, Math.round(targetW * 0.0035));
             ctx.strokeRect(0, 0, targetW, targetH);
             ctx.restore();
         }
@@ -1333,213 +1333,135 @@ export class PassportStudio {
         return canvas;
     }
 
-    // ================= A4 & 4x6 SHEET LAYOUT ALGORITHM =================
-    calculateSheetLayout() {
+    // ================= REALISTIC A4 SHEET PREVIEW =================
+    calculateSheetMetrics() {
         const paper = this.getSelectedPaper();
         const photo = this.getPhotoDimensionsMm();
 
-        const marginL = Number(this.state.margins.left);
-        const marginR = Number(this.state.margins.right);
-        const marginT = Number(this.state.margins.top);
-        const marginB = Number(this.state.margins.bottom);
+        const cols = Number(this.state.cols) || 3;
+        const rows = Number(this.state.rows) || 4;
+        const gapX = Number(this.state.gapX) || 4;
+        const gapY = Number(this.state.gapY) || 5;
 
-        const gapX = Number(this.state.gapX);
-        const gapY = Number(this.state.gapY);
+        // Total grid dimensions
+        const gridW = (cols * photo.widthMm) + ((cols - 1) * gapX);
+        const gridH = (rows * photo.heightMm) + ((rows - 1) * gapY);
 
-        const printableW = Math.max(0, paper.widthMm - marginL - marginR);
-        const printableH = Math.max(0, paper.heightMm - marginT - marginB);
+        // Center alignment on the sheet
+        const marginL = Math.max(5, (paper.widthMm - gridW) / 2);
+        const marginT = Math.max(8, (paper.heightMm - gridH) / 2);
 
-        // Optimal physical packing
-        const maxCols = Math.max(1, Math.floor((printableW + gapX) / (photo.widthMm + gapX)));
-        const maxRows = Math.max(1, Math.floor((printableH + gapY) / (photo.heightMm + gapY)));
-
-        const cols = this.state.autoFit ? maxCols : Math.min(Number(this.state.manualCols) || maxCols, maxCols);
-        const rows = this.state.autoFit ? maxRows : Math.min(Number(this.state.manualRows) || maxRows, maxRows);
-
-        const photosPerSheet = cols * rows;
-
-        // Build flat array of photo copies according to queue quantities
-        const queueItems = [];
-        this.state.photos.forEach(p => {
-            const qty = Number(p.copies) || 1;
-            for (let i = 0; i < qty; i++) {
-                queueItems.push(p);
-            }
-        });
-
-        const totalCopies = queueItems.length;
-        const totalPages = Math.max(1, Math.ceil(totalCopies / photosPerSheet));
-
-        // Group into pages
-        const pages = [];
-        for (let pg = 0; pg < totalPages; pg++) {
-            const pagePhotos = queueItems.slice(pg * photosPerSheet, (pg + 1) * photosPerSheet);
-            pages.push(pagePhotos);
-        }
+        const totalSlots = cols * rows;
 
         return {
             paper,
             photo,
-            printableW,
-            printableH,
             cols,
             rows,
-            maxCols,
-            maxRows,
-            photosPerSheet,
-            totalCopies,
-            totalPages,
-            marginL,
-            marginR,
-            marginT,
-            marginB,
             gapX,
             gapY,
-            pages
+            gridW,
+            gridH,
+            marginL,
+            marginT,
+            totalSlots
         };
     }
 
-    // ================= LIVE SHEET PREVIEW =================
     renderSheetPreview() {
         const canvas = document.getElementById('ps-sheet-canvas');
         if (!canvas) return;
 
-        const layout = this.calculateSheetLayout();
+        const m = this.calculateSheetMetrics();
         const ctx = canvas.getContext('2d');
 
-        // Update UI info chips
-        const maxFitText = document.getElementById('ps-max-fit-text');
-        if (maxFitText) {
-            maxFitText.textContent = `Fits max ${layout.photosPerSheet} / page (${layout.cols} × ${layout.rows} grid)`;
-        }
-
-        const statsChip = document.getElementById('ps-sheet-stats-chip');
-        if (statsChip) {
-            statsChip.textContent = `${layout.totalCopies} Copies &bull; ${layout.totalPages} ${layout.totalPages > 1 ? 'Pages' : 'Page'}`;
-        }
-
-        // Pagination controls
-        const paginationBar = document.getElementById('ps-pagination-bar');
-        const pageLabel = document.getElementById('ps-page-label');
-        if (paginationBar) {
-            if (layout.totalPages > 1) {
-                paginationBar.classList.remove('hidden');
-                paginationBar.classList.add('flex');
-                if (pageLabel) pageLabel.textContent = `Page ${this.state.activePage} of ${layout.totalPages}`;
-            } else {
-                paginationBar.classList.add('hidden');
-                paginationBar.classList.remove('flex');
-            }
-        }
-
-        // Clamp active page
-        if (this.state.activePage > layout.totalPages) {
-            this.state.activePage = layout.totalPages;
-        }
-
-        // Preview resolution (proportional scaling)
-        const PREVIEW_DPI = 72; // Screen resolution preview
+        // Scale proportionally for screen preview (Aspect ratio matches exact paper: 210 x 297 mm)
+        const PREVIEW_DPI = 96; // Crisp on-screen resolution
         const mmToPx = PREVIEW_DPI / 25.4;
-        const sheetW = Math.round(layout.paper.widthMm * mmToPx);
-        const sheetH = Math.round(layout.paper.heightMm * mmToPx);
+        const sheetW = Math.round(m.paper.widthMm * mmToPx);
+        const sheetH = Math.round(m.paper.heightMm * mmToPx);
 
         canvas.width = sheetW;
         canvas.height = sheetH;
 
-        // Paper Surface (White with crisp edge)
+        // 1. Pure Crisp White Paper Surface
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, sheetW, sheetH);
 
-        // Printable Margins boundary guide (subtle dashed)
-        ctx.strokeStyle = '#e2e8f0';
+        // 2. Subtle Printable Border Guide (Fine paper perimeter margin)
+        ctx.strokeStyle = '#f1f5f9';
         ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-        const mLPx = layout.marginL * mmToPx;
-        const mTPx = layout.marginT * mmToPx;
-        const mRPx = layout.marginR * mmToPx;
-        const mBPx = layout.marginB * mmToPx;
-        ctx.strokeRect(mLPx, mTPx, sheetW - mLPx - mRPx, sheetH - mTPx - mBPx);
+        ctx.strokeRect(2, 2, sheetW - 4, sheetH - 4);
 
-        // Render current page photos
-        const currentPageIndex = this.state.activePage - 1;
-        const currentPhotos = layout.pages[currentPageIndex] || [];
+        // 3. Tile the Photos in the exact (Cols × Rows) grid
+        const photoWPx = m.photo.widthMm * mmToPx;
+        const photoHPx = m.photo.heightMm * mmToPx;
+        const gapXPx = m.gapX * mmToPx;
+        const gapYPx = m.gapY * mmToPx;
+        const startXPx = m.marginL * mmToPx;
+        const startYPx = m.marginT * mmToPx;
 
-        const photoWPx = layout.photo.widthMm * mmToPx;
-        const photoHPx = layout.photo.heightMm * mmToPx;
-        const gapXPx = layout.gapX * mmToPx;
-        const gapYPx = layout.gapY * mmToPx;
+        const activePhoto = this.getActivePhoto();
+        const cleanPhotoCanvas = activePhoto ? this.generateCleanPhotoCanvas(activePhoto, 180) : null;
 
-        // Draw slots grid
-        let photoIndex = 0;
-        for (let r = 0; r < layout.rows; r++) {
-            for (let c = 0; c < layout.cols; c++) {
-                const x = mLPx + (c * (photoWPx + gapXPx));
-                const y = mTPx + (r * (photoHPx + gapYPx));
+        for (let r = 0; r < m.rows; r++) {
+            for (let c = 0; c < m.cols; c++) {
+                const x = startXPx + (c * (photoWPx + gapXPx));
+                const y = startYPx + (r * (photoHPx + gapYPx));
 
-                if (photoIndex < currentPhotos.length) {
-                    const photo = currentPhotos[photoIndex];
-                    const cleanCanvas = this.generateCleanPhotoCanvas(photo, 150);
-                    if (cleanCanvas) {
-                        ctx.drawImage(cleanCanvas, x, y, photoWPx, photoHPx);
-                    }
+                if (cleanPhotoCanvas) {
+                    ctx.drawImage(cleanPhotoCanvas, x, y, photoWPx, photoHPx);
                 } else {
-                    // Empty slot
+                    // Placeholder box
                     ctx.fillStyle = '#f8fafc';
                     ctx.fillRect(x, y, photoWPx, photoHPx);
-                    ctx.strokeStyle = '#e2e8f0';
-                    ctx.setLineDash([3, 3]);
+                    ctx.strokeStyle = '#cbd5e1';
                     ctx.strokeRect(x, y, photoWPx, photoHPx);
                 }
-
-                photoIndex++;
             }
         }
 
-        // Draw Scissor Cutting Lines
-        if (this.state.showCutLines && layout.totalCopies > 0) {
+        // 4. Scissor Cutting Lines / Guides (subtle dashed gray lines)
+        if (this.state.showCutLines) {
             ctx.save();
             ctx.strokeStyle = '#94a3b8';
             ctx.lineWidth = 0.75;
             ctx.setLineDash([3, 3]);
 
             // Vertical cutting lines between cols
-            for (let c = 1; c < layout.cols; c++) {
-                const lineX = mLPx + (c * (photoWPx + gapXPx)) - (gapXPx / 2);
-                const startY = mTPx - 4;
-                const endY = mTPx + (layout.rows * (photoHPx + gapYPx)) - gapYPx + 4;
+            for (let c = 1; c < m.cols; c++) {
+                const lineX = startXPx + (c * (photoWPx + gapXPx)) - (gapXPx / 2);
                 ctx.beginPath();
-                ctx.moveTo(lineX, startY);
-                ctx.lineTo(lineX, endY);
+                ctx.moveTo(lineX, startYPx - 8);
+                ctx.lineTo(lineX, startYPx + m.gridH * mmToPx + 8);
                 ctx.stroke();
             }
 
             // Horizontal cutting lines between rows
-            for (let r = 1; r < layout.rows; r++) {
-                const lineY = mTPx + (r * (photoHPx + gapYPx)) - (gapYPx / 2);
-                const startX = mLPx - 4;
-                const endX = mLPx + (layout.cols * (photoWPx + gapXPx)) - gapXPx + 4;
+            for (let r = 1; r < m.rows; r++) {
+                const lineY = startYPx + (r * (photoHPx + gapYPx)) - (gapYPx / 2);
                 ctx.beginPath();
-                ctx.moveTo(startX, lineY);
-                ctx.lineTo(endX, lineY);
+                ctx.moveTo(startXPx - 8, lineY);
+                ctx.lineTo(startXPx + m.gridW * mmToPx + 8, lineY);
                 ctx.stroke();
             }
 
             ctx.restore();
         }
 
-        // Header info watermark on sheet preview
-        ctx.fillStyle = '#64748b';
-        ctx.font = '8px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(`TECHTIS Print Studio &bull; ${layout.photo.widthMm} × ${layout.photo.heightMm} mm &bull; Scale: 100% Actual Size`, mLPx, mTPx - 4);
+        // Update Caption & Summary
+        const caption = document.getElementById('ps-sheet-caption');
+        if (caption) {
+            caption.textContent = `A4 Sheet Preview &bull; ${m.cols} Cols × ${m.rows} Rows (${m.totalSlots} Photos) &bull; ${m.photo.widthMm} × ${m.photo.heightMm} mm`;
+        }
     }
 
     // ================= FULL 300 DPI HIGH-RES SHEET CANVAS =================
-    generateHighResSheetCanvas(pageIndex = 0, dpi = 300) {
-        const layout = this.calculateSheetLayout();
+    generateHighResSheetCanvas(dpi = 300) {
+        const m = this.calculateSheetMetrics();
         const mmToPx = dpi / 25.4;
-        const sheetW = Math.round(layout.paper.widthMm * mmToPx);
-        const sheetH = Math.round(layout.paper.heightMm * mmToPx);
+        const sheetW = Math.round(m.paper.widthMm * mmToPx);
+        const sheetH = Math.round(m.paper.heightMm * mmToPx);
 
         const canvas = document.createElement('canvas');
         canvas.width = sheetW;
@@ -1550,61 +1472,57 @@ export class PassportStudio {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, sheetW, sheetH);
 
-        const mLPx = layout.marginL * mmToPx;
-        const mTPx = layout.marginT * mmToPx;
-        const photoWPx = layout.photo.widthMm * mmToPx;
-        const photoHPx = layout.photo.heightMm * mmToPx;
-        const gapXPx = layout.gapX * mmToPx;
-        const gapYPx = layout.gapY * mmToPx;
+        const photoWPx = m.photo.widthMm * mmToPx;
+        const photoHPx = m.photo.heightMm * mmToPx;
+        const gapXPx = m.gapX * mmToPx;
+        const gapYPx = m.gapY * mmToPx;
+        const startXPx = m.marginL * mmToPx;
+        const startYPx = m.marginT * mmToPx;
 
-        const currentPhotos = layout.pages[pageIndex] || [];
-        let photoIndex = 0;
+        const activePhoto = this.getActivePhoto();
+        const cleanPhotoCanvas = activePhoto ? this.generateCleanPhotoCanvas(activePhoto, dpi) : null;
 
-        for (let r = 0; r < layout.rows; r++) {
-            for (let c = 0; c < layout.cols; c++) {
-                if (photoIndex < currentPhotos.length) {
-                    const photo = currentPhotos[photoIndex];
-                    const cleanCanvas = this.generateCleanPhotoCanvas(photo, dpi);
-                    if (cleanCanvas) {
-                        const x = mLPx + (c * (photoWPx + gapXPx));
-                        const y = mTPx + (r * (photoHPx + gapYPx));
-                        ctx.drawImage(cleanCanvas, x, y, photoWPx, photoHPx);
-                    }
-                    photoIndex++;
+        for (let r = 0; r < m.rows; r++) {
+            for (let c = 0; c < m.cols; c++) {
+                const x = startXPx + (c * (photoWPx + gapXPx));
+                const y = startYPx + (r * (photoHPx + gapYPx));
+
+                if (cleanPhotoCanvas) {
+                    ctx.drawImage(cleanPhotoCanvas, x, y, photoWPx, photoHPx);
                 }
             }
         }
 
         // Cutting lines
-        if (this.state.showCutLines && currentPhotos.length > 0) {
+        if (this.state.showCutLines) {
             ctx.save();
             ctx.strokeStyle = '#94a3b8';
             ctx.lineWidth = Math.max(1, Math.round(sheetW * 0.0008));
             ctx.setLineDash([8, 8]);
 
-            for (let c = 1; c < layout.cols; c++) {
-                const lineX = mLPx + (c * (photoWPx + gapXPx)) - (gapXPx / 2);
+            for (let c = 1; c < m.cols; c++) {
+                const lineX = startXPx + (c * (photoWPx + gapXPx)) - (gapXPx / 2);
                 ctx.beginPath();
-                ctx.moveTo(lineX, mTPx - (6 * mmToPx));
-                ctx.lineTo(lineX, mTPx + (layout.rows * (photoHPx + gapYPx)) - gapYPx + (6 * mmToPx));
+                ctx.moveTo(lineX, startYPx - (8 * mmToPx));
+                ctx.lineTo(lineX, startYPx + (m.gridH * mmToPx) + (8 * mmToPx));
                 ctx.stroke();
             }
 
-            for (let r = 1; r < layout.rows; r++) {
-                const lineY = mTPx + (r * (photoHPx + gapYPx)) - (gapYPx / 2);
+            for (let r = 1; r < m.rows; r++) {
+                const lineY = startYPx + (r * (photoHPx + gapYPx)) - (gapYPx / 2);
                 ctx.beginPath();
-                ctx.moveTo(mLPx - (6 * mmToPx), lineY);
-                ctx.lineTo(mLPx + (layout.cols * (photoWPx + gapXPx)) - gapXPx + (6 * mmToPx), lineY);
+                ctx.moveTo(startXPx - (8 * mmToPx), lineY);
+                ctx.lineTo(startXPx + (m.gridW * mmToPx) + (8 * mmToPx), lineY);
                 ctx.stroke();
             }
             ctx.restore();
         }
 
-        // Footer Metadata Note
+        // Footer Note
         ctx.fillStyle = '#64748b';
-        ctx.font = `${Math.round(9 * (dpi / 72))}px sans-serif`;
+        ctx.font = `${Math.round(8 * (dpi / 72))}px sans-serif`;
         ctx.textAlign = 'left';
-        ctx.fillText(`TECHTIS Passport Photo Studio (${layout.paper.name}) &bull; Photo: ${layout.photo.widthMm} × ${layout.photo.heightMm} mm &bull; 100% Actual Size Print`, mLPx, sheetH - (mTPx / 2));
+        ctx.fillText(`TECHTIS Studio (${m.cols} × ${m.rows} = ${m.totalSlots} Photos) &bull; Photo Size: ${m.photo.widthMm} × ${m.photo.heightMm} mm &bull; Scale: 100% Actual Size`, startXPx, sheetH - 12);
 
         return canvas;
     }
@@ -1639,16 +1557,10 @@ export class PassportStudio {
     }
 
     downloadSheetImage(format = 'jpeg') {
-        if (this.state.photos.length === 0) {
-            this.app.showToast('Please upload photos first.', 'error');
-            return;
-        }
-
-        const pageIdx = this.state.activePage - 1;
-        const canvas = this.generateHighResSheetCanvas(pageIdx, 300);
+        const canvas = this.generateHighResSheetCanvas(300);
         const mime = format === 'png' ? 'image/png' : 'image/jpeg';
         const ext = format === 'png' ? 'png' : 'jpg';
-        const filename = `passport_sheet_page_${this.state.activePage}_300dpi.${ext}`;
+        const filename = `passport_a4_sheet_${this.state.cols}x${this.state.rows}_300dpi.${ext}`;
 
         canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
@@ -1660,139 +1572,106 @@ export class PassportStudio {
 
             StorageManager.logActivity('passport-photo-maker', 'Passport Photo Maker', `Exported high-res 300 DPI sheet (${filename})`);
             this.app.updateHistoryCounter();
-            this.app.showToast(`Sheet Page ${this.state.activePage} downloaded at 300 DPI!`, 'success');
+            this.app.showToast(`A4 Sheet (${this.state.cols * this.state.rows} Photos) downloaded at 300 DPI!`, 'success');
         }, mime, 0.96);
     }
 
-    // ================= MULTI-PAGE PRINT-READY PDF GENERATOR =================
+    // ================= EXACT PHYSICAL MILLIMETER PDF =================
     async downloadSheetPdf() {
-        if (this.state.photos.length === 0) {
-            this.app.showToast('Please upload photos first.', 'error');
-            return;
-        }
-
-        this.app.showToast('Generating exact physical millimeter PDF...', 'info');
+        this.app.showToast('Generating exact physical millimeter A4 PDF...', 'info');
 
         try {
             await ensurePdfLib();
             const pdfDoc = await window.PDFLib.PDFDocument.create();
 
-            const layout = this.calculateSheetLayout();
+            const m = this.calculateSheetMetrics();
             const MM_TO_PT = 72 / 25.4;
 
-            const paperW_pt = layout.paper.widthMm * MM_TO_PT;
-            const paperH_pt = layout.paper.heightMm * MM_TO_PT;
-            const photoW_pt = layout.photo.widthMm * MM_TO_PT;
-            const photoH_pt = layout.photo.heightMm * MM_TO_PT;
+            const paperW_pt = m.paper.widthMm * MM_TO_PT;
+            const paperH_pt = m.paper.heightMm * MM_TO_PT;
+            const photoW_pt = m.photo.widthMm * MM_TO_PT;
+            const photoH_pt = m.photo.heightMm * MM_TO_PT;
+            const gapX_pt = m.gapX * MM_TO_PT;
+            const gapY_pt = m.gapY * MM_TO_PT;
+            const startX_pt = m.marginL * MM_TO_PT;
+            const startY_pt = m.marginT * MM_TO_PT;
 
-            const marginL_pt = layout.marginL * MM_TO_PT;
-            const marginT_pt = layout.marginT * MM_TO_PT;
-            const gapX_pt = layout.gapX * MM_TO_PT;
-            const gapY_pt = layout.gapY * MM_TO_PT;
+            const page = pdfDoc.addPage([paperW_pt, paperH_pt]);
 
-            const font = await pdfDoc.embedFont(window.PDFLib.StandardFonts.Helvetica);
+            // Embed active photo at 300 DPI
+            const activePhoto = this.getActivePhoto();
+            const highResCanvas = this.generateCleanPhotoCanvas(activePhoto, 300);
+            const dataUrl = highResCanvas.toDataURL('image/jpeg', 0.95);
+            const bytes = await fetch(dataUrl).then(r => r.arrayBuffer());
+            const embedded = await pdfDoc.embedJpg(bytes);
+
+            // PDF (0,0) is bottom-left
+            for (let r = 0; r < m.rows; r++) {
+                for (let c = 0; c < m.cols; c++) {
+                    const x = startX_pt + (c * (photoW_pt + gapX_pt));
+                    const y = paperH_pt - startY_pt - ((r + 1) * photoH_pt) - (r * gapY_pt);
+
+                    page.drawImage(embedded, {
+                        x,
+                        y,
+                        width: photoW_pt,
+                        height: photoH_pt
+                    });
+
+                    if (this.state.hasBorder) {
+                        page.drawRectangle({
+                            x,
+                            y,
+                            width: photoW_pt,
+                            height: photoH_pt,
+                            borderColor: window.PDFLib.rgb(0.2, 0.25, 0.35),
+                            borderWidth: 0.6
+                        });
+                    }
+                }
+            }
+
+            // Cutting lines
+            if (this.state.showCutLines) {
+                for (let c = 1; c < m.cols; c++) {
+                    const lineX = startX_pt + (c * (photoW_pt + gapX_pt)) - (gapX_pt / 2);
+                    page.drawLine({
+                        start: { x: lineX, y: paperH_pt - startY_pt + 8 },
+                        end: { x: lineX, y: paperH_pt - startY_pt - (m.rows * (photoH_pt + gapY_pt)) + gapY_pt - 8 },
+                        color: window.PDFLib.rgb(0.65, 0.7, 0.75),
+                        thickness: 0.5,
+                        dashArray: [2, 2]
+                    });
+                }
+
+                for (let r = 1; r < m.rows; r++) {
+                    const lineY = paperH_pt - startY_pt - (r * (photoH_pt + gapY_pt)) + (gapY_pt / 2);
+                    page.drawLine({
+                        start: { x: startX_pt - 8, y: lineY },
+                        end: { x: startX_pt + (m.cols * (photoW_pt + gapX_pt)) - gapX_pt + 8, y: lineY },
+                        color: window.PDFLib.rgb(0.65, 0.7, 0.75),
+                        thickness: 0.5,
+                        dashArray: [2, 2]
+                    });
+                }
+            }
+
             const fontBold = await pdfDoc.embedFont(window.PDFLib.StandardFonts.HelveticaBold);
-
-            // Pre-render and embed unique photos at 300 DPI
-            const embeddedMap = new Map();
-            for (const p of this.state.photos) {
-                const highResCanvas = this.generateCleanPhotoCanvas(p, 300);
-                const dataUrl = highResCanvas.toDataURL('image/jpeg', 0.95);
-                const bytes = await fetch(dataUrl).then(r => r.arrayBuffer());
-                const embedded = await pdfDoc.embedJpg(bytes);
-                embeddedMap.set(p.id, embedded);
-            }
-
-            // Generate each page in the layout
-            for (let pg = 0; pg < layout.totalPages; pg++) {
-                const page = pdfDoc.addPage([paperW_pt, paperH_pt]);
-                const pagePhotos = layout.pages[pg] || [];
-
-                // Page Header note
-                page.drawText(`TECHTIS Studio: ${layout.photo.widthMm} × ${layout.photo.heightMm} mm &bull; Page ${pg + 1} of ${layout.totalPages}`, {
-                    x: marginL_pt,
-                    y: paperH_pt - (marginT_pt / 2) - 4,
-                    size: 8,
-                    font: fontBold,
-                    color: window.PDFLib.rgb(0.1, 0.15, 0.25)
-                });
-
-                page.drawText('IMPORTANT: Print at "Actual Size" or 100% scale. Do NOT select "Fit to printable area".', {
-                    x: marginL_pt,
-                    y: paperH_pt - (marginT_pt / 2) - 14,
-                    size: 7,
-                    font: font,
-                    color: window.PDFLib.rgb(0.85, 0.15, 0.15)
-                });
-
-                let photoIdx = 0;
-                for (let r = 0; r < layout.rows; r++) {
-                    for (let c = 0; c < layout.cols; c++) {
-                        if (photoIdx < pagePhotos.length) {
-                            const p = pagePhotos[photoIdx];
-                            const embedded = embeddedMap.get(p.id);
-
-                            // PDF origin (0,0) is bottom-left
-                            const x = marginL_pt + (c * (photoW_pt + gapX_pt));
-                            const y = paperH_pt - marginT_pt - 20 - ((r + 1) * photoH_pt) - (r * gapY_pt);
-
-                            if (embedded) {
-                                page.drawImage(embedded, {
-                                    x,
-                                    y,
-                                    width: photoW_pt,
-                                    height: photoH_pt
-                                });
-
-                                if (p.hasBorder) {
-                                    page.drawRectangle({
-                                        x,
-                                        y,
-                                        width: photoW_pt,
-                                        height: photoH_pt,
-                                        borderColor: window.PDFLib.rgb(0.8, 0.85, 0.9),
-                                        borderWidth: 0.5
-                                    });
-                                }
-                            }
-                            photoIdx++;
-                        }
-                    }
-                }
-
-                // Cutting lines
-                if (this.state.showCutLines && pagePhotos.length > 0) {
-                    for (let c = 1; c < layout.cols; c++) {
-                        const lineX = marginL_pt + (c * (photoW_pt + gapX_pt)) - (gapX_pt / 2);
-                        page.drawLine({
-                            start: { x: lineX, y: paperH_pt - marginT_pt - 10 },
-                            end: { x: lineX, y: paperH_pt - marginT_pt - 20 - (layout.rows * (photoH_pt + gapY_pt)) + gapY_pt - 10 },
-                            color: window.PDFLib.rgb(0.65, 0.7, 0.75),
-                            thickness: 0.5,
-                            dashArray: [2, 2]
-                        });
-                    }
-
-                    for (let r = 1; r < layout.rows; r++) {
-                        const lineY = paperH_pt - marginT_pt - 20 - (r * (photoH_pt + gapY_pt)) + (gapY_pt / 2);
-                        page.drawLine({
-                            start: { x: marginL_pt - 10, y: lineY },
-                            end: { x: marginL_pt + (layout.cols * (photoW_pt + gapX_pt)) - gapX_pt + 10, y: lineY },
-                            color: window.PDFLib.rgb(0.65, 0.7, 0.75),
-                            thickness: 0.5,
-                            dashArray: [2, 2]
-                        });
-                    }
-                }
-            }
+            page.drawText(`TECHTIS Studio (${m.cols} x ${m.rows} = ${m.totalSlots} Photos) &bull; Size: ${m.photo.widthMm} x ${m.photo.heightMm} mm &bull; Scale: 100% Actual Size`, {
+                x: startX_pt,
+                y: 12,
+                size: 7.5,
+                font: fontBold,
+                color: window.PDFLib.rgb(0.3, 0.35, 0.45)
+            });
 
             const pdfBytes = await pdfDoc.save();
-            const filename = `techtis_passport_print_sheet_${Date.now()}.pdf`;
+            const filename = `techtis_passport_a4_${m.cols}x${m.rows}_${Date.now()}.pdf`;
             PdfHelpers.downloadBytes(pdfBytes, filename, 'application/pdf');
 
-            StorageManager.logActivity('passport-photo-maker', 'Passport Photo Maker', `Generated ${layout.totalPages}-page print sheet (${layout.totalCopies} photos)`);
+            StorageManager.logActivity('passport-photo-maker', 'Passport Photo Maker', `Generated A4 PDF (${m.totalSlots} photos)`);
             this.app.updateHistoryCounter();
-            this.app.showToast(`Print-Ready PDF with ${layout.totalCopies} photos generated!`, 'success');
+            this.app.showToast(`Print-Ready A4 PDF with ${m.totalSlots} photos generated!`, 'success');
         } catch (err) {
             console.error('PDF sheet error:', err);
             this.app.showToast(`PDF generation error: ${err.message}`, 'error');
@@ -1805,23 +1684,17 @@ export class PassportStudio {
         if (!mount) return;
 
         mount.innerHTML = '';
-        const layout = this.calculateSheetLayout();
+        const sheetCanvas = this.generateHighResSheetCanvas(300);
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'passport-print-page';
 
-        // Generate full 300 DPI high-res sheet canvas for each page
-        for (let pg = 0; pg < layout.totalPages; pg++) {
-            const sheetCanvas = this.generateHighResSheetCanvas(pg, 300);
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'passport-print-page';
+        const img = document.createElement('img');
+        img.className = 'passport-print-img';
+        img.src = sheetCanvas.toDataURL('image/png');
 
-            const img = document.createElement('img');
-            img.className = 'passport-print-img';
-            img.src = sheetCanvas.toDataURL('image/png');
+        pageDiv.appendChild(img);
+        mount.appendChild(pageDiv);
 
-            pageDiv.appendChild(img);
-            mount.appendChild(pageDiv);
-        }
-
-        // Brief delay for high-res images to decode before window.print()
         setTimeout(() => {
             window.print();
             setTimeout(() => {
