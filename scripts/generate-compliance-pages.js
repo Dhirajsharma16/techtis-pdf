@@ -140,8 +140,8 @@ const aboutHtml = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Zero-Server Client-Side Document Platform | TECHTIS</title>
-    <meta name="description" content="About TECHTIS (techtis.in). Discover our mission to provide 60 free, private, ultra-fast PDF, document, and image utilities powered by client-side WebAssembly and HTML5 Canvas.">
+    <title>About Us - 100% Private Document Platform | TECHTIS</title>
+    <meta name="description" content="About TECHTIS (techtis.in): our mission is providing 60 free, private, client-side PDF and image tools powered by WebAssembly with zero file uploads.">
     <link rel="canonical" href="https://techtis.in/about.html">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="stylesheet" href="css/tailwind.min.css?v=2.2.3">
@@ -377,8 +377,8 @@ const privacyHtml = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - 100% Client-Side Privacy Guarantee | TECHTIS</title>
-    <meta name="description" content="TECHTIS Privacy Policy. Learn how our 100% client-side WebAssembly architecture ensures zero document uploads, zero file retention, and total personal data privacy.">
+    <title>Privacy Policy - 100% Client-Side Security | TECHTIS</title>
+    <meta name="description" content="TECHTIS Privacy Policy. Learn how our client-side WebAssembly architecture ensures zero file uploads, zero data retention, and total document privacy.">
     <link rel="canonical" href="https://techtis.in/privacy.html">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="stylesheet" href="css/tailwind.min.css?v=2.2.3">
@@ -574,7 +574,7 @@ const termsHtml = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms of Service - Usage Guidelines &amp; Disclaimers | TECHTIS</title>
+    <title>Terms of Service - Usage Guidelines | TECHTIS</title>
     <meta name="description" content="TECHTIS Terms of Service. Review user guidelines, client-side processing policies, passport photo compliance warnings, and OCR accuracy disclaimers.">
     <link rel="canonical" href="https://techtis.in/terms.html">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">

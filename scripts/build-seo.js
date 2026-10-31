@@ -94,6 +94,22 @@ for (const tool of TOOLS) {
     const categoryObj = FUNCTIONAL_CATEGORIES.find(c => c.id === tool.functionalCategory) || { name: 'Tools', id: 'all' };
     const toolUrl = `${BASE_URL}/${tool.id}/`;
 
+    // Ensure Title is strictly <= 60 characters for Bing & Google Search perfection
+    let cleanTitle = `${tool.name} Online Free - 100% Private | TECHTIS`;
+    if (cleanTitle.length > 60) cleanTitle = `${tool.name} Online Free | TECHTIS`;
+    if (cleanTitle.length > 60) cleanTitle = `${tool.name} | TECHTIS`;
+
+    // Ensure Meta Description is strictly between 120 and 158 characters
+    let cleanDesc = seo.metaDescription || `${tool.name} online free with TECHTIS. 100% private in-browser RAM execution, zero file uploads, and instant processing worldwide.`;
+    if (cleanDesc.length > 158) {
+        const trimmed = cleanDesc.substring(0, 155);
+        const lastSpace = trimmed.lastIndexOf(' ');
+        cleanDesc = trimmed.substring(0, lastSpace).replace(/[,;:\s]+$/, '') + '.';
+    }
+    if (cleanDesc.length < 120) {
+        cleanDesc = cleanDesc.replace(/\.$/, '') + '. 100% private client-side processing.';
+    }
+
     // Build JSON-LD Schema Graphs
     const schemaGraph = {
         '@context': 'https://schema.org',
@@ -119,7 +135,7 @@ for (const tool of TOOLS) {
                     'ratingCount': '14850',
                     'bestRating': '5'
                 },
-                'description': seo.metaDescription,
+                'description': cleanDesc,
                 'publisher': {
                     '@type': 'Organization',
                     '@id': `${BASE_URL}/#organization`
@@ -267,8 +283,8 @@ for (const tool of TOOLS) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${escapeHtml(seo.title)}</title>
-    <meta name="description" content="${escapeHtml(seo.metaDescription)}">
+    <title>${escapeHtml(cleanTitle)}</title>
+    <meta name="description" content="${escapeHtml(cleanDesc)}">
     <meta name="keywords" content="${escapeHtml(seo.keywords)}">
     <meta name="author" content="TECHTIS (techtis.in)">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -295,8 +311,8 @@ for (const tool of TOOLS) {
     <meta property="og:type" content="website">
     <meta property="og:url" content="${toolUrl}">
     <meta property="og:site_name" content="TECHTIS">
-    <meta property="og:title" content="${escapeHtml(seo.title)}">
-    <meta property="og:description" content="${escapeHtml(seo.metaDescription)}">
+    <meta property="og:title" content="${escapeHtml(cleanTitle)}">
+    <meta property="og:description" content="${escapeHtml(cleanDesc)}">
     <meta property="og:locale" content="en_US">
     <meta property="og:locale:alternate" content="en_GB">
     <meta property="og:locale:alternate" content="en_IN">
@@ -310,8 +326,8 @@ for (const tool of TOOLS) {
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="${escapeHtml(seo.title)}">
-    <meta name="twitter:description" content="${escapeHtml(seo.metaDescription)}">
+    <meta name="twitter:title" content="${escapeHtml(cleanTitle)}">
+    <meta name="twitter:description" content="${escapeHtml(cleanDesc)}">
 
     <!-- Schema.org JSON-LD Structured Data -->
     <script type="application/ld+json">
