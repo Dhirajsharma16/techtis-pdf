@@ -196,6 +196,7 @@ export class PassportStudio {
             autoCenter: false, // Don't vertically center - start from top 2mm
             showCutLines: true,
             hasBorder: true,
+            hasUserUploaded: false, // true once user uploads their own photo
             borderColor: '#334155', // crisp dark photo outline
             bgColor: '#ffffff',
             showFaceGuide: true,
@@ -215,6 +216,7 @@ export class PassportStudio {
         this.initDefaultSamplePhoto();
         this.renderUI();
         this.bindEvents();
+        this.updateUploadUIState();
         this.updateDimensionsInfo();
         this.renderCropCanvas();
         this.renderSheetPreview();
@@ -345,9 +347,9 @@ export class PassportStudio {
                     <!-- LEFT COLUMN: Photo Upload, Presets & Framing Controls (5 cols) -->
                     <div class="lg:col-span-5 space-y-4">
                         
-                        <!-- Upload Dropzone -->
+                        <!-- 1. Upload Dropzone (Visible before upload) -->
                         <div id="ps-dropzone" class="border-2 border-dashed border-red-300 hover:border-red-500 bg-red-50/20 hover:bg-red-50/40 rounded-2xl p-4 text-center cursor-pointer transition group">
-                            <input type="file" id="ps-file-input" accept="image/jpeg,image/png,image/webp" multiple class="hidden">
+                            <input type="file" id="ps-file-input" accept="image/jpeg,image/png,image/webp" class="hidden">
                             <div class="space-y-1.5 pointer-events-none">
                                 <div class="w-10 h-10 mx-auto rounded-xl bg-red-100 text-red-600 flex items-center justify-center group-hover:scale-110 transition shadow-2xs">
                                     <i data-lucide="image-plus" class="w-5 h-5"></i>
@@ -355,6 +357,29 @@ export class PassportStudio {
                                 <h4 class="text-xs sm:text-sm font-bold text-slate-800">Drop Portrait Photograph Here</h4>
                                 <p class="text-[11px] text-slate-500">Supports JPG, PNG, WebP &bull; High resolution camera photos</p>
                                 <button type="button" class="px-3 py-1 bg-red-600 text-white rounded-lg text-xs font-semibold shadow-2xs pointer-events-auto">Browse Device</button>
+                            </div>
+                        </div>
+
+                        <!-- 2. Compact Active Photo Bar (Replaces Dropzone once photo is uploaded!) -->
+                        <div id="ps-photo-active-bar" class="hidden bg-white border border-slate-200 rounded-2xl p-3 shadow-xs flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <img id="ps-active-thumb" class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-50" src="" alt="Thumbnail">
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                                        <h5 id="ps-active-name" class="text-xs font-bold text-slate-900 truncate">photo.jpg</h5>
+                                    </div>
+                                    <p id="ps-active-meta" class="text-[10px] text-slate-500 font-mono mt-0.5">Photo Loaded</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button type="button" id="ps-btn-load-another" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-2xs flex items-center gap-1.5 transition cursor-pointer">
+                                    <i data-lucide="image-plus" class="w-3.5 h-3.5"></i>
+                                    <span>Load Another Photo</span>
+                                </button>
+                                <button type="button" id="ps-btn-remove-photo" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition cursor-pointer" title="Remove Photo & Reset">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -800,6 +825,32 @@ export class PassportStudio {
         // File upload triggers
         dropzone?.addEventListener('click', () => fileInput?.click());
         directUploadBtn?.addEventListener('click', () => fileInput?.click());
+        document.getElementById('ps-btn-load-another')?.addEventListener('click', () => fileInput?.click());
+        document.getElementById('ps-btn-remove-photo')?.addEventListener('click', () => {
+            this.state.hasUserUploaded = false;
+            this.initDefaultSamplePhoto();
+            this.updateUploadUIState();
+            this.renderCropCanvas();
+            this.renderSheetPreview();
+            this.app.showToast('Photo removed. Upload a new photo.', 'info');
+        });
+
+        // Drag and drop events on dropzone
+        dropzone?.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('border-red-600', 'bg-red-50/60');
+        });
+        dropzone?.addEventListener('dragleave', () => {
+            dropzone.classList.remove('border-red-600', 'bg-red-50/60');
+        });
+        dropzone?.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-red-600', 'bg-red-50/60');
+            if (e.dataTransfer?.files?.length) {
+                this.loadFiles(Array.from(e.dataTransfer.files));
+            }
+        });
+
         fileInput?.addEventListener('change', (e) => {
             if (e.target?.files?.length) {
                 this.loadFiles(Array.from(e.target.files));
@@ -1227,12 +1278,14 @@ export class PassportStudio {
         });
 
         resetAllBtn?.addEventListener('click', () => {
+            this.state.hasUserUploaded = false;
             this.initDefaultSamplePhoto();
             this.state.cols = 3;
             this.state.rows = 4;
             syncMarginUI(2, false);
             syncGapUI(4);
             updateGridUI();
+            this.updateUploadUIState();
             this.renderCropCanvas();
             this.renderSheetPreview();
             this.app.showToast('Reset to default 3 × 4 studio layout.', 'info');
@@ -1243,7 +1296,7 @@ export class PassportStudio {
     async loadFiles(fileList) {
         if (!fileList || fileList.length === 0) return;
 
-        let loadedCount = 0;
+        let loadedPhoto = null;
         for (const file of fileList) {
             if (!file.type.startsWith('image/')) continue;
 
@@ -1254,7 +1307,7 @@ export class PassportStudio {
             const sizeStr = (file.size / 1024).toFixed(0) + ' KB';
             const dimStr = `${img.naturalWidth} × ${img.naturalHeight}`;
 
-            const newPhoto = {
+            loadedPhoto = {
                 id,
                 name: file.name,
                 sizeStr,
@@ -1271,22 +1324,45 @@ export class PassportStudio {
                 hasBorder: this.state.hasBorder
             };
 
-            // Replace demo placeholder or add to list
-            if (this.state.photos.length === 1 && this.state.photos[0].id === 'sample_portrait_demo') {
-                this.state.photos = [newPhoto];
-            } else {
-                this.state.photos.unshift(newPhoto);
-            }
-
+            // User requested: When photo is uploaded, remove previous photo, replace with this new one
+            this.state.photos = [loadedPhoto];
             this.state.activePhotoId = id;
-            loadedCount++;
+            this.state.hasUserUploaded = true;
+            break;
         }
 
-        if (loadedCount > 0) {
+        if (loadedPhoto) {
+            this.updateUploadUIState();
             this.syncActivePhotoControls();
             this.renderCropCanvas();
             this.renderSheetPreview();
-            this.app.showToast(`Loaded ${loadedCount} photo(s)! Preview updated on A4 sheet.`, 'success');
+            this.app.showToast(`Photo loaded successfully! Adjust framing or print A4 sheet.`, 'success');
+        }
+    }
+
+    updateUploadUIState() {
+        const dropzone = document.getElementById('ps-dropzone');
+        const activeBar = document.getElementById('ps-photo-active-bar');
+        const thumb = document.getElementById('ps-active-thumb');
+        const nameEl = document.getElementById('ps-active-name');
+        const metaEl = document.getElementById('ps-active-meta');
+
+        const activePhoto = this.getActivePhoto();
+        const hasUserPhoto = this.state.hasUserUploaded && activePhoto && activePhoto.id !== 'sample_portrait_demo';
+
+        if (hasUserPhoto) {
+            dropzone?.classList.add('hidden');
+            activeBar?.classList.remove('hidden');
+            if (thumb) thumb.src = activePhoto.dataUrl;
+            if (nameEl) nameEl.textContent = activePhoto.name;
+            if (metaEl) metaEl.textContent = `${activePhoto.sizeStr} • ${activePhoto.dimStr}`;
+        } else {
+            dropzone?.classList.remove('hidden');
+            activeBar?.classList.add('hidden');
+        }
+
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
         }
     }
 
