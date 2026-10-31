@@ -62,7 +62,8 @@ const rootFiles = [
     'apple-touch-icon.png',
     'site.webmanifest',
     'sw.js',
-    '_headers'
+    '_headers',
+    '_redirects'
 ];
 
 for (const file of rootFiles) {
@@ -73,7 +74,7 @@ for (const file of rootFiles) {
 }
 
 // 3. Copy Asset Directories
-const assetDirs = ['css', 'js', 'vendor', 'assets'];
+const assetDirs = ['css', 'js', 'vendor', 'assets', 'tools'];
 for (const dir of assetDirs) {
     const src = path.join(rootDir, dir);
     if (fs.existsSync(src)) {

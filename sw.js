@@ -32,6 +32,7 @@ const PRECACHE_URLS = [
     '/js/edge/ai-bridge.js',
     '/js/tools/all-tools-engine.js',
     '/js/tools/image-workspaces.js',
+    '/js/tools/passport-studio.js',
     '/js/tools/utility-workspaces.js',
     '/vendor/lucide.min.js',
     '/vendor/pdf-lib.min.js',

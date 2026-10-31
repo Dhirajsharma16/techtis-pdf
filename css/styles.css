@@ -401,3 +401,61 @@ body {
     padding: 0.75rem 0;
     border-top: 1px solid #e2e8f0;
 }
+
+
+/* ================= TECHTIS PRINT STUDIO STYLES ================= */
+@media print {
+    /* Hide everything on the page */
+    body * {
+        visibility: hidden !important;
+    }
+
+    /* Only show the dedicated print mount and its pages */
+    #passport-print-mount,
+    #passport-print-mount * {
+        visibility: visible !important;
+    }
+
+    #passport-print-mount {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        z-index: 999999 !important;
+        display: block !important;
+    }
+
+    .passport-print-page {
+        page-break-after: always;
+        break-after: page;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    .passport-print-page:last-child {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    .passport-print-img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto;
+    }
+
+    @page {
+        margin: 0;
+        size: auto;
+    }
+}

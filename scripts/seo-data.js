@@ -5011,11 +5011,11 @@ export const SEO_DATA = {
         ]
     },
     "passport-photo-maker": {
-        "title": "Passport & ID Photo Maker Online Free - Official Presets & A4 Print Sheet | TECHTIS",
-        "metaDescription": "Create compliant passport and ID photos online free. Official presets for India (35x45mm), US (2x2 in), UK/Schengen, face framing guide, and multi-up A4 printable PDF tiling.",
+        "title": "Passport Photo Maker Online Free | TECHTIS",
+        "metaDescription": "Create compliant passport and ID photos online free. Multi-photo queue, official presets (India 35x45mm, US 2x2 in), A4 print sheet tiling, and 300 DPI export.",
         "keywords": "create compliant passport size photo online print sheet, Passport Seva 3.5cm x 4.5cm photo maker online free, how to make 35x45 mm passport photo in browser, Indian passport photo size crop tool free, US visa 2x2 inch photo maker online free, Schengen visa 35x45mm photo template generator, passport photo sheet 4x6 print printable online, crop photo for Indian driving license and PAN card, free passport photo maker with white background, crop face for UPSC SSC exam application photo, create 8 passport photos on single printable page, passport photo maker for iPhone and Android free, official biometric passport photo crop tool, Canadian visa passport photo size maker, UK passport photo online tool free, create printable passport size photo collage, OCI card photo maker 2x2 inch, client side private passport photo maker, crop photo to 3.5 x 4.5 cm with head measurement guide, free online passport photo generator without watermark, make passport photo print sheet for local photo studio printing, create 35mm x 35mm photo for Indian visa application, passport photo maker, free passport photo online, create passport size photo, india passport photo 35x45, us visa photo 2x2 inch, passport photo a4 print sheet, id photo maker free, biometric photo crop",
-        "h1": "Passport & ID Photo Maker Online Free",
-        "subtitle": "Create compliant passport, visa, and ID photos with official country presets, biometric face framing guides, and multi-up A4 printable PDF tiling.",
+        "h1": "Passport Photo Maker & A4 Print Studio",
+        "subtitle": "Create compliant passport, visa, and ID photos with official country presets, multi-photo batch quantities, A4 print sheet generator, and actual-size printing.",
         "badge": "100% Client-Side Privacy",
         "howTo": [
             {
