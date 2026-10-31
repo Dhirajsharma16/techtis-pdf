@@ -192,6 +192,7 @@ export class PassportStudio {
             gapX: 4, // mm between photos
             gapY: 5, // mm between photos
             marginT: 2, // 2mm top margin from top edge of A4 paper (Studio & CSC standard)
+            isMarginCenter: false, // true when user explicitly clicks "Center Page"
             autoCenter: false, // Don't vertically center - start from top 2mm
             showCutLines: true,
             hasBorder: true,
@@ -601,24 +602,70 @@ export class PassportStudio {
                                 </div>
                             </div>
 
-                            <!-- Sheet Margins & Spacing (Top 2mm Studio Standard) -->
-                            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 text-xs">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[11px] font-bold text-slate-700">Top Margin:</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" id="ps-btn-dec-margin" class="w-5 h-5 rounded bg-white border border-slate-300 font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs text-[10px]">-</button>
-                                        <input type="number" id="ps-input-margin-top" min="0" max="80" step="1" value="2" class="w-12 px-1 py-0.5 text-xs text-center border border-slate-200 rounded bg-white font-bold text-red-600 font-mono">
-                                        <span class="text-[11px] font-semibold text-slate-500">mm</span>
-                                        <button type="button" id="ps-btn-inc-margin" class="w-5 h-5 rounded bg-white border border-slate-300 font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs text-[10px]">+</button>
+                            <!-- Dedicated Custom Top Margins & Spacing Studio Card -->
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2.5 mt-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <i data-lucide="move-vertical" class="w-4 h-4 text-red-600"></i>
+                                        <span class="text-xs font-bold text-slate-800">Top Margin (Custom mm):</span>
                                     </div>
-                                    <span class="text-[10px] text-slate-400 font-medium">(2mm top margin for paper reuse)</span>
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" id="ps-btn-dec-margin" class="w-6 h-6 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs text-xs">-</button>
+                                        <div class="flex items-center bg-white border border-slate-300 rounded-lg px-2 py-0.5 shadow-2xs">
+                                            <input type="number" id="ps-input-margin-top" min="0" max="150" step="1" value="2" class="w-10 text-center font-black text-sm text-red-600 font-mono outline-none border-none bg-transparent">
+                                            <span class="text-[11px] font-bold text-slate-500">mm</span>
+                                        </div>
+                                        <button type="button" id="ps-btn-inc-margin" class="w-6 h-6 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs text-xs">+</button>
+                                    </div>
                                 </div>
 
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[11px] font-bold text-slate-700">Photo Gap:</span>
+                                <!-- Quick Pick Margin Presets -->
+                                <div class="flex items-center justify-between gap-1 flex-wrap pt-0.5">
+                                    <span class="text-[10px] text-slate-400 font-medium">Quick Presets:</span>
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        <button type="button" class="ps-margin-pill px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold shadow-2xs cursor-pointer" data-val="2">
+                                            ⭐ 2 mm (Studio Top)
+                                        </button>
+                                        <button type="button" class="ps-margin-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400 cursor-pointer shadow-2xs" data-val="5">
+                                            5 mm
+                                        </button>
+                                        <button type="button" class="ps-margin-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400 cursor-pointer shadow-2xs" data-val="10">
+                                            10 mm
+                                        </button>
+                                        <button type="button" class="ps-margin-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400 cursor-pointer shadow-2xs" data-val="15">
+                                            15 mm
+                                        </button>
+                                        <button type="button" class="ps-margin-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400 cursor-pointer shadow-2xs" data-val="center">
+                                            Center Page
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Top Margin Slider for Smooth Dragging -->
+                                <div class="pt-1">
+                                    <div class="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
+                                        <span>0 mm (Top edge)</span>
+                                        <span id="ps-margin-slider-val" class="font-bold text-red-600 font-mono">2 mm</span>
+                                        <span>80 mm</span>
+                                    </div>
+                                    <input type="range" id="ps-range-margin-top" min="0" max="80" step="1" value="2" class="w-full accent-red-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg appearance-none">
+                                </div>
+
+                                <!-- Photo Gap (Spacing between photos) Row -->
+                                <div class="flex items-center justify-between pt-2 border-t border-slate-200/80">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[11px] font-bold text-slate-700">Photo Gap (Spacing):</span>
+                                        <div class="flex items-center gap-1">
+                                            <button type="button" class="ps-gap-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400 cursor-pointer" data-gap="2">2mm</button>
+                                            <button type="button" class="ps-gap-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400 cursor-pointer" data-gap="3">3mm</button>
+                                            <button type="button" class="ps-gap-pill px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold cursor-pointer" data-gap="4">4mm</button>
+                                            <button type="button" class="ps-gap-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400 cursor-pointer" data-gap="5">5mm</button>
+                                        </div>
+                                    </div>
                                     <div class="flex items-center gap-1">
-                                        <input type="number" id="ps-input-gap" min="0" max="25" step="1" value="4" class="w-12 px-1 py-0.5 text-xs text-center border border-slate-200 rounded bg-white font-bold text-slate-700 font-mono">
-                                        <span class="text-[11px] font-semibold text-slate-500">mm</span>
+                                        <span class="text-[10px] text-slate-400">Custom:</span>
+                                        <input type="number" id="ps-input-gap" min="0" max="25" step="1" value="4" class="w-11 px-1 py-0.5 text-xs text-center border border-slate-200 rounded bg-white font-bold text-slate-800 font-mono shadow-2xs">
+                                        <span class="text-[10px] text-slate-500 font-bold">mm</span>
                                     </div>
                                 </div>
                             </div>
@@ -955,35 +1002,85 @@ export class PassportStudio {
             this.renderSheetPreview();
         });
 
-        // Top Margin controls (Studio standard 2mm)
+        // ================= CUSTOM TOP MARGIN & GAP SYSTEM =================
         const marginInput = document.getElementById('ps-input-margin-top');
-        marginInput?.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value);
-            this.state.marginT = !isNaN(val) && val >= 0 ? val : 2;
-            this.renderSheetPreview();
-        });
-        document.getElementById('ps-btn-dec-margin')?.addEventListener('click', () => {
-            const current = (this.state.marginT !== undefined ? this.state.marginT : 2);
-            if (current > 0) {
-                this.state.marginT = Math.max(0, current - 1);
-                if (marginInput) marginInput.value = this.state.marginT;
-                this.renderSheetPreview();
+        const marginRange = document.getElementById('ps-range-margin-top');
+        const marginSliderVal = document.getElementById('ps-margin-slider-val');
+
+        const syncMarginUI = (val, isCenter = false) => {
+            this.state.isMarginCenter = isCenter;
+            if (!isCenter) {
+                const num = Math.max(0, Math.min(150, parseFloat(val) || 0));
+                this.state.marginT = num;
+                if (marginInput) marginInput.value = num;
+                if (marginRange) marginRange.value = Math.min(80, num);
+                if (marginSliderVal) marginSliderVal.textContent = `${num} mm`;
+            } else {
+                if (marginSliderVal) marginSliderVal.textContent = 'Centered';
             }
-        });
-        document.getElementById('ps-btn-inc-margin')?.addEventListener('click', () => {
-            const current = (this.state.marginT !== undefined ? this.state.marginT : 2);
-            this.state.marginT = Math.min(80, current + 1);
-            if (marginInput) marginInput.value = this.state.marginT;
+
+            // Sync margin pills
+            document.querySelectorAll('.ps-margin-pill').forEach(btn => {
+                const target = btn.getAttribute('data-val');
+                const active = isCenter ? (target === 'center') : (Number(target) === this.state.marginT);
+                if (active) {
+                    btn.className = 'ps-margin-pill px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold shadow-2xs cursor-pointer';
+                } else {
+                    btn.className = 'ps-margin-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400 cursor-pointer shadow-2xs';
+                }
+            });
+
             this.renderSheetPreview();
+        };
+
+        marginInput?.addEventListener('input', (e) => syncMarginUI(e.target.value, false));
+        marginInput?.addEventListener('change', (e) => syncMarginUI(e.target.value, false));
+        marginRange?.addEventListener('input', (e) => syncMarginUI(e.target.value, false));
+
+        document.getElementById('ps-btn-dec-margin')?.addEventListener('click', () => {
+            const current = this.state.isMarginCenter ? 2 : (this.state.marginT || 0);
+            syncMarginUI(Math.max(0, current - 1), false);
         });
 
-        // Photo Gap control
+        document.getElementById('ps-btn-inc-margin')?.addEventListener('click', () => {
+            const current = this.state.isMarginCenter ? 2 : (this.state.marginT || 0);
+            syncMarginUI(current + 1, false);
+        });
+
+        // Quick margin preset buttons (2mm, 5mm, 10mm, 15mm, center)
+        document.querySelectorAll('.ps-margin-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = btn.getAttribute('data-val');
+                if (val === 'center') {
+                    syncMarginUI(null, true);
+                } else {
+                    syncMarginUI(Number(val), false);
+                }
+            });
+        });
+
+        // Photo Gap pills & custom input
         const gapInput = document.getElementById('ps-input-gap');
-        gapInput?.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value);
-            this.state.gapX = !isNaN(val) && val >= 0 ? val : 4;
-            this.state.gapY = !isNaN(val) && val >= 0 ? val : 4;
+        const syncGapUI = (val) => {
+            const g = Math.max(0, Math.min(30, parseFloat(val) || 0));
+            this.state.gapX = g;
+            this.state.gapY = g;
+            if (gapInput) gapInput.value = g;
+            document.querySelectorAll('.ps-gap-pill').forEach(btn => {
+                const target = Number(btn.getAttribute('data-gap'));
+                if (target === g) {
+                    btn.className = 'ps-gap-pill px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold cursor-pointer';
+                } else {
+                    btn.className = 'ps-gap-pill px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:border-red-400 cursor-pointer';
+                }
+            });
             this.renderSheetPreview();
+        };
+
+        gapInput?.addEventListener('input', (e) => syncGapUI(e.target.value));
+        gapInput?.addEventListener('change', (e) => syncGapUI(e.target.value));
+        document.querySelectorAll('.ps-gap-pill').forEach(btn => {
+            btn.addEventListener('click', () => syncGapUI(btn.getAttribute('data-gap')));
         });
 
         // Framing canvas events (Pan, Zoom, Drag)
@@ -1133,13 +1230,8 @@ export class PassportStudio {
             this.initDefaultSamplePhoto();
             this.state.cols = 3;
             this.state.rows = 4;
-            this.state.marginT = 2;
-            this.state.gapX = 4;
-            this.state.gapY = 5;
-            const mIn = document.getElementById('ps-input-margin-top');
-            if (mIn) mIn.value = 2;
-            const gIn = document.getElementById('ps-input-gap');
-            if (gIn) gIn.value = 4;
+            syncMarginUI(2, false);
+            syncGapUI(4);
             updateGridUI();
             this.renderCropCanvas();
             this.renderSheetPreview();
@@ -1428,10 +1520,13 @@ export class PassportStudio {
         const gridW = (cols * photo.widthMm) + ((cols - 1) * gapX);
         const gridH = (rows * photo.heightMm) + ((rows - 1) * gapY);
 
-        // Top margin: 2mm (Studio & Cyber Cafe standard - starts 2mm from top edge, not centered)
-        const marginT = (this.state.marginT !== undefined && this.state.marginT !== null && !isNaN(this.state.marginT))
-            ? Math.max(0, Number(this.state.marginT))
-            : 2;
+        // Top margin: Custom mm or Centered
+        let marginT = 2;
+        if (this.state.isMarginCenter) {
+            marginT = Math.max(0, Math.round((paper.heightMm - gridH) / 2));
+        } else if (this.state.marginT !== undefined && this.state.marginT !== null && !isNaN(this.state.marginT)) {
+            marginT = Math.max(0, Number(this.state.marginT));
+        }
 
         // Horizontally centered across the page width
         const marginL = Math.max(2, (paper.widthMm - gridW) / 2);
@@ -1602,10 +1697,11 @@ export class PassportStudio {
         // Update Caption & Summary
         const caption = document.getElementById('ps-sheet-caption');
         if (caption) {
+            const marginStr = this.state.isMarginCenter ? 'Centered' : `Top: ${m.marginT}mm`;
             if (m.isOverflowX) {
-                caption.innerHTML = `⚠️ <span class="text-amber-600 font-bold">Width Exceeded:</span> ${m.cols} Cols &gt; Max ${m.maxCols} fit &bull; Switch to Landscape for 6 photos`;
+                caption.innerHTML = `⚠️ <span class="text-amber-600 font-bold">Paper Width Exceeded:</span> ${m.cols} Cols &gt; Max ${m.maxCols} fit &bull; Switch to Landscape for 6 photos`;
             } else {
-                caption.innerHTML = `A4 Sheet Preview &bull; ${m.cols} Cols &times; ${m.rows} Rows (${m.totalSlots} Photos) &bull; Top: ${m.marginT}mm`;
+                caption.innerHTML = `A4 Sheet Preview &bull; ${m.cols} Cols &times; ${m.rows} Rows (${m.totalSlots} Photos) &bull; ${marginStr}`;
             }
         }
     }
