@@ -1,4 +1,5 @@
 import { LocalMLEngine } from '../edge/ml-engine.js';
+import { EdgeAIBridge } from '../edge/ai-bridge.js';
 /**
  * Client-Side Image Processing Engine for TECHTIS (techtis.in)
  * High-performance, 100% in-browser Canvas & WebAssembly image tools.
@@ -426,27 +427,38 @@ export const ImageEngine = {
             console.warn('AI Vision extraction note, proceeding with WASM OCR:', aiErr);
         }
 
-        // In-Browser WebAssembly Tesseract.js
+        // In-Browser WebAssembly Tesseract.js (100% Client-Side)
+        if (!window.Tesseract && typeof EdgeAIBridge !== 'undefined' && typeof EdgeAIBridge.ensureTesseract === 'function') {
+            try {
+                await EdgeAIBridge.ensureTesseract(p => onProgress({ status: 'tesseract-load', progress: 0.3, message: p.message }));
+            } catch (_) {}
+        }
+
         if (window.Tesseract) {
             onProgress({ status: 'init', progress: 0.35, message: 'Initializing in-browser WebAssembly OCR worker...' });
             try {
-                if (typeof window.Tesseract.createWorker === 'function') {
-                    const worker = await window.Tesseract.createWorker('eng', 1, {
-                        logger: m => {
-                            if (m && m.status) {
-                                const pct = Math.round((m.progress || 0) * 100);
-                                onProgress({ status: m.status, progress: m.progress || 0, message: `Running OCR: ${m.status} (${pct}%)` });
-                            }
+                const workerOptions = {
+                    workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
+                    corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.0/tesseract-core-simd-lstm.wasm.js',
+                    langPath: 'https://cdn.jsdelivr.net/gh/naptha/tessdata@gh-pages/4.0.0',
+                    logger: m => {
+                        if (m && m.status) {
+                            const pct = Math.round((m.progress || 0) * 100);
+                            onProgress({ status: m.status, progress: m.progress || 0, message: `Running OCR: ${m.status} (${pct}%)` });
                         }
-                    });
+                    }
+                };
+
+                if (typeof window.Tesseract.createWorker === 'function') {
+                    const worker = await window.Tesseract.createWorker('eng', 1, workerOptions);
                     const res = await worker.recognize(targetSource);
                     await worker.terminate();
-                    if (res.data && res.data.text && res.data.text.trim()) {
+                    if (res && res.data && res.data.text && res.data.text.trim()) {
                         return res.data.text.trim();
                     }
                 } else if (typeof window.Tesseract.recognize === 'function') {
-                    const res = await window.Tesseract.recognize(targetSource, 'eng');
-                    if (res.data && res.data.text && res.data.text.trim()) {
+                    const res = await window.Tesseract.recognize(targetSource, 'eng', workerOptions);
+                    if (res && res.data && res.data.text && res.data.text.trim()) {
                         return res.data.text.trim();
                     }
                 }

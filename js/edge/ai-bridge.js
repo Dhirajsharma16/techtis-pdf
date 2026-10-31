@@ -308,10 +308,89 @@ ${text.slice(0, 25000)}`;
     },
 
     /**
+     * Ensure Tesseract.js library is loaded in the browser window
+     * Uses local vendor/tesseract.min.js with automatic fallback to CDN
+     */
+    async ensureTesseract(onProgress = () => {}) {
+        if (typeof window !== 'undefined' && window.Tesseract) {
+            return window.Tesseract;
+        }
+
+        onProgress({ step: 'tesseract-load', message: 'Loading WebAssembly OCR engine into browser memory...' });
+
+        return new Promise((resolve, reject) => {
+            const isSubdir = (typeof window !== 'undefined' && window.location.pathname.split('/').filter(Boolean).length > 0);
+            const localSrc = isSubdir ? '../vendor/tesseract.min.js' : 'vendor/tesseract.min.js';
+
+            const script = document.createElement('script');
+            script.src = localSrc;
+            script.onload = () => {
+                if (typeof window !== 'undefined' && window.Tesseract) {
+                    resolve(window.Tesseract);
+                } else {
+                    loadCdn();
+                }
+            };
+            script.onerror = () => loadCdn();
+
+            function loadCdn() {
+                const cdn = document.createElement('script');
+                cdn.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+                cdn.onload = () => {
+                    if (typeof window !== 'undefined' && window.Tesseract) resolve(window.Tesseract);
+                    else reject(new Error('Failed to initialize Tesseract OCR engine'));
+                };
+                cdn.onerror = () => reject(new Error('Could not load Tesseract OCR engine library'));
+                document.head.appendChild(cdn);
+            }
+
+            document.head.appendChild(script);
+        });
+    },
+
+    /**
+     * Pre-process image to high-resolution canvas for maximum OCR accuracy
+     */
+    async prepareImageCanvas(file) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            const objectUrl = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(objectUrl);
+                const canvas = document.createElement('canvas');
+                let scale = 1.0;
+                // Upscale small phone photos or compressed scans for crisp character detection
+                if (img.width < 1500) {
+                    scale = Math.min(3.0, 1800 / img.width);
+                } else if (img.width > 3600) {
+                    scale = 3600 / img.width;
+                }
+                canvas.width = Math.round(img.width * scale);
+                canvas.height = Math.round(img.height * scale);
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                resolve({ canvas, dataUrl });
+            };
+            img.onerror = () => {
+                URL.revokeObjectURL(objectUrl);
+                // Fallback to direct FileReader
+                const reader = new FileReader();
+                reader.onload = () => resolve({ canvas: null, dataUrl: reader.result });
+                reader.onerror = () => resolve({ canvas: null, dataUrl: null });
+                reader.readAsDataURL(file);
+            };
+            img.src = objectUrl;
+        });
+    },
+
+    /**
      * Optical Character Recognition (OCR) Engine
      * Multi-tier architecture: In-Browser Text Layer -> Fast AI Vision (Gemini / Groq) -> WASM Tesseract.js -> Cloud Fallback
      */
-    async performOcr(file, onProgress = () => {}) {
+    async performOcr(file, onProgress = () => {}, options = {}) {
         if (!file) return 'No file provided for OCR.';
 
         const isPdf = Boolean(
@@ -321,6 +400,7 @@ ${text.slice(0, 25000)}`;
 
         let targetCanvas = null;
         let imageBase64 = null;
+        const pdfCanvases = [];
 
         // 1. If PDF, check if digital text layer already exists (Sub-20ms, 100% accurate)
         if (isPdf) {
@@ -335,35 +415,38 @@ ${text.slice(0, 25000)}`;
                 console.warn('PDF text layer extraction note:', pdfTextErr);
             }
 
-            // Scanned PDF -> Render page 1 to high-resolution canvas
-            onProgress({ step: 'render', message: 'Rendering scanned PDF page for optical character recognition...' });
+            // Scanned PDF -> Render pages to high-resolution canvas
+            onProgress({ step: 'render', message: 'Rendering scanned PDF pages for OCR...' });
             try {
                 if (window.pdfjsLib) {
                     const arrayBuffer = await file.arrayBuffer();
                     const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer.slice(0) }).promise;
-                    const page = await pdf.getPage(1);
-                    const viewport = page.getViewport({ scale: 2.0 });
-                    const canvas = document.createElement('canvas');
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    const ctx = canvas.getContext('2d');
-                    await page.render({ canvasContext: ctx, viewport }).promise;
-                    targetCanvas = canvas;
-                    imageBase64 = canvas.toDataURL('image/jpeg', 0.9);
+                    const maxPages = Math.min(pdf.numPages, 10);
+                    for (let p = 1; p <= maxPages; p++) {
+                        const page = await pdf.getPage(p);
+                        const viewport = page.getViewport({ scale: 2.0 });
+                        const canvas = document.createElement('canvas');
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        const ctx = canvas.getContext('2d');
+                        await page.render({ canvasContext: ctx, viewport }).promise;
+                        pdfCanvases.push(canvas);
+                    }
+                    if (pdfCanvases.length > 0) {
+                        targetCanvas = pdfCanvases[0];
+                        imageBase64 = targetCanvas.toDataURL('image/jpeg', 0.9);
+                    }
                 }
             } catch (renderErr) {
                 console.warn('PDF render for OCR note:', renderErr);
             }
         } else {
-            // It's an image file
-            onProgress({ step: 'image', message: 'Preparing image for recognition...' });
+            // It's an image file (e.g. Aadhaar card photo, scan, receipt)
+            onProgress({ step: 'image', message: 'Optimizing image resolution for OCR detection...' });
             try {
-                imageBase64 = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
+                const prep = await this.prepareImageCanvas(file);
+                targetCanvas = prep.canvas;
+                imageBase64 = prep.dataUrl;
             } catch (_) {}
         }
 
@@ -467,33 +550,78 @@ ${text.slice(0, 25000)}`;
         }
 
         // 4. In-Browser WASM Tesseract.js (100% Offline, Client-Side)
-        const ocrTarget = targetCanvas || file;
-        if (window.Tesseract && (targetCanvas || !isPdf)) {
+        try {
+            await this.ensureTesseract(onProgress);
+        } catch (tessLoadErr) {
+            console.warn('ensureTesseract note:', tessLoadErr);
+        }
+
+        if (typeof window !== 'undefined' && window.Tesseract) {
             try {
-                onProgress({ step: 'tesseract', message: 'Initializing in-browser WebAssembly OCR (100% Client-Side)...' });
+                const selectedLang = (options && options.lang) ? options.lang : 'eng';
+                onProgress({ step: 'tesseract', message: 'Initializing in-browser WebAssembly OCR engine...' });
+
+                const workerOptions = {
+                    workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
+                    corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.0/tesseract-core-simd-lstm.wasm.js',
+                    langPath: 'https://cdn.jsdelivr.net/gh/naptha/tessdata@gh-pages/4.0.0',
+                    logger: m => {
+                        if (m && m.status) {
+                            const pct = Math.round((m.progress || 0) * 100);
+                            let msg = m.status;
+                            if (m.status === 'recognizing text') msg = 'Scanning text characters & numbers';
+                            else if (m.status === 'loading tesseract core') msg = 'Loading WebAssembly Core';
+                            else if (m.status === 'loading language traineddata') msg = `Loading neural language models (${pct}%)`;
+                            else if (m.status === 'initializing api') msg = 'Initializing OCR neural network';
+                            onProgress({ step: 'tesseract', message: `${msg} (${pct}%)` });
+                        }
+                    }
+                };
+
+                let recognizedText = '';
+
                 if (typeof window.Tesseract.createWorker === 'function') {
-                    const worker = await window.Tesseract.createWorker('eng', 1, {
-                        logger: m => {
-                            if (m && m.status) {
-                                const pct = Math.round((m.progress || 0) * 100);
-                                onProgress({ step: 'tesseract', message: `WASM OCR: ${m.status} (${pct}%)` });
+                    const worker = await window.Tesseract.createWorker(selectedLang, 1, workerOptions);
+
+                    if (pdfCanvases.length > 1) {
+                        const pageTexts = [];
+                        for (let i = 0; i < pdfCanvases.length; i++) {
+                            onProgress({ step: 'tesseract', message: `Scanning Page ${i + 1} of ${pdfCanvases.length}...` });
+                            const ret = await worker.recognize(pdfCanvases[i]);
+                            if (ret && ret.data && ret.data.text && ret.data.text.trim()) {
+                                pageTexts.push(`--- PAGE ${i + 1} ---\n` + ret.data.text.trim());
                             }
                         }
-                    });
-                    const ret = await worker.recognize(ocrTarget);
-                    await worker.terminate();
-                    if (ret.data && ret.data.text && ret.data.text.trim()) {
-                        onProgress({ step: 'done', message: 'WASM OCR completed successfully!' });
-                        return ret.data.text.trim();
+                        recognizedText = pageTexts.join('\n\n');
+                    } else {
+                        const ocrTarget = targetCanvas || file;
+                        const ret = await worker.recognize(ocrTarget);
+                        if (ret && ret.data && ret.data.text) {
+                            recognizedText = ret.data.text;
+                        }
                     }
+                    await worker.terminate();
                 } else if (typeof window.Tesseract.recognize === 'function') {
-                    const ret = await window.Tesseract.recognize(ocrTarget, 'eng');
-                    if (ret.data && ret.data.text && ret.data.text.trim()) {
-                        return ret.data.text.trim();
+                    const ocrTarget = targetCanvas || file;
+                    const ret = await window.Tesseract.recognize(ocrTarget, selectedLang, workerOptions);
+                    if (ret && ret.data && ret.data.text) {
+                        recognizedText = ret.data.text;
+                    }
+                }
+
+                if (recognizedText && recognizedText.trim()) {
+                    const cleaned = recognizedText
+                        .replace(/\r\n/g, '\n')
+                        .replace(/[ \t]+/g, ' ')
+                        .replace(/\n{3,}/g, '\n\n')
+                        .trim();
+                    if (cleaned.length > 3) {
+                        onProgress({ step: 'done', message: 'OCR completed successfully!' });
+                        return cleaned;
                     }
                 }
             } catch (err) {
-                console.warn('WASM Tesseract note, attempting cloud fallback:', err);
+                console.warn('WASM Tesseract processing note:', err);
             }
         }
 
@@ -508,7 +636,7 @@ ${text.slice(0, 25000)}`;
             } else {
                 formData.append('file', file);
             }
-            formData.append('language', 'eng');
+            formData.append('language', (options && options.lang === 'eng+hin') ? 'hin' : 'eng');
             formData.append('apikey', apiKey);
 
             const controller = new AbortController();

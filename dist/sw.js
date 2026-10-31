@@ -1,10 +1,10 @@
 /**
  * TECHTIS (techtis.in) - Progressive Web App Service Worker
  * Enables 100% Offline Client-Side Execution for all 60 PDF, Image & Dev Tools
- * Cache Version: v2.4.1
+ * Cache Version: v2.4.2
  */
 
-const CACHE_NAME = 'techtis-cache-v2.4.1';
+const CACHE_NAME = 'techtis-cache-v2.4.2';
 
 // Essential Core App Shell & WebAssembly/Worker Libraries
 const PRECACHE_URLS = [
@@ -22,7 +22,7 @@ const PRECACHE_URLS = [
     '/assets/images/logo.png',
     '/css/tailwind.min.css?v=2.4.0',
     '/css/styles.css?v=2.4.0',
-    '/js/app.js?v=2.4.0',
+    '/js/app.js?v=2.4.2',
     '/js/tools/registry.js',
     '/js/utils/storage.js',
     '/js/utils/pdf-helpers.js',
@@ -32,14 +32,16 @@ const PRECACHE_URLS = [
     '/js/edge/ai-bridge.js',
     '/js/tools/all-tools-engine.js',
     '/js/tools/image-workspaces.js',
-    '/js/tools/passport-studio.js?v=2.4.0',
+    '/js/tools/image-engine.js',
+    '/js/tools/passport-studio.js?v=2.4.1',
     '/js/tools/passport-studio.js',
     '/js/tools/utility-workspaces.js',
     '/vendor/lucide.min.js',
     '/vendor/pdf-lib.min.js',
     '/vendor/pdf.min.js',
     '/vendor/pdf.worker.min.js',
-    '/vendor/jszip.min.js'
+    '/vendor/jszip.min.js',
+    '/vendor/tesseract.min.js'
 ];
 
 // Install Event: Precache Core Assets with Fault-Tolerant Fallback
