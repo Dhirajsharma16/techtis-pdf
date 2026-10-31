@@ -304,13 +304,12 @@ for (const tool of TOOLS) {
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="${toolUrl}">
 
-    <!-- Global / Multi-Country Geo & Language Targeting -->
+    <!-- Global Multi-Country & Language Targeting -->
     <meta name="language" content="English">
     <meta name="distribution" content="Global">
     <meta name="coverage" content="Worldwide">
     <meta name="rating" content="General">
     <meta name="target" content="all">
-    <meta name="geo.region" content="US, IN, GB, CA, AU, DE, FR, BR, ES, JP, AE, SG">
 
     <!-- Hreflang Canonical & International Targeting -->
     <link rel="alternate" hreflang="x-default" href="${toolUrl}">
