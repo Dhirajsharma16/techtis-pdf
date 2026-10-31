@@ -49,6 +49,7 @@ const rootFiles = [
     'favicon.png',
     'logo.png',
     'robots.txt',
+    'BingSiteAuth.xml',
     'sitemap.xml',
     'ads.txt',
     'favicon.ico',
