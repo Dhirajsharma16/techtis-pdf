@@ -533,7 +533,10 @@ export class PassportStudio {
                                 <!-- Photos per row (Columns) -->
                                 <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                                     <div class="flex items-center justify-between mb-1">
-                                        <span class="text-xs font-bold text-slate-800">Photos per Row (Cols):</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-xs font-bold text-slate-800">Photos per Row (Cols):</span>
+                                            <span id="ps-max-cols-badge" class="text-[10px] text-slate-500 font-semibold bg-white border border-slate-200 px-1.5 py-0.5 rounded">Max: 5</span>
+                                        </div>
                                         <div class="flex items-center gap-1">
                                             <button type="button" id="ps-btn-dec-cols" class="w-6 h-6 rounded-lg bg-white border border-slate-300 font-black text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer shadow-2xs">-</button>
                                             <span id="ps-val-cols" class="w-8 text-center font-black text-sm text-red-600 font-mono">3</span>
@@ -624,6 +627,9 @@ export class PassportStudio {
                         <!-- REALISTIC A4 PAPER PREVIEW STAGE (Matches User's Uploaded Image!) -->
                         <div class="bg-gradient-to-b from-slate-100 to-slate-200/90 border border-slate-300 rounded-3xl p-4 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
                             
+                            <!-- Dynamic Overflow Warning Alert (Shows when photos exceed paper width) -->
+                            <div id="ps-overflow-warning-box" class="w-full max-w-[480px] mb-3 hidden z-20"></div>
+
                             <!-- Visual Stacked Sheets Mockup Effect in Background (Just like user's photo!) -->
                             <div class="absolute w-[72%] max-w-[420px] h-[88%] bg-white/70 rounded-md shadow-lg -rotate-6 -translate-x-12 translate-y-4 border border-slate-200 pointer-events-none hidden sm:block"></div>
                             <div class="absolute w-[74%] max-w-[430px] h-[89%] bg-white/85 rounded-md shadow-lg -rotate-3 -translate-x-6 translate-y-2 border border-slate-200 pointer-events-none hidden sm:block"></div>
@@ -797,8 +803,22 @@ export class PassportStudio {
                 }
             });
 
+            // Max columns capacity badge
+            const maxColsBadge = document.getElementById('ps-max-cols-badge');
+            if (maxColsBadge) {
+                const m = this.calculateSheetMetrics();
+                if (m.isOverflowX) {
+                    maxColsBadge.className = 'text-[10px] text-amber-800 bg-amber-100 font-bold px-1.5 py-0.5 rounded border border-amber-300';
+                    maxColsBadge.textContent = `⚠️ Max ${m.maxCols} fit`;
+                } else {
+                    maxColsBadge.className = 'text-[10px] text-slate-500 font-semibold bg-white border border-slate-200 px-1.5 py-0.5 rounded';
+                    maxColsBadge.textContent = `Max: ${m.maxCols}`;
+                }
+            }
+
             this.renderSheetPreview();
         };
+        this.updateGridUI = updateGridUI;
 
         // Stepper: Columns
         document.getElementById('ps-btn-dec-cols')?.addEventListener('click', () => {
@@ -1416,6 +1436,13 @@ export class PassportStudio {
         // Horizontally centered across the page width
         const marginL = Math.max(2, (paper.widthMm - gridW) / 2);
 
+        // Physical Paper Fit Calculation
+        const minMargin = 2; // mm minimum margin
+        const maxCols = Math.max(1, Math.floor((paper.widthMm - (minMargin * 2) + gapX) / (photo.widthMm + gapX)));
+        const maxRows = Math.max(1, Math.floor((paper.heightMm - marginT + gapY) / (photo.heightMm + gapY)));
+        const isOverflowX = gridW > paper.widthMm;
+        const isOverflowY = (marginT + gridH) > paper.heightMm;
+
         const totalSlots = cols * rows;
 
         return {
@@ -1429,6 +1456,10 @@ export class PassportStudio {
             gridH,
             marginL,
             marginT,
+            maxCols,
+            maxRows,
+            isOverflowX,
+            isOverflowY,
             totalSlots
         };
     }
@@ -1521,10 +1552,61 @@ export class PassportStudio {
             ctx.restore();
         }
 
+        // Update Overflow Warning Box
+        const warnBox = document.getElementById('ps-overflow-warning-box');
+        if (warnBox) {
+            if (m.isOverflowX) {
+                warnBox.classList.remove('hidden');
+                warnBox.innerHTML = `
+                    <div class="bg-amber-50 border border-amber-300 rounded-2xl p-3 text-xs text-amber-950 shadow-sm flex flex-col gap-2">
+                        <div class="flex items-start gap-2">
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+                            <div>
+                                <span class="font-bold text-amber-900">Paper Width Exceeded:</span>
+                                <span> ${m.cols} photos (${Math.round(m.gridW)} mm) exceed ${m.paper.label} width (${m.paper.widthMm} mm). That's why the last photo cuts off! Physical A4 width is 210 mm (max <strong>${m.maxCols} photos</strong> fit per row).</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-amber-200">
+                            <button type="button" id="ps-btn-fix-fit-cols" class="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-[11px] flex items-center gap-1 cursor-pointer shadow-2xs">
+                                <i data-lucide="check" class="w-3 h-3"></i> Set to ${m.maxCols} Cols (Fit A4)
+                            </button>
+                            <button type="button" id="ps-btn-fix-landscape" class="px-3 py-1 bg-slate-800 hover:bg-black text-white rounded-lg font-bold text-[11px] flex items-center gap-1 cursor-pointer shadow-2xs">
+                                <i data-lucide="rotate-cw" class="w-3 h-3"></i> Switch to A4 Landscape (Fits 6-7)
+                            </button>
+                        </div>
+                    </div>
+                `;
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    window.lucide.createIcons();
+                }
+
+                document.getElementById('ps-btn-fix-fit-cols')?.addEventListener('click', () => {
+                    this.state.cols = m.maxCols;
+                    if (typeof this.updateGridUI === 'function') this.updateGridUI();
+                    else this.renderSheetPreview();
+                });
+
+                document.getElementById('ps-btn-fix-landscape')?.addEventListener('click', () => {
+                    this.state.paperId = 'a4-landscape';
+                    const pSelect = document.getElementById('ps-paper-select');
+                    if (pSelect) pSelect.value = 'a4-landscape';
+                    if (typeof this.updateGridUI === 'function') this.updateGridUI();
+                    else this.renderSheetPreview();
+                });
+            } else {
+                warnBox.classList.add('hidden');
+                warnBox.innerHTML = '';
+            }
+        }
+
         // Update Caption & Summary
         const caption = document.getElementById('ps-sheet-caption');
         if (caption) {
-            caption.innerHTML = `A4 Sheet Preview &bull; ${m.cols} Cols &times; ${m.rows} Rows (${m.totalSlots} Photos) &bull; Top: ${m.marginT}mm`;
+            if (m.isOverflowX) {
+                caption.innerHTML = `⚠️ <span class="text-amber-600 font-bold">Width Exceeded:</span> ${m.cols} Cols &gt; Max ${m.maxCols} fit &bull; Switch to Landscape for 6 photos`;
+            } else {
+                caption.innerHTML = `A4 Sheet Preview &bull; ${m.cols} Cols &times; ${m.rows} Rows (${m.totalSlots} Photos) &bull; Top: ${m.marginT}mm`;
+            }
         }
     }
 
@@ -1665,6 +1747,9 @@ export class PassportStudio {
             const pdfDoc = await window.PDFLib.PDFDocument.create();
 
             const m = this.calculateSheetMetrics();
+            if (m.isOverflowX) {
+                this.app.showToast(`Notice: ${m.cols} photos exceed ${m.paper.label} width (${m.paper.widthMm}mm). Switch to Landscape to prevent cutting.`, 'warning');
+            }
             const MM_TO_PT = 72 / 25.4;
 
             const paperW_pt = m.paper.widthMm * MM_TO_PT;
@@ -1774,6 +1859,11 @@ export class PassportStudio {
     executeBrowserPrint() {
         const mount = document.getElementById('passport-print-mount');
         if (!mount) return;
+
+        const m = this.calculateSheetMetrics();
+        if (m.isOverflowX) {
+            this.app.showToast(`Notice: ${m.cols} photos exceed ${m.paper.label} width. Switch to Landscape for 6 photos without cutting.`, 'warning');
+        }
 
         mount.innerHTML = '';
         const sheetCanvas = this.generateHighResSheetCanvas(300);
