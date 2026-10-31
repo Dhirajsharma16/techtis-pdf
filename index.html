@@ -258,38 +258,40 @@
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
 
-    <!-- Main Navigation Header -->
-    <header class="header-glass sticky top-0 z-40 px-4 lg:px-8 py-2.5 flex items-center justify-between gap-4">
-        <a href="./" class="flex items-center gap-2.5 sm:gap-3 cursor-pointer shrink-0 group" id="brand-logo-btn" title="TechTis - Free PDF and Image Tools">
-            <img src="assets/images/logo.png" alt="TechTis Logo" width="69" height="40" fetchpriority="high" class="h-9 sm:h-10 w-auto object-contain group-hover:scale-105 transition-transform">
-            <div>
-                <div class="leading-none">
-                    <span class="text-xl sm:text-2xl font-black tracking-tight text-[#002244]">Tech<span class="text-[#EA1D2C]">Tis</span></span>
+    <!-- Persistent Sticky Header Bar (Navbar + Category Filter Section Always Visible on Scroll) -->
+    <div id="sticky-header-container" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-xs">
+        <!-- Main Navigation Header (Navbar) -->
+        <header class="header-glass px-4 lg:px-8 py-2.5 flex items-center justify-between gap-4 border-b border-slate-100/80">
+            <a href="./" class="flex items-center gap-2.5 sm:gap-3 cursor-pointer shrink-0 group" id="brand-logo-btn" title="TechTis - Free PDF and Image Tools">
+                <img src="assets/images/logo.png" alt="TechTis Logo" width="69" height="40" fetchpriority="high" class="h-9 sm:h-10 w-auto object-contain group-hover:scale-105 transition-transform">
+                <div>
+                    <div class="leading-none">
+                        <span class="text-xl sm:text-2xl font-black tracking-tight text-[#002244]">Tech<span class="text-[#EA1D2C]">Tis</span></span>
+                    </div>
+                    <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 mt-1 leading-none">Free <span class="text-[#EA1D2C] font-bold">PDF</span> and <span class="text-[#EA1D2C] font-bold">Image</span> Tools</p>
                 </div>
-                <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 mt-1 leading-none">Free <span class="text-[#EA1D2C] font-bold">PDF</span> and <span class="text-[#EA1D2C] font-bold">Image</span> Tools</p>
-            </div>
-        </a>
+            </a>
 
-        <!-- Top Header Search Bar -->
-        <div class="flex-1 max-w-lg mx-auto relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <i data-lucide="search" class="w-4 h-4"></i>
+            <!-- Top Header Search Bar -->
+            <div class="flex-1 max-w-lg mx-auto relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </div>
+                <input type="text" id="tool-search-input" placeholder="Search 60 PDF, Dev, Design & Image tools (e.g. passport, qr code, json, css, ocr, fill form...)" 
+                       class="w-full pl-9 pr-10 py-2 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#EA1D2C] rounded-xl text-xs shadow-xs focus:outline-none focus:ring-2 focus:ring-[#EA1D2C]/20 transition placeholder-slate-400">
+                <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
+                    <kbd class="px-1.5 py-0.5 text-[9px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs">/</kbd>
+                </div>
             </div>
-            <input type="text" id="tool-search-input" placeholder="Search 60 PDF, Dev, Design & Image tools (e.g. passport, qr code, json, css, ocr, fill form...)" 
-                   class="w-full pl-9 pr-10 py-2 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#EA1D2C] rounded-xl text-xs shadow-xs focus:outline-none focus:ring-2 focus:ring-[#EA1D2C]/20 transition placeholder-slate-400">
-            <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
-                <kbd class="px-1.5 py-0.5 text-[9px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs">/</kbd>
+
+            <div class="hidden sm:flex items-center gap-2 shrink-0 text-[11px] text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>100% In-Browser</span>
             </div>
-        </div>
+        </header>
 
-        <div class="hidden sm:flex items-center gap-2 shrink-0 text-[11px] text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>100% In-Browser</span>
-        </div>
-    </header>
-
-    <!-- Upper Category Navigation Bar (Engineered in 2 Clean Balanced Lines) -->
-    <nav class="bg-white/95 border-b border-slate-200/90 sticky top-[65px] z-30 shadow-xs backdrop-blur-md py-2.5 px-3 sm:px-6">
+        <!-- Upper Category Navigation Bar (Filter Section) -->
+        <nav id="top-category-nav" class="border-b border-slate-200/90 py-2 sm:py-2.5 px-3 sm:px-6">
         <div class="max-w-7xl mx-auto space-y-2">
             <!-- Line 1: Document & AI Suites -->
             <div class="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 sm:pb-0 scrollbar-none">
@@ -349,6 +351,7 @@
             </div>
         </div>
     </nav>
+    </div>
 
     <!-- Main Container -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">

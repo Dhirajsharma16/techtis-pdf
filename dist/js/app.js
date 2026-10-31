@@ -453,7 +453,8 @@ class App {
         if (options.scroll) {
             const catalogTarget = document.getElementById('catalog-view');
             if (catalogTarget) {
-                const headerOffset = 130;
+                const stickyHeader = document.getElementById('sticky-header-container');
+                const headerOffset = stickyHeader ? stickyHeader.offsetHeight + 10 : 130;
                 const elementPosition = catalogTarget.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
                 window.scrollTo({
@@ -615,6 +616,7 @@ class App {
     showCatalogView() {
         document.getElementById('catalog-view')?.classList.remove('hidden');
         document.getElementById('workspace-view')?.classList.add('hidden');
+        document.getElementById('top-category-nav')?.classList.remove('hidden');
         this.currentTool = null;
         this.uploadedFiles = [];
 
@@ -651,6 +653,7 @@ class App {
 
         document.getElementById('catalog-view')?.classList.add('hidden');
         document.getElementById('workspace-view')?.classList.remove('hidden');
+        document.getElementById('top-category-nav')?.classList.add('hidden');
 
         // Set Workspace Headers
         const titleEl = document.getElementById('workspace-title');
