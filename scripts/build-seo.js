@@ -360,8 +360,8 @@ for (const tool of TOOLS) {
     <meta property="og:image" content="https://techtis.in/favicon-512x512.png">
     <meta name="twitter:image" content="https://techtis.in/favicon-512x512.png">
     <!-- Precompiled High-Performance CSS (Zero JavaScript Compilation Delay) -->
-    <link rel="stylesheet" href="../css/tailwind.min.css?v=2.3.0">
-    <link rel="stylesheet" href="../css/styles.css?v=2.3.0">
+    <link rel="stylesheet" href="../css/tailwind.min.css?v=2.4.0">
+    <link rel="stylesheet" href="../css/styles.css?v=2.4.0">
 
     <!-- Performance Resource Hints -->
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
@@ -729,7 +729,7 @@ for (const tool of TOOLS) {
     <div id="toast-container"></div>
 
     <!-- Application Orchestrator Script -->
-    <script type="module" src="../js/app.js?v=2.3.0"></script>
+    <script type="module" src="../js/app.js?v=2.4.0"></script>
 </body>
 </html>`;
 

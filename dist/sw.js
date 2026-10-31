@@ -1,10 +1,10 @@
 /**
  * TECHTIS (techtis.in) - Progressive Web App Service Worker
  * Enables 100% Offline Client-Side Execution for all 60 PDF, Image & Dev Tools
- * Cache Version: v2.3.0
+ * Cache Version: v2.4.0
  */
 
-const CACHE_NAME = 'techtis-cache-v2.3.0';
+const CACHE_NAME = 'techtis-cache-v2.4.0';
 
 // Essential Core App Shell & WebAssembly/Worker Libraries
 const PRECACHE_URLS = [
@@ -20,9 +20,9 @@ const PRECACHE_URLS = [
     '/favicon-512x512.png',
     '/apple-touch-icon.png',
     '/assets/images/logo.png',
-    '/css/tailwind.min.css?v=2.3.0',
-    '/css/styles.css?v=2.3.0',
-    '/js/app.js?v=2.3.0',
+    '/css/tailwind.min.css?v=2.4.0',
+    '/css/styles.css?v=2.4.0',
+    '/js/app.js?v=2.4.0',
     '/js/tools/registry.js',
     '/js/utils/storage.js',
     '/js/utils/pdf-helpers.js',
@@ -32,6 +32,7 @@ const PRECACHE_URLS = [
     '/js/edge/ai-bridge.js',
     '/js/tools/all-tools-engine.js',
     '/js/tools/image-workspaces.js',
+    '/js/tools/passport-studio.js?v=2.4.0',
     '/js/tools/passport-studio.js',
     '/js/tools/utility-workspaces.js',
     '/vendor/lucide.min.js',
@@ -119,11 +120,26 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // 2. Static Assets (CSS, JS, Vendor WebAssembly, Images, Fonts) -> Cache-First with Dynamic Cache Fill
+    // 2. JavaScript & CSS Scripts -> Network-First so code updates take effect immediately
+    if (url.pathname.endsWith('.js') || url.pathname.endsWith('.css') || url.pathname.includes('/js/')) {
+        event.respondWith(
+            fetch(request)
+                .then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+                    }
+                    return networkResponse;
+                })
+                .catch(() => caches.match(request))
+        );
+        return;
+    }
+
+    // 3. Other Static Assets (Vendor WebAssembly, Images, Fonts) -> Cache-First with Dynamic Cache Fill
     event.respondWith(
         caches.match(request).then((cachedResponse) => {
             if (cachedResponse) {
-                // Return cached asset immediately; refresh in background if appropriate
                 return cachedResponse;
             }
 
@@ -134,7 +150,6 @@ self.addEventListener('fetch', (event) => {
                 }
                 return networkResponse;
             }).catch(() => {
-                // Asset unavailable offline and not in cache
                 return new Response('', { status: 408, statusText: 'Request Timed Out Offline' });
             });
         })

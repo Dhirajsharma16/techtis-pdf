@@ -8,7 +8,7 @@ import { PdfHelpers } from '../utils/pdf-helpers.js';
 import { StorageManager } from '../utils/storage.js';
 import { EdgeAIBridge, AIQuotaManager } from '../edge/ai-bridge.js';
 import { SessionDocVault } from '../utils/session-vault.js';
-import { PassportStudio } from './passport-studio.js';
+import { PassportStudio } from './passport-studio.js?v=2.4.0';
 
 export function registerImageWorkspaces(AppClass) {
 
